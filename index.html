@@ -301,6 +301,13 @@
         .export-note { margin: 12px 2px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
         .app-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: auto; padding: 14px 24px; background: var(--blue-dark); color: var(--blue-soft); font-size: 13px; }
 
+        .export-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; background: var(--marker-soft); border-top: 3px solid var(--blue); }
+        .export-bar > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .export-bar strong { font-family: var(--hand); font-size: 19px; color: var(--blue); line-height: 1.4; }
+        .export-bar span { font-size: 13px; color: var(--muted); }
+        .export-bar .button-primary { flex-shrink: 0; min-width: 260px; }
+        @media (max-width: 700px) { .export-bar { flex-direction: column; align-items: stretch; padding: 14px; } .export-bar .button-primary { min-width: 0; width: 100%; } }
+
         /* ---------- Hộp thoại ---------- */
         .card-3d, .card-3d-amber { background: var(--paper); border: 1px solid var(--line-strong); border-radius: 14px; box-shadow: 0 24px 60px rgba(20, 48, 107, .3); }
         .card-3d-header { background: var(--blue); border-bottom: 4px solid var(--marker); border-radius: 13px 13px 0 0; color: #fff; }
@@ -455,7 +462,7 @@
   </section>
   </details><div class="sidebar-settings"><nav aria-label="Thông tin và thiết lập" class="header-links"><button type="button"  class="button-quiet" onclick="openModal('modalTT27Rules')">Quy tắc TT27</button><button type="button"  class="button-quiet" onclick="openModal('modalAIKey')"><span id="aiModeBadgeHeader">Chế độ: Miễn phí 100%</span></button></nav></div></aside><div class="work-content">  <p id="ppctUploadFeedback" class="hidden" role="status" aria-live="polite"></p>
   <p id="studentSourceLabel" class="student-source-label" role="status"></p><p id="scopeStatusLine" class="scope-status-line"></p><section class="workspace" aria-labelledby="workspace-title">
-    <div class="workspace-heading"><div><h2 id="workspace-title"><span id="workspaceModeLabel">Danh sách nhận xét môn học</span> <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div></div>
+    <div class="workspace-heading"><div><h2 id="workspace-title"><span id="workspaceModeLabel">Danh sách nhận xét môn học</span> <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div><div class="workspace-actions"><button type="button" id="btnQuickComment" class="button-secondary" onclick="quickCommentAll()" title="Máy tự viết nhận xét cho cả lớp, không cần nhập từ khóa"><i data-lucide="sparkles" aria-hidden="true"></i>Nhận xét nhanh cả lớp</button><button type="button" id="btnQuickExport" class="btn-3d-gold px-4 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-2" onclick="quickExportAll()" title="Xuất ngay file Excel gồm tất cả các môn, không cần chỉnh thêm"><i data-lucide="zap" aria-hidden="true"></i>Xuất nhanh tất cả môn</button></div></div>
     <div class="table-toolbar"><div class="field subject-field"><label for="activePreviewTarget">Xem bảng của môn / nhóm</label><select id="activePreviewTarget" onchange="renderStudentTable()" class="input-vintage rounded-xl px-4 py-2 text-base font-extrabold text-[#1d3f8f] cursor-pointer min-w-[240px]">
                                 <!-- Tự động điền các Sheet môn học hoặc NLPC -->
                             </select></div><div class="field search-field"><label for="searchStudentInput">Tìm học sinh</label><input type="text" id="searchStudentInput" oninput="renderStudentTable()" placeholder="Tìm tên hoặc mã học sinh..." class="w-full input-vintage pl-10 pr-4 py-2 rounded-xl text-base"></div></div>
@@ -500,6 +507,7 @@
                         </table>
                     </div>
     <div class="table-footer"><div class="footer-stats"><span id="statTotalStudents"></span><span id="statTotalSubjects"></span><span id="statPPCTStatus"></span></div><button type="button"  class="button-quiet" onclick="downloadSampleTemplate(currentFileMode)">Tải file Excel mẫu trắng</button></div>
+    <div class="export-bar"><div><strong id="exportAllTitle">Xuất file tất cả các môn học</strong><span id="exportAllHint">Xuất đủ các môn theo đúng mẫu file đã nhập.</span></div><button type="button" id="btnExportAll" class="button-primary" onclick="exportExcelFile({ all: true })"><i data-lucide="download" aria-hidden="true"></i><span id="exportAllLabel">Xuất Excel tất cả các môn học</span></button></div>
   </section>
   <p class="export-note">Tệp xuất: <span id="footerFileNamePreview"></span> · Phông Times New Roman, cỡ 11.</p>
 </div></div></main>
@@ -1480,6 +1488,34 @@
             return matchedPhrases;
         }
 
+        // Chuẩn hóa lời nhận xét: bỏ nội dung trong ngoặc đơn, luôn mở đầu bằng "Em"
+        function stripParenthetical(text) {
+            let t = String(text || "");
+            let prev;
+            do {
+                prev = t;
+                t = t.replace(/\s*[\(（][^()（）]*[\)）]/g, "");
+            } while (t !== prev);
+            return t.replace(/\s+([,.;:!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
+        }
+
+        function startWithEm(text) {
+            const t = String(text || "").trim();
+            if (!t) return "";
+            if (/^em(\s|[,.;:!?]|$)/i.test(t)) return "Em" + t.slice(2);
+            return "Em " + t.charAt(0).toLowerCase() + t.slice(1);
+        }
+
+        function finalizeComment(text) {
+            return startWithEm(stripParenthetical(text));
+        }
+
+        // Cụm danh từ đứng sau "Em" cần thêm "có" cho đúng câu: "Em có chữ viết đều đẹp"
+        function emPhrase(phrase) {
+            const p = String(phrase || "").trim();
+            return /^(chữ viết|kỹ năng|vốn từ|năng lực|tư duy|năng khiếu|khả năng)(\s|$)/i.test(p) ? "có " + p : p;
+        }
+
         function buildSmartCommentForTarget(student, targetKey, seedOffset = 0) {
             const categoryKey = normalizeSubjectCategory(targetKey);
             const style = document.getElementById("styleSelect").value;
@@ -1521,14 +1557,14 @@
             let finalComment = "";
 
             if (matchedKeywordPhrases.length > 0 && chosenPPCTTopic && rawLevel !== "C") {
-                const kwPhrase = matchedKeywordPhrases[0];
+                const kwPhrase = emPhrase(matchedKeywordPhrases[0]);
                 if (style === "ngangon") {
                     finalComment = `Em ${kwPhrase}; ${chosenPPCTTopic}.`;
                 } else {
                     finalComment = `Em ${kwPhrase}, đồng thời ${chosenPPCTTopic}. ${chosenClosing}`;
                 }
             } else if (matchedKeywordPhrases.length > 0) {
-                const joinedPhrases = matchedKeywordPhrases.slice(0, 2).join("; ");
+                const joinedPhrases = [emPhrase(matchedKeywordPhrases[0])].concat(matchedKeywordPhrases.slice(1, 2)).join("; ");
                 if (style === "ngangon") {
                     finalComment = `Em ${joinedPhrases}. ${chosenClosing}`;
                 } else {
@@ -1536,13 +1572,14 @@
                 }
             } else if (chosenPPCTTopic && rawLevel !== "C") {
                 const prefix = rawLevel === "T"
-                    ? "Hoàn thành tốt nội dung học tập: em"
-                    : "Hoàn thành yêu cầu bài học: em";
+                    ? "Em hoàn thành tốt nội dung học tập,"
+                    : "Em hoàn thành yêu cầu bài học,";
                 finalComment = `${prefix} ${chosenPPCTTopic}. ${chosenClosing}`;
             } else {
                 finalComment = style === "ngangon" ? chosenBase : `${chosenBase} ${chosenClosing}`;
             }
 
+            finalComment = finalizeComment(finalComment);
             if (finalComment.length > 485) {
                 finalComment = finalComment.substring(0, 480) + "...";
             }
@@ -1793,6 +1830,18 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             source.textContent = studentDataOrigin === "file" ? `DANH SÁCH ĐÃ NHẬP: ${currentOriginalFileName} · ${studentsData.length} học sinh` : studentDataOrigin === "demo" ? "ĐANG DÙNG DỮ LIỆU GIẢ ĐỂ TRẢI NGHIỆM — chưa phải danh sách học sinh của thầy/cô." : "CHƯA NHẬP DANH SÁCH HỌC SINH";
             source.classList.toggle("is-demo", studentDataOrigin === "demo");
             document.getElementById("primaryExport").disabled = !studentsData.length;
+            const exportAllLabel = document.getElementById("exportAllLabel");
+            if (exportAllLabel) {
+                exportAllLabel.textContent = nlpc ? "Xuất Excel năng lực – phẩm chất" : "Xuất Excel tất cả các môn học";
+                document.getElementById("exportAllTitle").textContent = nlpc ? "Xuất file năng lực – phẩm chất" : "Xuất file tất cả các môn học";
+                document.getElementById("exportAllHint").textContent = total
+                    ? `Gồm ${total} ${unit}, giữ đúng cấu trúc file đã nhập, bất kể đang chọn môn nào ở trên.`
+                    : "Nhập file Excel để xuất đúng theo mẫu.";
+            }
+            ["btnExportAll", "btnQuickComment", "btnQuickExport"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = !studentsData.length;
+            });
         }
 
         async function handleExcelUpload(event, expectedMode = null) {
@@ -2641,10 +2690,75 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         }
 
         // 12. XUẤT FILE EXCEL GIỮ NGUYÊN 100% ĐỊNH DẠNG GỐC, TÊN FILE & FONT TIMES NEW ROMAN 11
-        async function exportExcelFile() {
+        // ---- Xuất Excel ----
+        function normHeader(value) {
+            return String(value || "").toLowerCase().replace(/\s+/g, " ").trim();
+        }
+
+        // Tìm cột theo tiêu đề để ghi đúng chỗ, kể cả sheet có thêm cột (ví dụ Tiếng Việt có 13 cột)
+        function findMonHocColumns(ws) {
+            const found = { level: 0, comment: 0, period: 0 };
+            ws.getRow(1).eachCell({ includeEmpty: false }, (cell, col) => {
+                const h = normHeader(getCellValueSafe(cell));
+                if (!found.level && h.includes("mức đạt")) found.level = col;
+                else if (!found.comment && h.includes("nội dung nhận xét")) found.comment = col;
+                else if (!found.period && h.includes("thời điểm")) found.period = col;
+            });
+            return { level: found.level || 5, comment: found.comment || 8, period: found.period || 9 };
+        }
+
+        function findNLPCColumns(ws) {
+            const find = re => {
+                let hit = 0;
+                [1, 2].forEach(r => ws.getRow(r).eachCell({ includeEmpty: false }, (cell, col) => {
+                    if (!hit && re.test(normHeader(getCellValueSafe(cell)))) hit = col;
+                }));
+                return hit;
+            };
+            const general = find(/nhận xét năng lực chung/), special = find(/nhận xét năng lực đặc thù/);
+            const quality = find(/nhận xét phẩm chất/), period = find(/thời điểm/);
+            return {
+                general: general ? general + 1 : 21,
+                special: special ? special + 1 : 23,
+                quality: quality ? quality + 1 : 25,
+                period: period || 26
+            };
+        }
+
+        // Tìm dòng của từng học sinh theo mã học sinh, nếu không có thì dùng số dòng đã đọc khi nhập
+        function mapRowsByStudentCode(ws, startRow) {
+            const map = new Map();
+            ws.eachRow({ includeEmpty: false }, (row, n) => {
+                if (n < startRow) return;
+                const code = String(getCellValueSafe(row.getCell(2)) || "").trim();
+                if (code && !map.has(code)) map.set(code, n);
+            });
+            return map;
+        }
+
+        // ExcelJS ghi thẻ <sheetPr> sai thứ tự khi sheet vừa có "vừa khổ giấy" vừa có outlinePr, làm Excel báo không mở được file
+        function makeWorkbookExcelSafe(workbook) {
+            workbook.worksheets.forEach(ws => {
+                if (ws.properties) ws.properties.outlineProperties = undefined;
+            });
+        }
+
+        function setExportCell(cell, value, wrap) {
+            cell.value = value;
+            cell.font = Object.assign({}, cell.font || {}, { name: "Times New Roman", size: 11 });
+            if (wrap) cell.alignment = Object.assign({}, cell.alignment || {}, { vertical: "middle", wrapText: true });
+        }
+
+        async function exportExcelFile(options) {
+            const exportAll = !!(options && options.all === true);
+            const exportTargets = exportAll ? new Set(availableSheetsOrTargets.map(t => t.key)) : selectedTargets;
             const periodCode = document.getElementById("periodSelect").value;
             const autoFillCode = document.getElementById("autoFillLevelCode").checked;
 
+            if (!studentsData.length) {
+                showToast("Chưa có danh sách học sinh để xuất. Hãy nhập file Excel trước.");
+                return;
+            }
             showToast("Đang đóng gói File Excel chuẩn Times New Roman (Size 11)...");
 
             try {
@@ -2655,44 +2769,38 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     workbook = await buildStandardIndustryWorkbook(currentFileMode);
                 }
 
-                const standardFont = { name: "Times New Roman", size: 11 };
-
+                let writtenSheets = 0;
                 if (currentFileMode === "MON_HOC") {
                     workbook.worksheets.forEach(ws => {
                         if (ws.name.toLowerCase() === "huongdan") return;
-                        if (!selectedTargets.has(ws.name)) return;
+                        if (!exportTargets.has(ws.name)) return;
+                        const cols = findMonHocColumns(ws);
+                        const rowsByCode = mapRowsByStudentCode(ws, 2);
 
                         studentsData.forEach((st, idx) => {
-                            const rowNum = st.rowNumber || (idx + 2);
+                            const rowNum = rowsByCode.get(String(st.code || "").trim()) || st.rowNumber || (idx + 2);
                             const row = ws.getRow(rowNum);
 
                             if (autoFillCode && ["T", "H", "Đ", "C"].includes(st.level)) {
-                                const levelCell = row.getCell(5);
+                                const levelCell = row.getCell(cols.level);
                                 if (!getCellValueSafe(levelCell)) {
                                     // Môn học chuẩn TT27: T (Hoàn thành tốt), H (Hoàn thành), C (Chưa hoàn thành)
-                                    levelCell.value = st.level === "T" ? "T" : (st.level === "C" ? "C" : "H");
+                                    setExportCell(levelCell, st.level === "T" ? "T" : (st.level === "C" ? "C" : "H"), false);
                                 }
                             }
-
-                            const commentCell = row.getCell(8);
-                            commentCell.value = (st.comments && st.comments[ws.name]) || buildSmartCommentForTarget(st, ws.name);
-                            row.getCell(9).value = periodCode;
-
-                            for (let c = 1; c <= 9; c++) {
-                                const cell = row.getCell(c);
-                                cell.font = Object.assign({}, cell.font || {}, standardFont);
-                                if (c === 8) {
-                                    cell.alignment = Object.assign({}, cell.alignment || {}, { vertical: "middle", wrapText: true });
-                                }
-                            }
+                            setExportCell(row.getCell(cols.comment), (st.comments && st.comments[ws.name]) || buildSmartCommentForTarget(st, ws.name), true);
+                            setExportCell(row.getCell(cols.period), periodCode, false);
                             row.commit();
                         });
+                        writtenSheets++;
                     });
                 } else {
                     const ws = workbook.worksheets[0];
                     if (ws) {
+                        const cols = findNLPCColumns(ws);
+                        const rowsByCode = mapRowsByStudentCode(ws, 3);
                         studentsData.forEach((st, idx) => {
-                            const rowNum = st.rowNumber || (idx + 3);
+                            const rowNum = rowsByCode.get(String(st.code || "").trim()) || st.rowNumber || (idx + 3);
                             const row = ws.getRow(rowNum);
 
                             if (autoFillCode && ["T", "H", "Đ", "C"].includes(st.level)) {
@@ -2700,42 +2808,88 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                                 const codeVal = st.level === "T" ? "T" : (st.level === "C" ? "C" : "Đ");
                                 for (let c = 5; c <= 19; c++) {
                                     const cell = row.getCell(c);
-                                    if (!getCellValueSafe(cell)) cell.value = codeVal;
+                                    if (!getCellValueSafe(cell)) setExportCell(cell, codeVal, false);
                                 }
                             }
-
-                            if (selectedTargets.has("NL_CHUNG")) {
-                                row.getCell(21).value = (st.comments && st.comments["NL_CHUNG"]) || buildSmartCommentForTarget(st, "NL_CHUNG");
+                            if (exportTargets.has("NL_CHUNG")) {
+                                setExportCell(row.getCell(cols.general), (st.comments && st.comments["NL_CHUNG"]) || buildSmartCommentForTarget(st, "NL_CHUNG"), true);
                             }
-                            if (selectedTargets.has("NL_DACTHU")) {
-                                row.getCell(23).value = (st.comments && st.comments["NL_DACTHU"]) || buildSmartCommentForTarget(st, "NL_DACTHU");
+                            if (exportTargets.has("NL_DACTHU")) {
+                                setExportCell(row.getCell(cols.special), (st.comments && st.comments["NL_DACTHU"]) || buildSmartCommentForTarget(st, "NL_DACTHU"), true);
                             }
-                            if (selectedTargets.has("PHAM_CHAT")) {
-                                row.getCell(25).value = (st.comments && st.comments["PHAM_CHAT"]) || buildSmartCommentForTarget(st, "PHAM_CHAT");
+                            if (exportTargets.has("PHAM_CHAT")) {
+                                setExportCell(row.getCell(cols.quality), (st.comments && st.comments["PHAM_CHAT"]) || buildSmartCommentForTarget(st, "PHAM_CHAT"), true);
                             }
-                            row.getCell(26).value = periodCode;
-
-                            for (let c = 1; c <= 26; c++) {
-                                const cell = row.getCell(c);
-                                cell.font = Object.assign({}, cell.font || {}, standardFont);
-                                if (c === 21 || c === 23 || c === 25) {
-                                    cell.alignment = Object.assign({}, cell.alignment || {}, { vertical: "middle", wrapText: true });
-                                }
-                            }
+                            setExportCell(row.getCell(cols.period), periodCode, false);
                             row.commit();
                         });
+                        writtenSheets = exportTargets.size;
                     }
                 }
 
+                makeWorkbookExcelSafe(workbook);
                 const buffer = await workbook.xlsx.writeBuffer();
                 const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
                 saveAs(blob, currentOriginalFileName);
 
-                showToast(`Đã xuất file "${currentOriginalFileName}" thành công!`);
+                const unit = currentFileMode === "NLPC" ? "nhóm" : "môn";
+                const missing = studentsData.filter(st => !["T", "H", "Đ", "C"].includes(st.level)).length;
+                showToast(`Đã xuất file "${currentOriginalFileName}" (${writtenSheets} ${unit}).` + (missing ? ` Còn ${missing} học sinh chưa có mức đạt nên chưa có nhận xét.` : ""));
             } catch (err) {
                 console.error(err);
                 showToast("Có lỗi khi xuất file Excel. Vui lòng thử lại!");
             }
+        }
+
+        // ---- Nhận xét nhanh và xuất nhanh ----
+        const VALID_LEVELS = ["T", "H", "Đ", "C"];
+
+        // Gán mức đạt theo mục "Mức đánh giá" trong Thiết lập cho các em chưa có mức; trả về số học sinh được gán
+        function assignDefaultLevelsToMissing() {
+            const mode = document.getElementById("defaultLevelMode").value;
+            const midCode = currentFileMode === "NLPC" ? "Đ" : "H";
+            const assigned = [];
+            studentsData.forEach((st, idx) => {
+                if (VALID_LEVELS.includes(st.level)) return;
+                if (mode === "ALL_T" || mode === "ALL_XS") st.level = "T";
+                else if (mode === "ALL_MID" || mode === "ALL_HTT") st.level = midCode;
+                else if (mode === "3LEVELS") st.level = idx % 8 === 7 ? "C" : (idx % 2 === 0 ? "T" : midCode);
+                else st.level = idx % 2 === 0 ? "T" : midCode;
+                assigned.push(idx);
+            });
+            return assigned;
+        }
+
+        // Chuẩn bị cho chế độ nhanh: hỏi trước khi tự gán mức cho các em chưa có mức đạt
+        function prepareQuickMode() {
+            if (!studentsData.length) {
+                showToast("Chưa có danh sách học sinh. Hãy nhập file Excel trước.");
+                return null;
+            }
+            const missing = studentsData.filter(st => !VALID_LEVELS.includes(st.level)).length;
+            if (missing) {
+                const ok = window.confirm(`Có ${missing} học sinh chưa có mức đạt.\n\nMáy sẽ tự gán mức theo mục "Mức đánh giá" trong Thiết lập (mặc định xen kẽ Tốt và Hoàn thành) để viết nhận xét. Thầy/cô nên xem lại cột "Mức đạt chuẩn" của các em này.\n\nBấm OK để tiếp tục, Hủy để bỏ qua các em chưa có mức.`);
+                if (ok) return assignDefaultLevelsToMissing();
+            }
+            return [];
+        }
+
+        function quickCommentAll() {
+            const assigned = prepareQuickMode();
+            if (assigned === null) return;
+            regenerateAllComments(true);
+            const missing = studentsData.filter(st => !VALID_LEVELS.includes(st.level)).length;
+            showToast(missing
+                ? `Đã viết nhận xét nhanh cho ${studentsData.length - missing} học sinh. Còn ${missing} học sinh chưa có mức đạt nên chưa có nhận xét.`
+                : `Đã viết nhận xét nhanh cho cả lớp: ${studentsData.length} học sinh, ${availableSheetsOrTargets.length} mục.` + (assigned.length ? ` Đã tự gán mức cho ${assigned.length} học sinh, nên xem lại.` : ""));
+        }
+
+        async function quickExportAll() {
+            const assigned = prepareQuickMode();
+            if (assigned === null) return;
+            assigned.forEach(idx => generateCommentsForSingleStudent(idx));
+            if (assigned.length) renderStudentTable();
+            await exportExcelFile({ all: true });
         }
 
         async function buildStandardIndustryWorkbook(mode) {
@@ -3182,6 +3336,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
 Kiến thức Phân phối chương trình giai đoạn này: ${ppctList.join("; ")}.
 Quy định bổ sung: ${customSchoolDirective || "Ngắn gọn, khích lệ vì sự tiến bộ của học sinh, dưới 400 ký tự mỗi em"}.
 Mức đánh giá: T là Hoàn thành tốt/Tốt, H hoặc Đ là Hoàn thành/Đạt, C là Chưa hoàn thành/Cần cố gắng.
+Mỗi nhận xét bắt đầu bằng từ "Em" và không dùng dấu ngoặc đơn.
 Trả về JSON array gồm các object: [{"stt": number, "comment": string}].
 Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
 
@@ -3201,7 +3356,7 @@ Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
                     parsedArr.forEach(item => {
                         const found = studentsData.find(s => Number(s.stt) === Number(item.stt));
                         if (found && item.comment) {
-                            found.comments[activeTargetKey] = item.comment.trim();
+                            found.comments[activeTargetKey] = finalizeComment(item.comment);
                         }
                     });
                     renderStudentTable();

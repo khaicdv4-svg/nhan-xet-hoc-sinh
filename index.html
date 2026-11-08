@@ -333,7 +333,7 @@
 
                     <div class="p-5 space-y-3.5">
                         <p class="text-sm font-semibold text-[#3d250a]">
-                            Tải file chứa các câu nhận xét mẫu của thầy/cô lên để App học theo (Đọc tự động mọi Sheet và mọi cột trong Excel):
+                            Tải file mẫu câu để bổ sung vào kho hiện có; xem kết quả đọc và phân loại từng sheet:
                         </p>
 
                         <!-- Nút tải trực tiếp file Excel mẫu nhận xét ngay trên Sidebar -->
@@ -693,7 +693,7 @@
                     </div>
                     <div>
                         <h3 class="font-serif font-bold text-xl text-[#fce89c]">Ngân Hàng Mẫu Câu Nhận Xét (Hỗ trợ .xlsx, .xls, .docx, .txt)</h3>
-                        <p class="text-xs sm:text-sm text-[#d8e8df]">Đọc tự động tất cả các Sheet và các cột trong file Excel mẫu câu của giáo viên</p>
+                        <p class="text-xs sm:text-sm text-[#d8e8df]">Quét các sheet và cột; xem kho hiện có và kết quả phân loại từng sheet bên dưới</p>
                     </div>
                 </div>
                 <button onclick="closeModal('modalBank')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
@@ -710,7 +710,7 @@
                             <span>Tải File Excel Mẫu Nhận Xét (.xlsx, .xls) hoặc Word (.docx), Text (.txt):</span>
                         </div>
                         <p class="text-sm text-[#5c3a21] font-medium">
-                            Nếu file Excel của thầy/cô có nhiều Sheet (Toán, Tiếng Việt, Năng lực, Phẩm chất...), App sẽ <strong>tự động phân loại vào đúng môn</strong> hoặc nạp vào mục đang chọn!
+                            Nếu file Excel của thầy/cô có nhiều Sheet (Toán, Tiếng Việt, Năng lực, Phẩm chất...), App sẽ <strong>nạp bổ sung và phân loại theo tên sheet</strong> hoặc nạp vào mục đang chọn!
                         </p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2.5 shrink-0">
@@ -729,9 +729,11 @@
                 <!-- Hộp thông báo kết quả đọc file Excel mẫu câu -->
                 <div id="bankUploadResultBanner" class="hidden p-3.5 rounded-xl bg-emerald-100 border-2 border-emerald-700 text-emerald-950 font-bold text-sm flex items-center justify-between">
                     <span id="bankUploadResultText">Đã nạp thành công mẫu câu từ file Excel!</span>
-                    <span class="text-xs uppercase px-2 py-0.5 rounded bg-emerald-800 text-white">Đã kích hoạt</span>
+                    <span class="text-xs uppercase px-2 py-0.5 rounded bg-emerald-800 text-white">Kết quả đọc</span>
                 </div>
 
+                <div id="bankInventory" class="p-4 rounded-xl bg-[#f4ead5] border border-[#b59469]" aria-live="polite"></div>
+                <div id="bankImportHistory" class="p-4 rounded-xl border border-[#b59469]"></div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">Chọn Môn học / Năng lực - Phẩm chất để xem hoặc sửa:</label>
@@ -2477,7 +2479,7 @@
             const modalEl = document.getElementById(id);
             if (!modalEl) return;
             modalEl.classList.remove("hidden");
-            if (id === "modalBank") loadCustomBankCategoryPreview();
+            if (id === "modalBank") { loadCustomBankCategoryPreview(); renderBankInventory(); }
             if (id === "modalPPCT") {
                 const gEl = document.getElementById("ppctModalGrade");
                 const pEl = document.getElementById("ppctModalPeriod");
@@ -2499,114 +2501,126 @@
             document.getElementById("customBankTextarea").value = list.join("\n");
         }
 
-        // KHẮC PHỤC TRIỆT ĐỂ ĐỌC MỌI FILE EXCEL (.XLSX, .XLS) TẠI MỤC NGÂN HÀNG MẪU NHẬN XÉT
+        // Nạp bổ sung vào kho hiện có; không lưu nội dung tệp gốc.
         async function handleBankFileUpload(event, fromSidebar = false) {
             const file = event.target.files[0];
             if (!file) return;
             const ext = file.name.split(".").pop().toLowerCase();
             const selectedCat = document.getElementById("bankCategorySelect").value || "Tiếng việt";
-
             showToast(`Đang đọc file mẫu nhận xét "${file.name}"...`);
-
             try {
-                let totalImported = 0;
-                let importedCategories = new Set();
-
-                if (ext === "xlsx" || ext === "xls" || ext === "csv") {
-                    const buf = await file.arrayBuffer();
-                    // Dùng SheetJS (XLSX) để đọc được cả .xls (Excel 2003) lẫn .xlsx mọi cấu trúc
-                    const wb = XLSX.read(buf, { type: "array" });
-
-                    const allFallbackLines = [];
-
-                    wb.SheetNames.forEach(sheetName => {
-                        if (sheetName.toLowerCase() === "huongdan") return;
-                        const ws = wb.Sheets[sheetName];
-                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-
-                        // Xem tên Sheet có trùng với môn học hoặc NLPC không
-                        const matchedSheetCat = detectBankCategoryByName(sheetName);
-                        const sheetLines = [];
-
-                        rows.forEach(row => {
-                            if (!Array.isArray(row)) return;
-                            row.forEach(cellVal => {
-                                const text = String(cellVal || "").trim();
-                                // Lọc các câu nhận xét hợp lệ (độ dài >= 12 ký tự, không phải tiêu đề bảng)
-                                if (
-                                    text.length >= 12 &&
-                                    isNaN(text) &&
-                                    !text.toLowerCase().includes("nội dung nhận xét") &&
-                                    !text.toLowerCase().includes("họ và tên") &&
-                                    !text.toLowerCase().includes("mã học sinh")
-                                ) {
-                                    sheetLines.push(text);
-                                    allFallbackLines.push(text);
-                                }
-                            });
-                        });
-
-                        const uniqueSheetLines = Array.from(new Set(sheetLines));
-                        if (matchedSheetCat && uniqueSheetLines.length > 0) {
-                            customCommentBank[matchedSheetCat] = uniqueSheetLines;
-                            importedCategories.add(matchedSheetCat);
-                            totalImported += uniqueSheetLines.length;
+                const sheets = [];
+                const validLine = value => {
+                    const text = String(value ?? "").trim();
+                    return text.length >= 12 && isNaN(text) &&
+                        !/nội dung nhận xét|họ và tên|mã học sinh/i.test(text);
+                };
+                if (["xlsx", "xls", "csv"].includes(ext)) {
+                    const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+                    wb.SheetNames.forEach(name => {
+                        if (name.toLowerCase() === "huongdan") {
+                            sheets.push({ name, category: null, lines: [], status: "instructions" });
+                            return;
                         }
+                        const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: "" });
+                        const lines = Array.from(new Set(rows.filter(Array.isArray)
+                            .flatMap(row => row.filter(validLine).map(value => String(value).trim()))));
+                        const category = detectBankCategoryByName(name);
+                        sheets.push({ name, category, lines, status: !lines.length ? "empty" : (category ? "imported" : "unmapped") });
                     });
-
-                    // Nếu file Excel chỉ có Sheet1 chung chung, nạp vào mục đang chọn
-                    if (importedCategories.size === 0 && allFallbackLines.length > 0) {
-                        const uniqueAll = Array.from(new Set(allFallbackLines));
-                        customCommentBank[selectedCat] = uniqueAll;
-                        importedCategories.add(selectedCat);
-                        totalImported = uniqueAll.length;
-                    }
-                } else if (ext === "docx" && window.mammoth) {
-                    const buf = await file.arrayBuffer();
-                    const res = await window.mammoth.extractRawText({ arrayBuffer: buf });
-                    const lines = Array.from(new Set(res.value.split(/\r?\n/).map(s => s.trim()).filter(s => s.length >= 12)));
-                    if (lines.length > 0) {
-                        customCommentBank[selectedCat] = lines;
-                        importedCategories.add(selectedCat);
-                        totalImported = lines.length;
+                    // Giữ cách nạp file tên sheet chung vào mục đang chọn, nhưng báo rõ từng sheet.
+                    if (!sheets.some(sheet => sheet.category && sheet.lines.length)) {
+                        sheets.filter(sheet => sheet.status === "unmapped").forEach(sheet => {
+                            sheet.category = selectedCat;
+                            sheet.status = "selected";
+                        });
                     }
                 } else {
-                    const text = await file.text();
-                    const lines = Array.from(new Set(text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length >= 12)));
-                    if (lines.length > 0) {
-                        customCommentBank[selectedCat] = lines;
-                        importedCategories.add(selectedCat);
-                        totalImported = lines.length;
+                    let text;
+                    if (ext === "docx") {
+                        if (!window.mammoth) throw new Error("Thiếu thư viện đọc DOCX");
+                        text = (await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value;
+                    } else if (ext === "txt") {
+                        text = await file.text();
+                    } else {
+                        throw new Error("Định dạng mẫu câu không được hỗ trợ");
                     }
+                    const lines = Array.from(new Set(text.split(/\r?\n/).map(line => line.trim()).filter(line => line.length >= 12)));
+                    sheets.push({ name: file.name, category: selectedCat, lines, status: lines.length ? "selected" : "empty" });
                 }
 
-                if (totalImported > 0) {
-                    localStorage.setItem("THAYKHAIEDU_CUSTOM_BANK", JSON.stringify(customCommentBank));
-                    updateCustomBankBadge();
-                    const firstImportedCat = Array.from(importedCategories)[0];
-                    if (firstImportedCat) {
-                        document.getElementById("bankCategorySelect").value = firstImportedCat;
+                const nextBank = { ...customCommentBank };
+                let totalAdded = 0;
+                let totalRead = 0;
+                const importedCategories = new Set();
+                const reportSheets = sheets.map(sheet => {
+                    let added = 0;
+                    if (sheet.category && sheet.lines.length) {
+                        const previous = nextBank[sheet.category] || [];
+                        const merged = Array.from(new Set([...previous, ...sheet.lines]));
+                        added = merged.length - previous.length;
+                        nextBank[sheet.category] = merged;
+                        importedCategories.add(sheet.category);
+                        totalRead += sheet.lines.length;
+                        totalAdded += added;
                     }
-                    loadCustomBankCategoryPreview();
-                    regenerateAllComments();
-
-                    const resultBanner = document.getElementById("bankUploadResultBanner");
-                    const resultText = document.getElementById("bankUploadResultText");
-                    if (resultBanner && resultText) {
-                        resultBanner.classList.remove("hidden");
-                        resultText.innerText = `Đã nạp thành công ${totalImported} mẫu câu nhận xét từ file "${file.name}" (${importedCategories.size} danh mục)!`;
-                    }
-
-                    if (fromSidebar) {
-                        openModal("modalBank");
-                    }
-                    showToast(`Đã nạp thành công ${totalImported} mẫu câu từ "${file.name}" và áp dụng cho lớp!`);
-                } else {
-                    showToast("Không tìm thấy câu nhận xét (độ dài >= 12 ký tự) trong file. Vui lòng kiểm tra lại file!");
-                }
+                    return { name: sheet.name, category: sheet.category, found: sheet.lines.length, added, status: sheet.status };
+                });
+                const report = { fileName: file.name, time: new Date().toISOString(), added: totalAdded, read: totalRead, sheets: reportSheets };
+                const history = [report, ...getBankImportHistory()].slice(0, 20);
+                localStorage.setItem("THAYKHAIEDU_CUSTOM_BANK", JSON.stringify(nextBank));
+                customCommentBank = nextBank;
+                localStorage.setItem("THAYKHAIEDU_BANK_IMPORT_HISTORY", JSON.stringify(history));
+                updateCustomBankBadge();
+                const firstCategory = Array.from(importedCategories)[0];
+                if (firstCategory) document.getElementById("bankCategorySelect").value = firstCategory;
+                loadCustomBankCategoryPreview();
+                if (totalRead) regenerateAllComments();
+                const hasUnmapped = reportSheets.some(sheet => sheet.status === "unmapped");
+                showToast(hasUnmapped
+                    ? `Đã thêm ${totalAdded} câu. Có sheet chưa phân loại: xem chi tiết trong ngân hàng.`
+                    : (totalRead ? `Đã thêm ${totalAdded} câu mới; giữ câu cũ và bỏ câu trùng.` : "Không tìm thấy câu hợp lệ. Kho hiện có được giữ nguyên."));
+                if (fromSidebar) openModal("modalBank");
             } catch (err) {
                 console.error(err);
-                showToast("Lỗi khi đọc file mẫu câu. Thầy/cô vui lòng thử lại hoặc tải file mẫu chuẩn về xem!");
+                showToast("Không thể đọc hoặc lưu file mẫu câu. Vui lòng kiểm tra file và dung lượng lưu của trình duyệt.");
+            }
+        }
+
+        function getBankImportHistory() {
+            try {
+                const history = JSON.parse(localStorage.getItem("THAYKHAIEDU_BANK_IMPORT_HISTORY") || "[]");
+                return Array.isArray(history) ? history : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function renderBankInventory() {
+            const inventory = document.getElementById("bankInventory");
+            if (!inventory) return;
+            const labels = { NL_CHUNG: "Năng lực chung", NL_DACTHU: "Năng lực đặc thù", PHAM_CHAT: "Phẩm chất chủ yếu" };
+            const label = category => labels[category] || category;
+            const entries = Object.entries(customCommentBank).filter(([, lines]) => Array.isArray(lines) && lines.length);
+            const total = entries.reduce((sum, [, lines]) => sum + lines.length, 0);
+            inventory.innerHTML = `<p class="font-extrabold">Kho đang sử dụng: ${total} câu / ${entries.length} danh mục</p>` +
+                entries.map(([category, lines]) => `<p>${escapeHtml(label(category))}: ${lines.length} câu</p>`).join("") +
+                `<p class="mt-2 text-sm">Nạp file sẽ bổ sung câu mới, giữ câu cũ và loại câu trùng trong cùng danh mục. Câu được lưu trên trình duyệt này; ứng dụng không lưu tệp gốc.</p>`;
+            const history = getBankImportHistory();
+            const historyBox = document.getElementById("bankImportHistory");
+            const statuses = { imported: "Đã phân loại", selected: "Nạp vào mục đang chọn", unmapped: "CHƯA NẠP — chưa nhận diện tên sheet. Đổi tên sheet theo môn/mục rồi nạp lại.", instructions: "Bỏ qua sheet hướng dẫn", empty: "Không có câu hợp lệ (tối thiểu 12 ký tự)" };
+            historyBox.innerHTML = history.length ? `<p class="font-extrabold">Lịch sử 20 lần đọc gần nhất</p>` + history.map((report, index) => `
+                <details ${index === 0 ? "open" : ""} class="mt-2 rounded-xl border border-[#b59469] p-3">
+                    <summary class="cursor-pointer font-bold">${escapeHtml(report.fileName)} — thêm ${report.added} câu · ${report.sheets.length} sheet/mục</summary>
+                    <p class="text-xs my-2">${escapeHtml(new Date(report.time).toLocaleString("vi-VN"))}</p>
+                    ${report.sheets.map(sheet => `<p class="text-sm mt-1">${escapeHtml(sheet.name)} → ${escapeHtml(sheet.category ? label(sheet.category) : "Chưa phân loại")}: tìm ${sheet.found}, thêm ${sheet.added}. ${escapeHtml(statuses[sheet.status] || "")}</p>`).join("")}
+                </details>`).join("") : `<p class="text-sm">Chưa có lịch sử nạp file. Các câu đã lưu trước bản cập nhật vẫn được liệt kê ở kho hiện có; không truy ngược được tên file cũ.</p>`;
+            const banner = document.getElementById("bankUploadResultBanner");
+            if (banner) banner.classList.toggle("hidden", !history.length);
+            const resultText = document.getElementById("bankUploadResultText");
+            if (resultText && history.length) {
+                const last = history[0];
+                resultText.innerText = `Lần đọc gần nhất: "${last.fileName}" — thêm ${last.added} câu. ${last.sheets.some(sheet => sheet.status === "unmapped") ? "Có sheet CHƯA NẠP — xem chi tiết bên dưới." : "Xem kết quả từng sheet bên dưới."}`;
             }
         }
 
@@ -2683,6 +2697,7 @@
         function resetCustomBank() {
             customCommentBank = {};
             localStorage.removeItem("THAYKHAIEDU_CUSTOM_BANK");
+            localStorage.removeItem("THAYKHAIEDU_BANK_IMPORT_HISTORY");
             loadCustomBankCategoryPreview();
             updateCustomBankBadge();
             regenerateAllComments();
@@ -2690,6 +2705,7 @@
         }
 
         function updateCustomBankBadge() {
+            renderBankInventory();
             const badge = document.getElementById("customBankBadge");
             const sidebarStatus = document.getElementById("sidebarBankStatusText");
             const countCats = Object.keys(customCommentBank).length;
@@ -2845,3 +2861,4 @@ Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
     </script>
 </body>
 </html>
+

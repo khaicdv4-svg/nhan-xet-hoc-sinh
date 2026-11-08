@@ -212,6 +212,18 @@ button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visi
 .ppct-feedback{padding:12px 14px;margin:0 0 14px;border:1px solid #8bb59b;border-radius:7px;background:#eff8f0;color:#194c30;font-size:12px;line-height:1.7;overflow-wrap:anywhere}.ppct-feedback-error{border-color:#c6a15c;background:#fff8e7;color:#745118}
 @media(max-width:700px){.app-main .page-heading{min-height:136px;padding:16px 48px}.app-main .page-heading h1{font-size:25px}.page-heading .eyebrow{font-size:8px;letter-spacing:.4px}.page-heading .page-description{font-size:11px;line-height:1.6}.title-ornament{width:45px;height:70px;left:4px}.title-ornament-right{left:auto;right:4px}.page-actions{margin-top:8px}.page-actions #installAppButton{grid-column:1/-1;padding:4px;min-height:30px}}
 </style>
+<style id="classic-cards-and-modes">/* Trả lại màu, thẻ và nút nổi của giao diện đầu; phân tầng rõ vùng thao tác. */
+body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transparent .65px);background-size:24px 24px;font-size:16px}
+.app-main{padding-top:18px}.app-main .page-heading{min-height:110px;padding-top:14px;padding-bottom:14px;background:linear-gradient(100deg,#eee5d0,#fffaf0 50%,#eee5d0);border:2px solid #b69763;box-shadow:0 3px 0 #c7b48e}.app-main .page-heading h1{font-size:32px}.page-heading .page-description{font-size:13px}.page-heading .eyebrow{font-size:11px}.title-ornament{color:#8f713b}
+.mode-status-panel{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap;padding:12px 18px;margin:15px 0;background:linear-gradient(100deg,#163d32,#245746);border:2px solid #b18b37;border-radius:10px;color:#fff8dd;box-shadow:0 3px 0 #b6a275}.mode-status-caption{font-size:11px;font-weight:700;color:#d5e2ce;letter-spacing:.8px}.mode-status-panel strong{font-size:19px;font-weight:800;line-height:1.5}.mode-status-panel>span:last-child{font-size:13px;margin-left:auto;color:#f5da8c}.mode-status-panel.is-nlpc{background:linear-gradient(100deg,#632b39,#884150);border-color:#b69763}
+.import-panel{border:2px solid #a58452;border-radius:12px;background:#fffaf0;margin-bottom:16px;box-shadow:0 4px 0 #b9a17a;overflow:hidden}.import-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f0dfba;border-bottom:1px solid #c2a269;padding:11px 18px}.import-panel-heading h2{font-size:18px;font-weight:800;color:#3d2d17}.import-panel-heading p{font-size:12px;color:#6c583a}.import-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 18px 10px}.mode-import-button{position:relative;display:grid;grid-template-columns:30px 1fr;gap:5px 10px;align-items:center;text-align:left;padding:13px 17px;border:2px solid #8d743f;border-radius:9px;background:linear-gradient(#fffef9,#ead9b7);color:#3e2b13;box-shadow:0 4px 0 #9a7d48;min-height:82px}.mode-import-button>svg{width:25px;height:25px;grid-row:1/3;color:#214e3c}.mode-import-button>span{font-size:18px;line-height:1.5;font-weight:800}.mode-import-button>small{font-size:11px;font-weight:650;color:#6e5a38}.mode-import-button:hover{background:linear-gradient(#fffdf3,#f0d48e);transform:translateY(-1px)}.mode-import-button.is-active{border-color:#1d6249;background:linear-gradient(#e9f4dd,#cedfb4);box-shadow:0 4px 0 #39714c}.mode-import-nlpc.is-active{border-color:#7b3245;background:linear-gradient(#fae8e7,#ead1d0);box-shadow:0 4px 0 #824858}.mode-import-nlpc.is-active>svg{color:#7c3545}.import-note{padding:4px 18px 11px;font-size:12px;line-height:1.7;color:#78654a}.student-import-error{margin:4px 18px 14px;padding:11px 13px;border:1px solid #b48739;border-radius:6px;background:#fff0c8;color:#6c4318;font-size:13px;font-weight:600;line-height:1.7}
+.context-panel{background:#fffbf2;border:2px solid #b89a69;box-shadow:0 3px 0 #c4b08b;border-radius:10px;padding:12px 18px;gap:12px 16px;margin-bottom:16px}.context-heading{grid-column:1/-1;font-size:16px;font-weight:800;color:#2b4a37;border-bottom:1px solid #deceb0;padding-bottom:8px}.field>label{font-size:13px;color:#57462b;font-weight:700}.field select,.field input{min-height:44px;border:1.5px solid #b59b75;background:#fffef9;font-size:15px;font-weight:600;box-shadow:inset 0 1px 3px #8f6e3020}.field-caption{font-size:12px;color:#77664d}.file-name{font-size:13px}.muted-badge{background:#e8ddc4;color:#51452f;font-size:11px}.file-summary .muted-badge{background:#254e3c;color:#fff0bd}.count-badge{font-size:12px;background:#e7d59c;color:#3c321a;font-weight:750}
+#main-content .button-secondary,#main-content .button-quiet{border:1.5px solid #a18353;background:linear-gradient(#fffdf7,#eadfc8);color:#493617;box-shadow:0 3px 0 #a68d65;border-radius:8px;font-size:14px;font-weight:750;min-height:42px;padding:10px 13px}#main-content .button-secondary:hover,#main-content .button-quiet:hover{background:#f4e5bc;transform:translateY(-1px)}#main-content .button-primary{background:linear-gradient(#f2cc68,#d7a22d);color:#2e210c;border:2px solid #97701d;box-shadow:0 4px 0 #8e671d;font-size:16px;font-weight:800;min-height:46px;padding:11px 18px;border-radius:8px}#main-content .button-primary:hover{background:linear-gradient(#f7d77f,#e1ae3e)}
+.support-tools{background:#fbf3e2;border:1.5px solid #b9a17b;border-radius:9px;margin-bottom:16px;box-shadow:0 2px 0 #d1c1a3}.support-tools>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;min-height:48px;color:#593e21;font-size:15px;font-weight:750;list-style:none;cursor:pointer}.support-tools>summary::before{content:'▸';font-size:16px}.support-tools[open]>summary::before{content:'▾'}.support-tools>summary>span{font-size:11px;font-weight:400;color:#837258;margin-left:auto}.support-tools[open]>summary{border-bottom:1px solid #d5c5a5}.support-tools .resources{padding:15px;gap:12px}.support-tools .resource-label{display:none}.support-tools .settings-menu{margin-left:auto}.settings-menu>summary{border:1.5px solid #a18353;background:linear-gradient(#fffdf7,#eadfc8);color:#493617;box-shadow:0 3px 0 #a68d65;font-size:14px;min-height:42px;padding:10px 12px;font-weight:700}.settings-content{border-color:#c2a878;background:#fffcf4}.settings-content h2{font-size:15px}.settings-content p{font-size:12px}.settings-content select{font-size:14px}.checkbox-line,.scope-options{font-size:13px}.file-link{font-size:13px}.demo-data>summary{font-size:14px}
+.workspace{background:#fffaf0;border:2px solid #9f8556;border-radius:12px;box-shadow:0 4px 0 #b3a07b}.workspace-heading{background:linear-gradient(100deg,#173e31,#2a5b47);border-bottom:3px solid #c7a247;padding:16px 18px!important;align-items:center}.workspace-heading h2{color:#fff5ce;font-size:20px;font-weight:800;line-height:1.5}.workspace-heading .count-badge{background:#f0d788;color:#2e371f;font-size:12px}.workspace-heading p{color:#d4e3d3;font-size:12px}.workspace-actions{flex-wrap:wrap;justify-content:flex-end}.workspace-actions #primaryExport{order:2}.table-toolbar{padding-top:14px;padding-bottom:14px!important;background:#f1e4c7}.ppct-context,.keyword-tools{background:#fbf2df;border-color:#d0bb94;font-size:12px;color:#59452b;padding:10px 16px}.contextual-tools>details>summary{display:inline-block;list-style:none;border:1px solid #b99b68;border-radius:6px;padding:7px 10px;background:#fffbf0;box-shadow:0 2px 0 #d1bc94;font-weight:700;cursor:pointer}.contextual-tools>details>summary::before{content:'▸ ';color:#8b672f}.contextual-tools>details[open]>summary::before{content:'▾ '}.student-table-scroll{border-color:#baa171}.student-table-scroll thead{background:#254b39;color:#fff2c9;border-bottom:2px solid #c9a350;font-size:13px}.student-table-scroll th{font-size:13px;font-weight:750}.student-table-scroll th div+div{color:#e1cc91;font-size:10px}.student-table-scroll td{border-color:#ddd0b7}.student-table-scroll td:nth-child(2)>div:first-child{font-size:14px}.student-table-scroll td:first-child{font-size:13px}.student-table-scroll td textarea{font-size:16px!important;border-color:#bca987;background:#fffefa}.student-table-scroll td select{font-size:13px;border-width:1.5px}.student-table-scroll td input{font-size:13px;border-color:#c9b593}.student-table-scroll td button{border:1px solid #ac9261;background:#f6e9cc;box-shadow:0 2px 0 #c2ab7d}.table-footer{background:#f4e9d2;border-top:1px solid #d1bd92}.footer-stats{font-size:11px;color:#706042}.export-note{color:#806c4c;font-size:11px}.header-links .button-quiet{background:#234c3d;border:1px solid #8f9c76;box-shadow:0 2px 0 #0e2c21;font-size:13px;font-weight:700}.app-footer{background:#214d3a;color:#e8e6cb;border-top:2px solid #a2874c}
+@media(max-width:1100px){.workspace-heading{display:block}.workspace-actions{margin-top:12px;justify-content:flex-start}.mode-status-panel strong{font-size:17px}.mode-import-button>span{font-size:16px}}
+@media(max-width:700px){.app-main .page-heading{min-height:116px}.app-main .page-heading h1{font-size:27px}.mode-status-panel{padding:11px 13px;gap:5px}.mode-status-caption{width:100%;font-size:10px}.mode-status-panel strong{font-size:17px}.mode-status-panel>span:last-child{font-size:12px;margin-left:0;width:100%}.import-panel-heading{padding:10px 13px;display:block}.import-panel-heading h2{font-size:17px}.import-panel-heading p{font-size:11px;margin-top:3px}.import-actions{grid-template-columns:1fr;padding:12px 13px 8px;gap:12px}.mode-import-button{padding:12px;min-height:80px}.mode-import-button>span{font-size:16px}.import-note{padding:4px 13px 10px;font-size:11px}.context-panel{padding:12px;gap:12px}.context-heading{font-size:15px}.field>label{font-size:12px}.field select,.field input{font-size:14px}.support-tools>summary{padding:11px 12px;font-size:14px;flex-wrap:wrap}.support-tools>summary>span{font-size:10px;margin:0;width:100%;padding-left:16px}.support-tools .resources{padding:12px}.workspace-heading{padding:14px!important}.workspace-heading h2{font-size:18px}.workspace-actions{gap:10px}#main-content .workspace-actions button{font-size:12px;min-height:42px;padding:10px}#main-content .workspace-actions #primaryExport{font-size:14px}.student-table-scroll table{min-width:1050px}.header-links .button-quiet{font-size:10px}.settings-menu{width:100%}.settings-content{padding:12px}.ppct-context,.keyword-tools{padding:10px 12px}.contextual-tools>details>summary{font-size:12px}.file-name{font-size:12px}.table-footer{padding:12px}.app-footer{font-size:10px}}
+</style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
@@ -226,9 +238,21 @@ button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visi
   <div class="page-heading"><svg class="title-ornament" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg><svg class="title-ornament title-ornament-right" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg>
     <div class="title-copy"><p class="eyebrow">THAYKHAIEDU · ĐỒNG HÀNH CÙNG GIÁO VIÊN</p><h1>Nhận xét học sinh</h1><p class="page-description">Tải danh sách, kiểm tra từng em và xuất file Excel.</p></div>
   </div>
-    <div class="primary-actions page-actions"><button type="button" id="primaryUpload" class="button-secondary" onclick="document.getElementById('excelUpload').click()"><i data-lucide="upload" aria-hidden="true"></i>Tải danh sách Excel</button><input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event)" onclick="this.value=null"><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i>Xuất Excel</button><button type="button" id="installAppButton" class="button-quiet" onclick="installApp()">Cài trên máy</button></div>
-  <ol class="workflow" aria-label="Quy trình sử dụng"><li><span>1</span>Tải danh sách</li><li><span>2</span>Kiểm tra nhận xét</li><li><span>3</span>Xuất Excel</li></ol>
-  <section class="context-panel" aria-label="Danh sách và kỳ đánh giá">
+  <section id="modeStatusPanel" class="mode-status-panel" aria-live="polite">
+    <span class="mode-status-caption">PHẦN ĐANG LÀM VIỆC</span><strong id="activeModeTitle">NHẬN XÉT MÔN HỌC</strong><span id="activeModeDescription">Mức đánh giá: T / H / C</span>
+  </section>
+  <section class="import-panel" aria-labelledby="importPanelTitle">
+    <div class="import-panel-heading"><h2 id="importPanelTitle">1. Nhập file nhận xét</h2><p>Chọn đúng loại file Excel cần làm việc</p></div>
+    <div class="import-actions">
+      <button type="button" id="primaryUpload" class="mode-import-button" onclick="openStudentFilePicker('MON_HOC')"><i data-lucide="book-open" aria-hidden="true"></i><span>Nhập file nhận xét môn học</span><small id="monHocModeState">Môn học · T / H / C</small></button>
+      <button type="button" id="primaryUploadNLPC" class="mode-import-button mode-import-nlpc" onclick="openStudentFilePicker('NLPC')"><i data-lucide="award" aria-hidden="true"></i><span>Nhập file nhận xét năng lực – phẩm chất</span><small id="nlpcModeState">Năng lực, phẩm chất · T / Đ / C</small></button>
+      <input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event, 'MON_HOC')" onclick="this.value=null">
+      <input type="file" id="excelUploadNLPC" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event, 'NLPC')" onclick="this.value=null">
+    </div>
+    <p class="import-note">File được nhập sẽ thay danh sách đang mở. Chọn nút nhập không làm mất dữ liệu nếu thầy/cô chưa chọn file.</p>
+    <p id="studentImportFeedback" class="hidden" role="status" aria-live="polite"></p>
+  </section>
+  <section class="context-panel" aria-label="Danh sách và kỳ đánh giá"><h2 class="context-heading">2. Thông tin file và thiết lập nhận xét</h2>
     <div id="loadedFileNameBox" class="file-summary"><span class="field-caption">Danh sách đang mở</span><span id="loadedFileName" class="file-name"></span><span id="fileTypeBadge" class="muted-badge"></span></div>
     <div class="field"><label for="gradeSelect">Khối lớp</label><select id="gradeSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
                                     <option value="1">Lớp 1 (6t)</option>
@@ -248,8 +272,8 @@ button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visi
                                 <option value="nghiemtuc">🎯 Khách quan, chuẩn mực & rõ ràng</option>
                             </select></div>
   </section>
-  <section class="resources" aria-label="Học liệu bổ trợ">
-    <span class="resource-label">Học liệu</span><button type="button"  class="button-secondary" onclick="openModal('modalBank')"><i data-lucide="book-open" aria-hidden="true"></i>Ngân hàng mẫu câu <span id="customBankBadge" class="hidden muted-badge"></span></button><button type="button"  class="button-secondary" onclick="openModal('modalPPCT')"><i data-lucide="calendar-range" aria-hidden="true"></i>Phân phối chương trình <span id="ppctActiveBadge" class="muted-badge">Đang bật</span></button>
+  <details id="supportTools" class="support-tools"><summary>Học liệu và thiết lập bổ trợ <span>Ngân hàng mẫu câu · PPCT · tùy chọn nâng cao</span></summary><section class="resources" aria-label="Học liệu bổ trợ">
+    <span class="resource-label">CHỨC NĂNG BỔ TRỢ</span><button type="button" id="installAppButton" class="button-quiet" onclick="installApp()">Cài trên máy</button><button type="button"  class="button-secondary" onclick="openModal('modalBank')"><i data-lucide="book-open" aria-hidden="true"></i>Ngân hàng mẫu câu <span id="customBankBadge" class="hidden muted-badge"></span></button><button type="button"  class="button-secondary" onclick="openModal('modalPPCT')"><i data-lucide="calendar-range" aria-hidden="true"></i>Phân phối chương trình <span id="ppctActiveBadge" class="muted-badge">Đang bật</span></button>
     <details id="workflowSettings" class="settings-menu"><summary>Thiết lập nhận xét</summary><div class="settings-content">
       <section><h2>Phạm vi cần viết nhận xét</h2><div class="scope-options"><label><input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()"> Tất cả danh mục</label><label><input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()"> Tự chọn danh mục</label></div><div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-3">
                                 <div class="flex items-center justify-between">
@@ -286,9 +310,10 @@ button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visi
       <details class="demo-data"><summary>Dùng dữ liệu giả để trải nghiệm</summary><p>Thay danh sách hiện tại bằng 35 học sinh giả.</p><div class="scope-options"><button type="button"  class="button-secondary" onclick="loadDemoData('MON_HOC')">Mẫu môn học</button><button type="button"  class="button-secondary" onclick="loadDemoData('NLPC')">Mẫu năng lực, phẩm chất</button></div></details>
     </div></details>
   </section>
+  </details>
   <p id="ppctUploadFeedback" class="hidden" role="status" aria-live="polite"></p>
   <section class="workspace" aria-labelledby="workspace-title">
-    <div class="workspace-heading"><div><h2 id="workspace-title">Danh sách và nhận xét <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div><div class="workspace-actions"><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#f3c65f]">
+    <div class="workspace-heading"><div><h2 id="workspace-title"><span id="workspaceModeLabel">Danh sách nhận xét môn học</span> <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div><div class="workspace-actions"><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#f3c65f]">
                                 <i data-lucide="sparkles" class="w-4 h-4 text-[#f3c65f]"></i>
                                 <span>Viết bằng Gemini AI</span>
                             </button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button></div></div>
@@ -1484,21 +1509,51 @@ button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visi
             }
         }
 
-        async function handleExcelUpload(event) {
+        function openStudentFilePicker(mode) {
+            const input = document.getElementById(mode === "NLPC" ? "excelUploadNLPC" : "excelUpload");
+            input.value = "";
+            input.click();
+        }
+
+        function updateWorkingModeUI() {
+            const nlpc = currentFileMode === "NLPC";
+            const title = document.getElementById("activeModeTitle");
+            if (!title) return;
+            title.textContent = nlpc ? "NHẬN XÉT NĂNG LỰC – PHẨM CHẤT" : "NHẬN XÉT MÔN HỌC";
+            document.getElementById("activeModeDescription").textContent = nlpc ? "Mức đánh giá: T / Đ / C" : "Mức đánh giá: T / H / C";
+            document.getElementById("modeStatusPanel").classList.toggle("is-nlpc", nlpc);
+            document.getElementById("workspaceModeLabel").textContent = nlpc ? "Danh sách nhận xét năng lực – phẩm chất" : "Danh sách nhận xét môn học";
+            document.getElementById("exportModeLabel").textContent = nlpc ? "Xuất Excel NL–PC" : "Xuất Excel môn học";
+            document.getElementById("primaryUpload").classList.toggle("is-active", !nlpc);
+            document.getElementById("primaryUploadNLPC").classList.toggle("is-active", nlpc);
+            document.getElementById("monHocModeState").textContent = !nlpc ? "ĐANG LÀM VIỆC · T / H / C" : "Môn học · T / H / C";
+            document.getElementById("nlpcModeState").textContent = nlpc ? "ĐANG LÀM VIỆC · T / Đ / C" : "Năng lực, phẩm chất · T / Đ / C";
+        }
+
+        async function handleExcelUpload(event, expectedMode = null) {
             const file = event.target.files[0];
             if (!file) return;
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
-                currentWorkbookBuffer = arrayBuffer;
-                currentOriginalFileName = file.name;
-
                 const workbook = new ExcelJS.Workbook();
                 await workbook.xlsx.load(arrayBuffer);
 
                 const sheetNames = workbook.worksheets.map(ws => ws.name);
                 const isNLPCFile = sheetNames.length <= 2 && workbook.worksheets[0] &&
                     String(getCellValueSafe(workbook.worksheets[0].getRow(1).getCell(5))).toLowerCase().includes("năng lực");
+
+                const detectedMode = isNLPCFile ? "NLPC" : "MON_HOC";
+                const feedback = document.getElementById("studentImportFeedback");
+                if (expectedMode && detectedMode !== expectedMode) {
+                    const message = `File không khớp nút nhập đã chọn. Đây là file ${isNLPCFile ? "năng lực – phẩm chất" : "môn học"}; vui lòng dùng đúng nút nhập. Danh sách hiện tại được giữ nguyên.`;
+                    if (feedback) { feedback.textContent = message; feedback.className = "student-import-error"; }
+                    showToast(message);
+                    return;
+                }
+                currentWorkbookBuffer = arrayBuffer;
+                currentOriginalFileName = file.name;
+                if (feedback) { feedback.textContent = ""; feedback.className = "hidden"; }
 
                 if (isNLPCFile) {
                     currentFileMode = "NLPC";
@@ -1840,6 +1895,7 @@ button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visi
         }
 
         function renderStudentTable() {
+            updateWorkingModeUI();
             updatePreviewHeaderTitle();
             const tbody = document.getElementById("studentTableBody");
             const searchKw = (document.getElementById("searchStudentInput").value || "").toLowerCase().trim();
@@ -2587,6 +2643,7 @@ Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
     </script>
 </body>
 </html>
+
 
 
 

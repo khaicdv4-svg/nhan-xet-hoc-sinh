@@ -215,7 +215,15 @@
         /* ---------- Thông tin file và thiết lập ---------- */
         .context-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px; }
         .context-heading { grid-column: 1 / -1; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
-        .file-summary, .style-field { grid-column: 1 / -1; }
+        .file-summary, .style-field, .title-field { grid-column: 1 / -1; }
+        .field-title { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+        .title-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .title-choice label { position: relative; display: flex; align-items: center; justify-content: center; min-height: 46px; padding: 8px 12px; border: 1.5px solid var(--line-strong); border-radius: 8px; background: var(--paper); color: var(--blue); font-size: 17px; font-weight: 800; cursor: pointer; transition: background .15s, border-color .15s; }
+        .title-choice label:hover { background: var(--tint); border-color: var(--blue); }
+        .title-choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+        .title-choice label:has(input:checked) { background: var(--blue); border-color: var(--blue); color: #fff; }
+        .title-choice label:has(input:focus-visible) { outline: 3px solid var(--blue); outline-offset: 2px; }
+        .title-hint { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); line-height: 1.5; }
         .file-summary { min-width: 0; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
 
         .support-tools > summary { display: block; padding: 12px 14px; font-size: 15px; font-weight: 700; color: var(--blue); list-style: none; line-height: 1.6; }
@@ -435,7 +443,7 @@
                                 <option value="ancan">💖 Ân cần, sát sao & tỉ mỉ (Chủ nhiệm)</option>
                                 <option value="ngangon">⚡ Ngắn gọn, súc tích & chuẩn TT27</option>
                                 <option value="nghiemtuc">🎯 Khách quan, chuẩn mực & rõ ràng</option>
-                            </select></div>
+                            </select></div><div class="field title-field" role="radiogroup" aria-labelledby="teacherTitleLabel"><span id="teacherTitleLabel" class="field-title">Giáo viên xưng là</span><div class="title-choice"><label><input type="radio" name="teacherTitle" value="Thầy" checked onchange="onTeacherTitleChange()"><span>Thầy</span></label><label><input type="radio" name="teacherTitle" value="Cô" onchange="onTeacherTitleChange()"><span>Cô</span></label></div><small class="title-hint">Lời nhận xét sẽ viết "Thầy" hoặc "Cô" theo lựa chọn này.</small></div>
   </section><details id="supportTools" open class="support-tools"><summary>Học liệu và thiết lập bổ trợ <span>Ngân hàng mẫu câu · PPCT · tùy chọn nâng cao</span></summary><section class="resources" aria-label="Học liệu bổ trợ">
     <span class="resource-label">CHỨC NĂNG BỔ TRỢ</span><button type="button" id="installAppButton" class="button-quiet" onclick="installApp()">Cài trên máy</button><button type="button"  class="button-secondary" onclick="openModal('modalBank')"><i data-lucide="book-open" aria-hidden="true"></i>Ngân hàng mẫu câu <span id="customBankBadge" class="hidden muted-badge"></span></button><button type="button"  class="button-secondary" onclick="openModal('modalPPCT')"><i data-lucide="calendar-range" aria-hidden="true"></i>Phân phối chương trình <span id="ppctActiveBadge" class="muted-badge">Đang bật</span></button>
     <details id="workflowSettings" class="settings-menu"><summary>Thiết lập nhận xét</summary><div class="settings-content">
@@ -1283,11 +1291,15 @@
             "NL_CHUNG": {
                 XS: [
                     "Đạt mức Tốt các năng lực chung: có ý thức tự chủ và tự học rất cao; giao tiếp tự tin, hợp tác nhóm hiệu quả và giải quyết vấn đề sáng tạo.",
-                    "Luôn tự giác hoàn thành tốt nhiệm vụ học tập, biết chủ động phối hợp với bạn bè và sáng tạo trong cách làm bài."
+                    "Luôn tự giác hoàn thành tốt nhiệm vụ học tập, biết chủ động phối hợp với bạn bè và sáng tạo trong cách làm bài.",
+                    "Tự giác học tập, mạnh dạn trao đổi cùng bạn và biết tìm cách giải quyết khi gặp bài khó; năng lực chung đạt mức Tốt.",
+                    "Chủ động chuẩn bị bài, hợp tác nhóm hiệu quả và có nhiều cách làm sáng tạo."
                 ],
                 HTT: [
                     "Đạt yêu cầu về năng lực chung: tự giác trong học tập và sinh hoạt; biết lắng nghe, chia sẻ, hợp tác với bạn bè và hoàn thành nhiệm vụ.",
-                    "Có khả năng tự học và chuẩn bị bài đầy đủ; giao tiếp thân thiện, lịch sự và biết vận dụng kiến thức giải quyết bài tập."
+                    "Có khả năng tự học và chuẩn bị bài đầy đủ; giao tiếp thân thiện, lịch sự và biết vận dụng kiến thức giải quyết bài tập.",
+                    "Biết tự học, tự chuẩn bị bài và hợp tác cùng bạn để hoàn thành nhiệm vụ; năng lực chung đạt yêu cầu.",
+                    "Giao tiếp lịch sự, biết lắng nghe bạn và cố gắng tự giải quyết bài tập."
                 ],
                 HT: ["Biết tự chuẩn bị đồ dùng học tập và tham gia làm việc nhóm cùng bạn. Cần mạnh dạn phát biểu hơn."],
                 CCG: ["Cần cố gắng rèn luyện thêm tính tự giác trong học tập và chủ động hỏi thầy cô, bạn bè khi chưa hiểu bài."]
@@ -1295,11 +1307,15 @@
             "NL_DACTHU": {
                 XS: [
                     "Đạt mức Tốt các năng lực đặc thù: diễn đạt ngôn ngữ mạch lạc, tính toán nhạy bén, vận dụng tốt khoa học - công nghệ và thẩm mĩ.",
-                    "Năng lực ngôn ngữ và tính toán vững vàng; giàu óc thẩm mĩ, nhanh nhẹn trong các hoạt động thể chất và tin học công nghệ."
+                    "Năng lực ngôn ngữ và tính toán vững vàng; giàu óc thẩm mĩ, nhanh nhẹn trong các hoạt động thể chất và tin học công nghệ.",
+                    "Diễn đạt rõ ràng, tính toán chính xác, vận dụng tốt kiến thức khoa học và công nghệ vào học tập.",
+                    "Có năng lực ngôn ngữ và tính toán vững vàng, thao tác nhanh nhẹn trong các hoạt động thực hành."
                 ],
                 HTT: [
                     "Đạt yêu cầu các năng lực đặc thù: diễn đạt rõ ràng, tính toán cẩn thận, nắm bắt được kiến thức khoa học, công nghệ và rèn luyện sức khỏe.",
-                    "Sử dụng được ngôn ngữ và phép tính trong học tập; biết vận dụng kiến thức các môn học vào thực hành cơ bản."
+                    "Sử dụng được ngôn ngữ và phép tính trong học tập; biết vận dụng kiến thức các môn học vào thực hành cơ bản.",
+                    "Biết dùng ngôn ngữ và phép tính để học tập, bước đầu vận dụng kiến thức vào thực hành; năng lực đặc thù đạt yêu cầu.",
+                    "Hoàn thành các nhiệm vụ học tập ở mức cơ bản và tích cực tham gia hoạt động thực hành."
                 ],
                 HT: ["Đạt yêu cầu về năng lực ngôn ngữ, tính toán và các môn học. Cần rèn tính cẩn thận hơn."],
                 CCG: ["Cần cố gắng rèn luyện thêm kỹ năng đọc viết và tính toán cơ bản để theo kịp tiến độ chung của lớp."]
@@ -1307,41 +1323,46 @@
             "PHAM_CHAT": {
                 XS: [
                     "Đạt mức Tốt các phẩm chất chủ yếu: chăm ngoan, lễ phép, giàu lòng nhân ái, luôn trung thực, tự giác và có trách nhiệm cao với tập thể.",
-                    "Em là học sinh gương mẫu, chăm chỉ học tập, đoàn kết yêu thương bạn bè và luôn giữ chữ tín, trách nhiệm trong mọi việc."
+                    "Em là học sinh gương mẫu, chăm chỉ học tập, đoàn kết yêu thương bạn bè và luôn giữ chữ tín, trách nhiệm trong mọi việc.",
+                    "Chăm chỉ, trung thực, biết yêu thương và giúp đỡ bạn bè; phẩm chất đạt mức Tốt.",
+                    "Luôn có trách nhiệm với việc được giao, sống nhân ái và gương mẫu trong lớp."
                 ],
                 HTT: [
                     "Đạt yêu cầu về phẩm chất: chăm chỉ học tập, đi học chuyên cần; ngoan ngoãn, lễ phép với thầy cô, đoàn kết và thân thiện với bạn bè.",
-                    "Có phẩm chất đạo đức đạt yêu cầu, trung thực trong học tập, biết quan tâm giúp đỡ bạn và hoàn thành việc được giao."
+                    "Có phẩm chất đạo đức đạt yêu cầu, trung thực trong học tập, biết quan tâm giúp đỡ bạn và hoàn thành việc được giao.",
+                    "Chăm học, đi học đều, lễ phép với thầy cô và hòa đồng với bạn bè; phẩm chất đạt yêu cầu.",
+                    "Biết giữ lời, trung thực và có ý thức hoàn thành việc được giao."
                 ],
                 HT: ["Ngoan ngoãn, lễ phép, đi học đều đặn và hòa đồng với bạn bè trong lớp."],
                 CCG: ["Em ngoan nhưng cần cố gắng rèn luyện thêm tính kiên trì, chăm chỉ làm bài và tập trung hơn trong giờ học."]
             }
         };
 
+        // {GV} sẽ được thay bằng "Thầy" hoặc "Cô" theo lựa chọn của giáo viên
         const STYLE_CLOSINGS = {
             khichle: {
-                XS: ["Thầy/cô rất tự hào về em, hãy tiếp tục tỏa sáng nhé!", "Cần phát huy tinh thần học tập tuyệt vời này nhé!", "Chúc mừng em đã đạt kết quả thật đáng khen ngợi!"],
-                HTT: ["Phát huy đà tiến bộ này để gặt hái kết quả cao hơn nữa nhé!", "Thầy/cô rất vui trước sự nỗ lực đều đặn của em!", "Hãy tiếp tục giữ vững sự chăm chỉ này nhé!"],
+                XS: ["{GV} rất tự hào về em, hãy tiếp tục tỏa sáng nhé!", "Em hãy giữ vững tinh thần học tập tuyệt vời này nhé!", "Chúc mừng em đã đạt kết quả thật đáng khen!", "{GV} tin em sẽ còn tiến xa hơn nữa, hãy tiếp tục cố gắng nhé!", "Em là tấm gương tốt cho các bạn, hãy tiếp tục phát huy nhé!"],
+                HTT: ["Em hãy phát huy đà tiến bộ này để đạt kết quả cao hơn nữa nhé!", "{GV} rất vui trước sự nỗ lực đều đặn của em!", "Hãy tiếp tục giữ vững sự chăm chỉ này nhé!", "{GV} tin em sẽ làm tốt hơn nữa nếu cố gắng mỗi ngày.", "Cố gắng thêm một chút, em sẽ còn tiến bộ nhiều hơn nữa!"],
                 HT: ["Cố gắng thêm một chút nữa em sẽ tiến bộ vượt bậc đấy!"],
-                CCG: ["Thầy/cô và các bạn luôn đồng hành cùng em cố gắng mỗi ngày nhé!"]
+                CCG: ["{GV} và các bạn luôn đồng hành cùng em cố gắng mỗi ngày nhé!", "Em đừng nản lòng, {GV} sẽ giúp em tiến bộ từng ngày nhé!", "Chỉ cần chăm chỉ ôn luyện mỗi ngày, em sẽ tiến bộ nhanh thôi!"]
             },
             ancan: {
-                XS: ["Mong em luôn giữ vững nét chăm ngoan và học giỏi như hiện tại.", "Gia đình cùng nhà trường tiếp tục khích lệ để em phát triển toàn diện nhé."],
-                HTT: ["Em cứ duy trì thói quen học tập tốt và rèn luyện đều đặn mỗi ngày nhé.", "Rất khen ngợi tinh thần tự giác và sự cố gắng của em trên lớp."],
+                XS: ["Mong em luôn giữ vững nét chăm ngoan và học giỏi như hiện tại.", "Gia đình cùng nhà trường tiếp tục khích lệ để em phát triển toàn diện nhé.", "{GV} mong em giữ vững phong độ này trong thời gian tới."],
+                HTT: ["Em cứ duy trì thói quen học tập tốt và rèn luyện đều đặn mỗi ngày nhé.", "Rất khen ngợi tinh thần tự giác và sự cố gắng của em trên lớp.", "{GV} mong em ôn bài thường xuyên để nắm chắc kiến thức hơn nữa."],
                 HT: ["Em chú ý ôn bài kỹ hơn ở nhà để nắm chắc kiến thức hơn nhé."],
-                CCG: ["Gia đình phối hợp động viên và nhắc nhở em rèn bài thêm ở nhà mỗi tối nhé."]
+                CCG: ["Gia đình phối hợp động viên và nhắc nhở em rèn bài thêm ở nhà mỗi tối nhé.", "{GV} mong gia đình dành thêm thời gian kèm em ôn bài mỗi ngày."]
             },
             ngangon: {
-                XS: ["Cần phát huy tốt.", "Đáng khen ngợi."],
-                HTT: ["Tiếp tục phát huy.", "Hoàn thành tốt nhiệm vụ."],
+                XS: ["Cần phát huy tốt.", "Đáng khen ngợi.", "Tiếp tục phát huy nhé."],
+                HTT: ["Tiếp tục phát huy.", "Hoàn thành tốt nhiệm vụ.", "Cố gắng giữ vững nhé."],
                 HT: ["Cần cố gắng thêm."],
-                CCG: ["Cần nỗ lực rèn luyện thêm."]
+                CCG: ["Cần nỗ lực rèn luyện thêm.", "Cần chăm chỉ ôn tập hơn."]
             },
             nghiemtuc: {
-                XS: ["Đạt kết quả xuất sắc các mục tiêu đề ra."],
-                HTT: ["Đáp ứng tốt yêu cầu cần đạt của chương trình."],
+                XS: ["Đạt kết quả xuất sắc các mục tiêu đề ra.", "Hoàn thành vượt yêu cầu cần đạt của chương trình."],
+                HTT: ["Đáp ứng tốt yêu cầu cần đạt của chương trình.", "Đạt yêu cầu cần đạt của giai đoạn này."],
                 HT: ["Đạt yêu cầu cơ bản, cần nâng cao tính cẩn thận."],
-                CCG: ["Cần tăng cường thời gian ôn tập để củng cố kiến thức cơ bản."]
+                CCG: ["Cần tăng cường thời gian ôn tập để củng cố kiến thức cơ bản.", "Cần được hỗ trợ thêm để đạt yêu cầu cần đạt."]
             }
         };
 
@@ -1359,6 +1380,8 @@
         let customPPCTStore = JSON.parse(localStorage.getItem("THAYKHAIEDU_PPCT_STORE") || "{}");
         let userGeminiApiKey = localStorage.getItem("THAYKHAIEDU_GEMINI_KEY") || "";
         let customSchoolDirective = localStorage.getItem("THAYKHAIEDU_DIRECTIVE") || "";
+        let teacherTitle = "Thầy";
+        try { if (["Thầy", "Cô"].includes(localStorage.getItem("THAYKHAIEDU_TEACHER_TITLE"))) teacherTitle = localStorage.getItem("THAYKHAIEDU_TEACHER_TITLE"); } catch (_) { /* dùng mặc định */ }
 
         // 6. KHỞI TẠO KHI TẢI TRANG
         window.addEventListener("DOMContentLoaded", () => {
@@ -1369,6 +1392,7 @@
             if (document.getElementById("customDirectiveTextarea")) {
                 document.getElementById("customDirectiveTextarea").value = customSchoolDirective;
             }
+            initTeacherTitleUI();
             initializeEmptyStudentWorkspace();
             warnAboutMisassignedPPCT();
             updatePPCTSummaryBox();
@@ -1506,14 +1530,157 @@
             return "Em " + t.charAt(0).toLowerCase() + t.slice(1);
         }
 
+        // Thay "Thầy/cô" và {GV} bằng cách xưng giáo viên đã chọn
+        function applyTeacherTitle(text) {
+            return String(text || "")
+                .replace(/\{GV\}/g, teacherTitle)
+                .replace(/Thầy\s*\/\s*[cC]ô/g, teacherTitle)
+                .replace(/thầy\s*\/\s*cô/g, teacherTitle.toLowerCase());
+        }
+
         function finalizeComment(text) {
-            return startWithEm(stripParenthetical(text));
+            return applyTeacherTitle(startWithEm(stripParenthetical(text)));
         }
 
         // Cụm danh từ đứng sau "Em" cần thêm "có" cho đúng câu: "Em có chữ viết đều đẹp"
         function emPhrase(phrase) {
             const p = String(phrase || "").trim();
             return /^(chữ viết|kỹ năng|vốn từ|năng lực|tư duy|năng khiếu|khả năng)(\s|$)/i.test(p) ? "có " + p : p;
+        }
+
+        function initTeacherTitleUI() {
+            document.querySelectorAll('input[name="teacherTitle"]').forEach(input => {
+                input.checked = input.value === teacherTitle;
+            });
+        }
+
+        function onTeacherTitleChange() {
+            const checked = document.querySelector('input[name="teacherTitle"]:checked');
+            if (!checked) return;
+            teacherTitle = checked.value;
+            try { localStorage.setItem("THAYKHAIEDU_TEACHER_TITLE", teacherTitle); } catch (_) { /* không lưu được thì vẫn dùng trong phiên này */ }
+            regenerateAllComments();
+            showToast(`Lời nhận xét sẽ xưng "${teacherTitle}".`);
+        }
+
+        // Chọn phần tử cố định theo học sinh, môn và "muối" riêng, để mỗi em một câu khác nhau
+        function hashPick(pool, ...keys) {
+            let h = 2166136261;
+            const text = keys.join("|");
+            for (let i = 0; i < text.length; i++) {
+                h ^= text.charCodeAt(i);
+                h = Math.imul(h, 16777619) >>> 0;
+            }
+            // trộn thêm bit để các giá trị gần nhau vẫn cho kết quả khác nhau
+            h ^= h >>> 16; h = Math.imul(h, 2246822507) >>> 0;
+            h ^= h >>> 13; h = Math.imul(h, 3266489909) >>> 0;
+            h ^= h >>> 16;
+            return pool[(h >>> 0) % pool.length];
+        }
+
+        // Ý chính khi PPCT có tên chủ đề: {about} là chủ đề hoặc chủ điểm đang học
+        const TOPIC_BODIES = {
+            T: [
+                "nắm vững kiến thức {about}",
+                "tiếp thu tốt bài học về {about}",
+                "hiểu bài và làm tốt các bài tập thuộc {about}",
+                "học tập tích cực, nắm chắc nội dung {about}",
+                "nắm chắc kiến thức {about} và làm bài cẩn thận",
+                "hoàn thành tốt các nội dung của {about}"
+            ],
+            H: [
+                "nắm được kiến thức cơ bản của {about}",
+                "hiểu bài và làm được các bài tập cơ bản thuộc {about}",
+                "hoàn thành yêu cầu bài học về {about}",
+                "tiếp thu được nội dung {about}",
+                "thực hiện đúng các yêu cầu cơ bản của {about}"
+            ],
+            C: [
+                "cần ôn tập thêm {about} để nắm vững kiến thức",
+                "chưa nắm chắc {about}, cần được hướng dẫn thêm",
+                "cần chăm chỉ luyện tập hơn để theo kịp nội dung {about}"
+            ]
+        };
+
+        // PPCT do giáo viên tự nhập: giữ nguyên cụm kiến thức, chỉ đổi lời dẫn
+        const FREE_TOPIC_LEADS = {
+            T: ["hoàn thành tốt nội dung học tập, ", "học tập tích cực, ", "tiếp thu bài tốt, "],
+            H: ["hoàn thành yêu cầu bài học, ", "học tập nghiêm túc, "]
+        };
+        const FREE_TOPIC_C = ["cần ôn tập thêm các nội dung đã học trong giai đoạn này", "cần chăm chỉ luyện tập để nắm vững các nội dung đã học"];
+
+        // Khi không có PPCT: ý chính theo môn
+        const SUBJECT_LABELS = {
+            "Tiếng việt": "Tiếng Việt", "Toán": "Toán", "Đạo đức": "Đạo đức", "Khoa học": "Khoa học",
+            "Lịch sử và Địa lý": "Lịch sử và Địa lí", "TH-CN (Công nghệ)": "Tin học và Công nghệ"
+        };
+        const SUBJECT_ONLY_BODIES = {
+            "Hoạt động trải nghiệm": {
+                T: ["tích cực tham gia các hoạt động trải nghiệm", "hào hứng tham gia các hoạt động của lớp và của trường"],
+                H: ["tham gia đầy đủ các hoạt động trải nghiệm", "thực hiện được các nhiệm vụ trong hoạt động trải nghiệm"]
+            }
+        };
+        const SUBJECT_ONLY_TEMPLATES = {
+            T: ["học tốt môn {subj}", "nắm chắc kiến thức môn {subj}", "tích cực học tập môn {subj}"],
+            H: ["hoàn thành yêu cầu môn {subj}", "nắm được kiến thức cơ bản của môn {subj}"]
+        };
+
+        // Điểm nổi bật của em theo môn, thêm vào sau ý chính cho câu có thêm chi tiết
+        const SUBJECT_SKILLS = {
+            "Toán": {
+                T: ["tính toán nhanh và chính xác", "trình bày bài giải rõ ràng", "biết vận dụng vào giải toán có lời văn", "tư duy linh hoạt khi giải toán"],
+                H: ["thực hiện được các phép tính cơ bản", "cần cẩn thận hơn khi tính toán", "trình bày bài giải khá rõ ràng"]
+            },
+            "Tiếng việt": {
+                T: ["đọc to, rõ ràng, lưu loát", "viết chữ đẹp, trình bày bài sạch sẽ", "diễn đạt mạch lạc khi nói và viết", "có vốn từ phong phú"],
+                H: ["đọc được bài và trả lời được câu hỏi cơ bản", "cần rèn thêm chữ viết cho đều nét", "cần luyện đọc thêm để lưu loát hơn"]
+            },
+            "Đạo đức": {
+                T: ["biết vận dụng bài học vào cuộc sống", "thực hiện tốt các chuẩn mực đã học", "ứng xử lễ phép, văn minh"],
+                H: ["biết thực hiện những việc làm đơn giản đã học", "cần chủ động hơn khi thực hành"]
+            },
+            "Khoa học": {
+                T: ["ham tìm tòi, quan sát tốt", "biết giải thích các hiện tượng quen thuộc", "biết liên hệ bài học với thực tế"],
+                H: ["bước đầu giải thích được các hiện tượng quen thuộc", "cần mạnh dạn phát biểu hơn"]
+            },
+            "Lịch sử và Địa lý": {
+                T: ["biết sử dụng tranh ảnh, lược đồ", "trình bày được các sự kiện chính", "ghi nhớ tốt nội dung bài"],
+                H: ["nắm được các nội dung chính", "cần mạnh dạn hơn khi trình bày"]
+            },
+            "TH-CN (Công nghệ)": {
+                T: ["thao tác thực hành đúng và an toàn", "sáng tạo khi làm sản phẩm", "tiếp thu nhanh các kỹ thuật mới"],
+                H: ["hoàn thành sản phẩm theo hướng dẫn", "cần cẩn thận hơn khi thực hành"]
+            },
+            "Hoạt động trải nghiệm": {
+                T: ["hợp tác tốt cùng các bạn", "tự tin thể hiện bản thân", "nhiệt tình giúp đỡ bạn trong hoạt động tập thể"],
+                H: ["cần mạnh dạn, tự tin hơn", "cần chủ động hơn khi tham gia hoạt động"]
+            }
+        };
+
+        // Lấy tên chủ đề từ cụm PPCT đã nhập từ Excel: nắm được nội dung chủ đề “X”
+        function parseTopicRef(topic) {
+            const m = String(topic || "").match(/^nắm được nội dung\s+(?:(chủ đề|chủ điểm)\s+)?“([^”]+)”/i);
+            return m ? { about: (m[1] ? m[1] + " " : "") + "“" + m[2] + "”" } : null;
+        }
+
+        // Ý chính về kiến thức, bắt đầu bằng động từ (không có chữ "Em"); trả về "" nếu không có gì để nói
+        function buildKnowledgeBody(levelKey, cat, topic, pick) {
+            if (topic) {
+                const ref = parseTopicRef(topic);
+                if (ref) return pick(TOPIC_BODIES[levelKey], "body").replace(/\{about\}/g, ref.about);
+                return levelKey === "C" ? pick(FREE_TOPIC_C, "body") : pick(FREE_TOPIC_LEADS[levelKey], "lead") + topic;
+            }
+            if (levelKey === "C") return "";
+            const special = SUBJECT_ONLY_BODIES[cat];
+            if (special) return pick(special[levelKey], "body");
+            return pick(SUBJECT_ONLY_TEMPLATES[levelKey], "body").replace(/\{subj\}/g, SUBJECT_LABELS[cat] || cat);
+        }
+
+        function cutToSentence(text, limit) {
+            if (text.length <= limit) return text;
+            const cut = text.slice(0, limit);
+            const end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("! "), cut.lastIndexOf("? "));
+            return end > limit * 0.5 ? cut.slice(0, end + 1) : cut.slice(0, limit - 3).trim() + "...";
         }
 
         function buildSmartCommentForTarget(student, targetKey, seedOffset = 0) {
@@ -1525,21 +1692,20 @@
             // Chuẩn hóa mã mức đạt: T (Tốt/Hoàn thành tốt), H hoặc Đ (Hoàn thành/Đạt), C (Chưa hoàn thành/Cần cố gắng)
             const rawLevel = student.level;
             if (!["T", "H", "Đ", "C"].includes(rawLevel)) return "";
-            const numericStt = Number(student.stt);
-            const safeStt = Number.isSafeInteger(numericStt) && numericStt > 0 ? numericStt : 1;
             const safeOffset = Number.isSafeInteger(seedOffset) && seedOffset >= 0 ? seedOffset : 0;
+            const pick = (pool, salt) => hashPick(pool, student.stt, student.code, categoryKey, salt, safeOffset);
+            const levelKey = rawLevel === "T" ? "T" : (rawLevel === "C" ? "C" : "H");
             const bankKey = rawLevel === "T" ? "XS" : (rawLevel === "C" ? "CCG" : "HTT");
 
-            // 1. Lấy cụm từ khóa thực tế của học sinh
-            const matchedKeywordPhrases = extractMatchedPhrasesFromKeywords(student.keywords, categoryKey);
+            // 1. Cụm từ khóa thực tế của học sinh
+            const kwPhrases = extractMatchedPhrasesFromKeywords(student.keywords, categoryKey);
 
-            // 2. Lấy kiến thức PPCT của môn & giai đoạn hiện tại (Chỉ áp dụng cho môn học)
+            // 2. Kiến thức PPCT của môn và giai đoạn hiện tại (chỉ áp dụng cho môn học)
             const ppctTopics = (usePPCT && !isNLPCTarget) ? getPPCTTopicsForSubject(period, categoryKey) : [];
-            const chosenPPCTTopic = ppctTopics.length > 0
-                ? ppctTopics[(safeStt + safeOffset) % ppctTopics.length]
-                : "";
+            const topic = ppctTopics.length ? pick(ppctTopics, "topic") : "";
+            const knowledge = isNLPCTarget ? "" : buildKnowledgeBody(levelKey, categoryKey, topic, pick);
 
-            // 3. Lấy câu nhận xét nền từ ngân hàng mẫu
+            // 3. Câu nền từ ngân hàng mẫu (của giáo viên nếu có, nếu không dùng kho mặc định)
             let basePool = [];
             if (customCommentBank[categoryKey] && customCommentBank[categoryKey].length > 0) {
                 basePool = customCommentBank[categoryKey];
@@ -1547,43 +1713,29 @@
                 const catObj = DEFAULT_COMMENT_BANK[categoryKey] || DEFAULT_COMMENT_BANK["Hoạt động trải nghiệm"];
                 basePool = catObj[bankKey] || catObj["HTT"];
             }
-            const chosenBase = basePool[(safeStt + safeOffset) % basePool.length];
+            const baseSentence = () => pick(basePool, "base");
 
-            // 4. Lấy câu kết theo phong cách
+            // 4. Câu kết theo phong cách
             const styleObj = STYLE_CLOSINGS[style] || STYLE_CLOSINGS.khichle;
-            const closingPool = styleObj[bankKey] || styleObj.HTT;
-            const chosenClosing = closingPool[(safeStt + safeOffset) % closingPool.length];
+            const closing = pick(styleObj[bankKey] || styleObj.HTT, "closing");
 
-            let finalComment = "";
-
-            if (matchedKeywordPhrases.length > 0 && chosenPPCTTopic && rawLevel !== "C") {
-                const kwPhrase = emPhrase(matchedKeywordPhrases[0]);
-                if (style === "ngangon") {
-                    finalComment = `Em ${kwPhrase}; ${chosenPPCTTopic}.`;
-                } else {
-                    finalComment = `Em ${kwPhrase}, đồng thời ${chosenPPCTTopic}. ${chosenClosing}`;
-                }
-            } else if (matchedKeywordPhrases.length > 0) {
-                const joinedPhrases = [emPhrase(matchedKeywordPhrases[0])].concat(matchedKeywordPhrases.slice(1, 2)).join("; ");
-                if (style === "ngangon") {
-                    finalComment = `Em ${joinedPhrases}. ${chosenClosing}`;
-                } else {
-                    finalComment = `Em ${joinedPhrases}. ${chosenBase.split(".")[0]}. ${chosenClosing}`;
-                }
-            } else if (chosenPPCTTopic && rawLevel !== "C") {
-                const prefix = rawLevel === "T"
-                    ? "Em hoàn thành tốt nội dung học tập,"
-                    : "Em hoàn thành yêu cầu bài học,";
-                finalComment = `${prefix} ${chosenPPCTTopic}. ${chosenClosing}`;
+            // 5. Ghép câu: luôn mở đầu bằng "Em"
+            let main = "";
+            if (kwPhrases.length > 0) {
+                const connector = pick([", đồng thời ", "; bên cạnh đó ", ", ngoài ra "], "connector");
+                const kwText = [emPhrase(kwPhrases[0])].concat(kwPhrases.slice(1, 2)).join("; ");
+                main = knowledge && levelKey !== "C"
+                    ? `Em ${kwText}${connector}${knowledge}.`
+                    : `Em ${kwText}. ${baseSentence().split(".")[0]}.`;
+            } else if (knowledge) {
+                const skills = (SUBJECT_SKILLS[categoryKey] || {})[levelKey];
+                const addSkill = skills && pick([true, true, false], "skillflag");
+                main = `Em ${knowledge}${addSkill ? ", " + pick(skills, "skill") : ""}.`;
             } else {
-                finalComment = style === "ngangon" ? chosenBase : `${chosenBase} ${chosenClosing}`;
+                main = baseSentence();
             }
 
-            finalComment = finalizeComment(finalComment);
-            if (finalComment.length > 485) {
-                finalComment = finalComment.substring(0, 480) + "...";
-            }
-            return finalComment;
+            return cutToSentence(finalizeComment(`${main} ${closing}`), 485);
         }
 
         function generateCommentsForSingleStudent(studentIdx, seedOffset = 0) {
@@ -3336,7 +3488,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
 Kiến thức Phân phối chương trình giai đoạn này: ${ppctList.join("; ")}.
 Quy định bổ sung: ${customSchoolDirective || "Ngắn gọn, khích lệ vì sự tiến bộ của học sinh, dưới 400 ký tự mỗi em"}.
 Mức đánh giá: T là Hoàn thành tốt/Tốt, H hoặc Đ là Hoàn thành/Đạt, C là Chưa hoàn thành/Cần cố gắng.
-Mỗi nhận xét bắt đầu bằng từ "Em" và không dùng dấu ngoặc đơn.
+Mỗi nhận xét bắt đầu bằng từ "Em", không dùng dấu ngoặc đơn, mỗi em một cách diễn đạt khác nhau. Giáo viên xưng là "${teacherTitle}"; nếu cần xưng hô chỉ viết "${teacherTitle}", không viết "Thầy/cô".
 Trả về JSON array gồm các object: [{"stt": number, "comment": string}].
 Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
 

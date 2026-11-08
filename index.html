@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#163d32">
+    <link rel="icon" href="icons/app.ico" sizes="any">
+    <link rel="icon" type="image/png" href="icons/icon-32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="manifest" href="manifest.webmanifest">
     <title>ThayKhaiEdu - Hệ thống Trợ lý Nhận xét Học sinh Tiểu học TT27</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -170,136 +175,83 @@
             background: #755329;
         }
     </style>
+<style id="workspace-layout">
+:root{--ink:#1f3430;--muted:#65746f;--line:#dce4df;--green:#174d3e;--surface:#fff;--soft:#f4f7f5;--gold:#e6b84d}
+body{background:#f4f6f4;background-image:none;color:var(--ink);font-family:"Be Vietnam Pro",system-ui,sans-serif;font-size:14px}
+*{box-sizing:border-box}button,input,select,textarea{font:inherit}button,summary,label[for]{-webkit-tap-highlight-color:transparent}button,summary{cursor:pointer}button svg{width:17px;height:17px;flex-shrink:0}
+button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visible{outline:3px solid #b78516;outline-offset:3px}
+.app-header{position:static;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:70px;padding:12px max(24px,calc((100vw - 1480px)/2));background:#163d32;border-bottom:1px solid #285548;color:#fff}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-size:20px;font-weight:800;letter-spacing:-.4px;flex-shrink:0}.brand small{display:block;font-size:11px;font-weight:400;letter-spacing:0;color:#c5d8ce}.brand-icon{display:grid;place-items:center;background:var(--gold);color:#173d32;border-radius:8px;width:36px;height:38px;font-size:27px}.header-links{display:flex;align-items:center;gap:8px}.header-links .button-quiet{color:#e6eee9;font-size:12px}.header-links .button-quiet:hover{background:#285548}
+.app-main{width:min(1480px,100%);margin:0 auto;padding:28px 24px 16px;min-width:0}.page-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}.eyebrow{color:var(--muted);font-size:10px;letter-spacing:1.2px;font-weight:700;margin-bottom:5px}h1{font-size:28px;font-weight:750;letter-spacing:-.8px;line-height:1.3}.page-description{color:var(--muted);font-size:13px;margin-top:6px}.primary-actions{display:flex;gap:10px;flex-shrink:0}
+.button-primary,.button-secondary,.button-quiet{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:7px;min-height:38px;padding:9px 13px;font-weight:600;font-size:13px;line-height:1.4;max-width:100%}.button-primary{background:var(--green);color:white;border:1px solid var(--green)}.button-primary:hover{background:#103e30}.button-secondary{background:white;border:1px solid #cbd7ce;color:#25483b}.button-secondary:hover{background:#f1f6f2;border-color:#8ca999}.button-quiet{border:1px solid transparent;background:transparent;color:var(--muted)}.button-quiet:hover{background:#eaf0eb;color:var(--ink)}
+.workflow{list-style:none;display:flex;gap:28px;margin:0 0 18px;padding:0;font-size:12px;color:var(--muted)}.workflow li{display:flex;align-items:center;gap:7px}.workflow li span{display:grid;place-items:center;width:22px;height:22px;background:#e7eee8;border-radius:50%;font-size:11px;color:var(--green);font-weight:700}
+.context-panel{display:grid;grid-template-columns:minmax(240px,1.4fr) 140px 180px minmax(220px,1fr);gap:16px;background:white;border:1px solid var(--line);padding:16px 18px;border-radius:9px;align-items:center}.file-summary{min-width:0;display:flex;flex-wrap:wrap;gap:5px 8px;align-items:center}.field-caption{display:block;width:100%;color:var(--muted);font-size:11px}.file-name{display:block;max-width:100%;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.muted-badge{display:inline-block;font-size:10px;font-weight:600;color:#426451;background:#eaf2ec;border-radius:4px;padding:3px 6px;line-height:1.3}.field{min-width:0}.field>label{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:5px}.field select,.field input{width:100%;min-width:0;min-height:38px;border:1px solid #ced9d2;border-radius:6px;padding:8px 10px;background:#fff;font-size:13px;box-shadow:none;font-weight:500;color:var(--ink)}.field select:focus,.field input:focus{outline:2px solid #83ad96;outline-offset:1px}.field #activePreviewTarget{min-width:0}
+.resources{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 0 18px}.resource-label{font-size:11px;color:var(--muted);margin-right:2px}.resources>.button-secondary{background:transparent;font-size:12px;border-color:transparent;padding:7px 9px}.resources>.button-secondary:hover{background:#e6eee7}.settings-menu{position:relative;margin-left:auto;font-size:12px}.settings-menu>summary{list-style:none;padding:9px 12px;border:1px solid #d5dfd7;border-radius:6px;color:#405c4b;background:#fff}.settings-menu>summary::after{content:'⌄';padding-left:10px}.settings-menu[open]{flex-basis:100%;margin-left:0}.settings-menu[open]>summary{width:fit-content;margin-left:auto}.settings-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;border:1px solid var(--line);background:white;border-radius:8px;padding:20px;margin-top:10px}.settings-content h2{font-family:inherit;font-size:13px;font-weight:700;margin-bottom:10px}.settings-content select{max-width:100%;width:100%;margin:8px 0;background:white;border:1px solid var(--line);font-size:12px;padding:8px;border-radius:6px}.scope-options{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;align-items:center}.scope-options input,.checkbox-line input{accent-color:var(--green)}.checkbox-line{display:flex;gap:8px;align-items:center;font-size:12px;margin:10px 0}.checkbox-line input{width:16px;height:16px;flex-shrink:0}.settings-content p{font-size:11px;color:var(--muted);line-height:1.7}.settings-note{margin-top:6px}.file-link{display:inline-block;color:var(--green);text-decoration:underline;font-size:12px;margin:6px 0;cursor:pointer}.demo-data{grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px}.demo-data summary{font-weight:600;font-size:12px}.demo-data p{margin:8px 0}
+.workspace{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden;min-width:0}.workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 20px 16px}.workspace-heading h2{font-family:inherit;font-size:18px;font-weight:700;letter-spacing:-.3px;line-height:1.4}.count-badge{display:inline-block;font-size:11px;font-weight:500;background:#edf4ee;color:#396247;padding:4px 7px;border-radius:5px;vertical-align:middle;margin-left:8px;letter-spacing:0}.workspace-heading p{font-size:12px;color:var(--muted);margin-top:5px}.workspace-actions{display:flex;gap:8px;flex-shrink:0}.table-toolbar{display:grid;grid-template-columns:minmax(240px,1fr) minmax(220px,320px);align-items:end;gap:24px;padding:0 20px 16px}.subject-field{max-width:420px}.ppct-context,.keyword-tools{border-top:1px solid var(--line);padding:9px 20px;font-size:11px;color:#617468}.ppct-context>summary,.keyword-tools>summary{width:fit-content}.ppct-context #activeSubjectPPCTBanner{padding:12px 0 4px;background:white;border:0;font-size:12px}.ppct-context #activeSubjectPPCTText{font-size:12px;font-weight:400}.keyword-chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:10px}.keyword-chips button{font-size:11px;font-weight:500}
+.student-table-scroll{overflow:auto;max-height:620px;border-top:1px solid var(--line);overscroll-behavior:contain}.student-table-scroll table{width:100%;min-width:1050px;table-layout:fixed;border-collapse:collapse}.student-table-scroll thead{background:#f3f6f3;color:#587060;text-transform:none;border-bottom:1px solid var(--line);box-shadow:none;font-size:11px}.student-table-scroll th{padding:13px 12px;font-weight:600;vertical-align:top}.student-table-scroll th:nth-child(1){width:48px}.student-table-scroll th:nth-child(2){width:185px;min-width:0}.student-table-scroll th:nth-child(3){width:170px}.student-table-scroll th:nth-child(4){width:200px;min-width:0}.student-table-scroll th:nth-child(5){width:auto;min-width:0}.student-table-scroll th:nth-child(6){width:54px}.student-table-scroll th div+div{color:#87938a;font-size:10px;font-weight:400;margin-top:3px}.student-table-scroll tbody{background:white;font-size:13px;--tw-divide-opacity:1;border-color:var(--line)}.student-table-scroll tbody tr{border-bottom:1px solid var(--line);transition:background .15s}.student-table-scroll tbody tr:hover{background:#f7faf7}.student-table-scroll td{padding:12px;vertical-align:top;border-color:var(--line)}.student-table-scroll td:nth-child(2)>div:first-child{font-size:13px;font-weight:650;color:var(--ink)}.student-table-scroll td:nth-child(2)>div+div{font-size:10px;color:#7c8b80;font-weight:400;margin-top:5px;line-height:1.6}.student-table-scroll td:first-child{font-size:12px;color:#7f8d83;font-weight:500;padding-top:20px}.student-table-scroll td select{font-size:12px;font-weight:600;border-width:1px;min-height:38px;border-radius:6px;padding:8px 5px;width:100%}.student-table-scroll td input{border:1px solid #dbe3dc;border-radius:6px;padding:9px;font-size:12px;box-shadow:none}.student-table-scroll td textarea{min-height:88px;border:1px solid #d8e2da;border-radius:6px;box-shadow:none;padding:9px;font-size:15px!important;line-height:1.55;background:#fdfefd;resize:vertical}.student-table-scroll td button{box-shadow:none;border-width:1px;border-radius:6px;background:#fff}.student-table-scroll td .text-xs{font-size:10px;font-weight:400}
+.table-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 16px;background:#fafcf9}.footer-stats{display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:#7a887d}.table-footer button{font-size:11px}.export-note{font-size:10px;color:#87958a;margin:12px 2px;overflow-wrap:anywhere}.app-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:15px 24px;margin-top:auto;border-top:1px solid var(--line);font-size:11px;color:#829185;background:#f4f6f4}
+/* Các hộp thoại giữ nguyên nội dung, dùng cùng cách trình bày nhẹ hơn. */
+.card-3d,.card-3d-amber{background:#fff;border:1px solid #ced9d0;border-radius:10px;box-shadow:0 12px 36px #153d3220}.card-3d-header{background:#184a3a;border-bottom:1px solid #37644f;border-radius:9px 9px 0 0}.btn-3d-gold,.btn-3d-cream,.btn-3d-teal{box-shadow:none;text-shadow:none;border-width:1px;border-radius:7px;transition:background .15s}.btn-3d-gold{background:#f0cd77;border-color:#c5a34c}.btn-3d-cream{background:#fff;border-color:#cbd7ce}.btn-3d-teal{background:#174d3e;border-color:#174d3e}.btn-3d-gold:hover,.btn-3d-cream:hover,.btn-3d-teal:hover{transform:none;box-shadow:none}.input-vintage{border-width:1px;box-shadow:none;border-color:#cbd7ce}.hidden{display:none}
+@media(min-width:1600px){.app-main{padding-top:32px}.student-table-scroll th:nth-child(5){width:auto}}
+@media(max-width:1100px){.context-panel{grid-template-columns:minmax(220px,1fr) 130px 160px}.style-field{grid-column:1/-1;max-width:380px}.resources{gap:6px}.resource-label{display:none}.table-toolbar{gap:12px}.settings-content{gap:16px}.workspace-heading h2{font-size:17px}}
+@media(max-width:700px){.app-header{padding:12px 16px;min-height:64px}.brand{font-size:17px}.brand small{font-size:10px}.brand-icon{width:30px;height:33px;font-size:23px}.header-links{gap:0}.header-links .button-quiet{font-size:10px;padding:6px;max-width:110px}.header-links button:last-child{display:none}.app-main{padding:20px 14px 14px}.page-heading{display:block;margin-bottom:16px}h1{font-size:25px}.page-description{font-size:12px}.primary-actions{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.primary-actions button{font-size:12px;padding:10px 8px}.workflow{gap:14px;justify-content:space-between;font-size:10px;margin-bottom:14px}.workflow li{gap:5px}.workflow li span{width:19px;height:19px}.context-panel{grid-template-columns:1fr 1fr;padding:14px;gap:12px}.file-summary,.style-field{grid-column:1/-1}.style-field{max-width:none}.field select,.field input{font-size:13px;min-height:42px}.resources{padding:12px 0 14px;gap:5px}.resources>.button-secondary{font-size:11px;min-height:36px;padding:6px 5px}.resources .muted-badge{font-size:9px}.settings-menu{margin-left:0;width:100%}.settings-menu>summary{border:0;background:transparent;padding:7px 3px;min-height:34px}.settings-menu[open]>summary{margin-left:0}.settings-content{grid-template-columns:1fr;padding:14px}.workspace-heading{display:block;padding:16px 14px 12px}.workspace-heading h2{font-size:16px}.workspace-heading p{font-size:11px;line-height:1.7}.workspace-actions{margin-top:10px}.workspace-actions button{font-size:11px}.table-toolbar{grid-template-columns:1fr;padding:0 14px 14px;gap:10px}.subject-field{max-width:none}.ppct-context,.keyword-tools{padding:10px 14px}.table-footer{display:block;padding:12px}.table-footer button{margin-top:8px}.footer-stats{font-size:10px;gap:6px}.app-footer{padding:14px;font-size:10px}.student-table-scroll{max-height:560px}.export-note{font-size:10px}.fixed[id^="modal"]{padding:10px}}
+.app-main h1{font-size:28px;font-weight:750;line-height:1.3;letter-spacing:-.8px}
+.page-heading{margin-bottom:8px}
+@media(min-width:701px){.app-header{min-height:64px;padding-top:9px;padding-bottom:9px}.app-main{padding-top:20px}.page-heading{margin-bottom:16px}.workflow{margin-bottom:12px}.context-panel{padding-top:12px;padding-bottom:12px}.resources{padding-top:10px;padding-bottom:12px}.workspace-heading{padding-top:14px;padding-bottom:10px}.workspace-heading p{display:none}.table-toolbar{padding-bottom:12px}.contextual-tools{display:grid;grid-template-columns:1fr 1fr}.contextual-tools>details{padding-top:8px;padding-bottom:8px}.contextual-tools>details+details{border-left:1px solid var(--line)}}
+@media(max-width:700px){.app-main h1{font-size:25px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+</style>
+<style id="title-and-feedback">
+.brand-image{width:38px;height:38px;object-fit:contain;border-radius:9px}
+.app-main .page-heading{position:relative;display:grid;grid-template-columns:1fr;align-items:center;min-height:132px;padding:20px 100px;margin:0 0 10px;text-align:center;border:1px solid #dfdfcc;border-radius:10px;background:linear-gradient(100deg,#f3f5ee,#fffdf5 50%,#f3f5ee);overflow:hidden}
+.app-main .page-heading h1{font-size:34px;letter-spacing:-.7px;font-weight:800;color:#174d3e;margin:5px 0}
+.page-heading .eyebrow{font-size:10px;letter-spacing:1.5px;color:#827443}.page-heading .page-description{font-size:12px;color:#64746a}.title-copy{position:relative;z-index:1}
+.title-ornament{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:88px;height:88px;color:#ac9152;opacity:.65;pointer-events:none}.title-ornament-right{left:auto;right:18px;transform:translateY(-50%) scaleX(-1)}
+.page-actions{justify-content:flex-end;margin:0 0 12px}.app-main .workflow{margin-bottom:10px}.app-main .workspace-heading{padding-top:12px;padding-bottom:8px}.app-main .table-toolbar{padding-bottom:10px}
+.ppct-feedback{padding:12px 14px;margin:0 0 14px;border:1px solid #8bb59b;border-radius:7px;background:#eff8f0;color:#194c30;font-size:12px;line-height:1.7;overflow-wrap:anywhere}.ppct-feedback-error{border-color:#c6a15c;background:#fff8e7;color:#745118}
+@media(max-width:700px){.app-main .page-heading{min-height:136px;padding:16px 48px}.app-main .page-heading h1{font-size:25px}.page-heading .eyebrow{font-size:8px;letter-spacing:.4px}.page-heading .page-description{font-size:11px;line-height:1.6}.title-ornament{width:45px;height:70px;left:4px}.title-ornament-right{left:auto;right:4px}.page-actions{margin-top:8px}.page-actions #installAppButton{grid-column:1/-1;padding:4px;min-height:30px}}
+</style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
     <!-- ========================================================================= -->
     <!-- HEADER: THƯƠNG HIỆU THAYKHAIEDU Ở GÓC TRÊN BÊN TRÁI (3D ROYAL CLASSIC)     -->
     <!-- ========================================================================= -->
-    <header class="sticky top-0 z-40 bg-gradient-to-r from-[#132a21] via-[#1b4332] to-[#132a21] border-b-4 border-[#c59b27] shadow-xl">
-        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
-            
-            <!-- Góc trên bên trái: Logo Thương hiệu ThayKhaiEdu -->
-            <div class="flex items-center gap-4 cursor-pointer group" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-                <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-b from-[#f8d57e] to-[#b8860b] p-0.5 shadow-lg border-2 border-[#fff3c4] group-hover:scale-105 transition-transform">
-                    <div class="w-full h-full bg-[#16382c] rounded-[13px] flex items-center justify-center">
-                        <!-- Biểu tượng Sách cổ & Ngôi sao vàng -->
-                        <svg class="w-8 h-8 text-[#f8d57e]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 19.5V5C4 3.89543 4.89543 3 6 3H19.4C19.7314 3 20 3.26863 20 3.6V16.7143" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-                            <path d="M6 17H20V21H6C4.89543 21 4 20.1046 4 19C4 17.8954 4.89543 17 6 17Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
-                            <path d="M12 6.5L13.3 9.1L16.2 9.5L14.1 11.5L14.6 14.4L12 13L9.4 14.4L9.9 11.5L7.8 9.5L10.7 9.1L12 6.5Z" fill="#facc15" stroke="#facc15" stroke-width="1.2" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 border-2 border-[#132a21] rounded-full"></span>
-                </div>
-                <div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-serif font-black text-2xl sm:text-3xl tracking-wide text-[#fce89c] drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]">
-                            ThayKhaiEdu
-                        </span>
-                        <span class="px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-[#c59b27] text-[#1a1306] border border-[#fae596] shadow">
-                            Thông Tư 27 • Chuẩn Ngành
-                        </span>
-                    </div>
-                    <p class="text-sm sm:text-base text-[#d8e8df] font-medium mt-0.5">
-                        Hệ thống Trợ lý Viết Nhận xét Học sinh Tiểu học (Tích hợp Phân phối chương trình)
-                    </p>
-                </div>
-            </div>
-
-            <!-- Phải: Các nút chức năng phụ trợ 3D -->
-            <div class="flex flex-wrap items-center gap-3">
-                <button onclick="openModal('modalTT27Rules')" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
-                    <i data-lucide="shield-check" class="w-5 h-5 text-[#163832]"></i>
-                    <span>Quy Tắc Thông Tư 27</span>
-                    <span class="px-2 py-0.5 text-xs bg-[#163832] text-[#fce89c] rounded-full font-extrabold">Tích hợp sẵn</span>
-                </button>
-                <button onclick="openModal('modalPPCT')" class="btn-3d-gold px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
-                    <i data-lucide="calendar-range" class="w-5 h-5"></i>
-                    <span>Kho Phân Phối Chương Trình</span>
-                    <span id="ppctActiveBadge" class="px-2 py-0.5 text-xs bg-[#16382c] text-[#fce89c] rounded-full font-extrabold">Đang bật</span>
-                </button>
-                <button onclick="openModal('modalBank')" class="btn-3d-cream px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
-                    <i data-lucide="book-marked" class="w-5 h-5 text-[#6e1e2a]"></i>
-                    <span>Ngân Hàng Mẫu Câu</span>
-                    <span id="customBankBadge" class="hidden px-2 py-0.5 text-xs bg-emerald-700 text-white rounded-full">Đã nạp</span>
-                </button>
-                <button onclick="openModal('modalAIKey')" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2" title="Cấu hình Chế độ Miễn phí / Gemini API Key">
-                    <i data-lucide="cpu" class="w-5 h-5 text-[#8c4a08]"></i>
-                    <span id="aiModeBadgeHeader">Chế độ: Miễn phí 100%</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- ========================================================================= -->
-    <!-- BỐ CỤC CHÍNH: BÊN TRÁI (THẺ CHỨC NĂNG 3D) - Ở GIỮA (MÀN HÌNH VIEW)          -->
-    <!-- ========================================================================= -->
-    <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 space-y-8">
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-
-            <!-- ================================================================= -->
-            <!-- KHU VỰC 1 (BÊN TRÁI - 4/12): CÁC THẺ CHỨC NĂNG 3D CỔ KÍNH          -->
-            <!-- ================================================================= -->
-            <aside class="lg:col-span-4 space-y-6">
-
-                <!-- THẺ 3D SỐ 1: TẢI FILE EXCEL HỆ THỐNG NGÀNH -->
-                <div class="card-3d overflow-hidden">
-                    <div class="card-3d-header px-5 py-3.5 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-base flex items-center justify-center shadow">1</span>
-                            <h2 class="font-serif font-bold text-lg tracking-wide">Tải File Danh Sách Ngành</h2>
-                        </div>
-                        <span id="fileTypeBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-[#f3c65f] text-[#1e1b18]">Mẫu Môn học</span>
-                    </div>
-
-                    <div class="p-5 space-y-4">
-                        <!-- Ô kéo thả file -->
-                        <label for="excelUpload" class="block border-2 border-dashed border-[#8c6239] hover:border-[#163832] rounded-2xl p-4 text-center cursor-pointer bg-[#fdf8ed] hover:bg-[#f6ebd4] transition shadow-inner">
-                            <input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event)" onclick="this.value=null">
-                            <div class="w-12 h-12 rounded-xl bg-[#163832] text-[#fce89c] flex items-center justify-center mx-auto mb-2 shadow-md">
-                                <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
-                            </div>
-                            <p class="text-base font-extrabold text-[#2b1d0e]">Bấm chọn File Excel (.xlsx, .xls)</p>
-                            <p class="text-xs sm:text-sm text-[#5c4328] font-medium mt-0.5">Hỗ trợ File Môn học (T/H/C) & File NL-PC (T/Đ/C)</p>
-                            <div id="loadedFileNameBox" class="mt-3 px-3 py-2 rounded-xl bg-[#163832] text-[#fce89c] text-sm font-bold flex items-center justify-center gap-2 shadow">
-                                <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 text-emerald-400"></i>
-                                <span id="loadedFileName" class="truncate">danhgia_dinhky_tt27_2020GK1_4_1.xlsx</span>
-                            </div>
-                        </label>
-
-                        <!-- Nút nạp nhanh dữ liệu mẫu Lớp 4/1 để dùng thử -->
-                        <div class="space-y-2 pt-1">
-                            <p class="text-xs font-extrabold uppercase tracking-wider text-[#5c3a21]">Hoặc chuyển nhanh chế độ mẫu Lớp 4/1 (35 HS):</p>
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <button type="button" onclick="loadDemoData('MON_HOC')" class="btn-3d-cream px-3 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5">
-                                    <i data-lucide="book-open" class="w-4 h-4 text-[#163832]"></i>
-                                    <span>7 Môn Học (T/H/C)</span>
-                                </button>
-                                <button type="button" onclick="loadDemoData('NLPC')" class="btn-3d-cream px-3 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5">
-                                    <i data-lucide="award" class="w-4 h-4 text-[#8c4a08]"></i>
-                                    <span>NL & Phẩm Chất (T/Đ/C)</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Chọn phạm vi môn học -->
-                        <div class="pt-3 border-t-2 border-[#e3d3b6] space-y-3">
-                            <label class="block text-sm font-extrabold text-[#2b1d0e]">Phạm vi môn học / năng lực cần viết:</label>
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <label class="flex items-center gap-2 p-2.5 rounded-xl border-2 border-[#b59469] bg-[#fffdf9] cursor-pointer font-bold text-sm">
-                                    <input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()" class="w-4 h-4 accent-[#163832]">
-                                    <span>Tất cả danh mục</span>
-                                </label>
-                                <label class="flex items-center gap-2 p-2.5 rounded-xl border-2 border-[#b59469] bg-[#fffdf9] cursor-pointer font-bold text-sm">
-                                    <input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()" class="w-4 h-4 accent-[#163832]">
-                                    <span>Tự tích chọn</span>
-                                </label>
-                            </div>
-
-                            <!-- Khung tích chọn môn học -->
-                            <div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-3">
+<header class="app-header">
+  <a class="brand" href="#main-content"><img class="brand-image" src="icons/icon-192.png" alt="" width="38" height="38"><span>ThayKhaiEdu<small>Trợ lý nhận xét tiểu học</small></span></a>
+  <nav aria-label="Thông tin và thiết lập" class="header-links"><button type="button"  class="button-quiet" onclick="openModal('modalTT27Rules')">Quy tắc TT27</button><button type="button"  class="button-quiet" onclick="openModal('modalAIKey')"><span id="aiModeBadgeHeader">Chế độ: Miễn phí 100%</span></button></nav>
+</header>
+<main id="main-content" class="app-main">
+  <div class="page-heading"><svg class="title-ornament" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg><svg class="title-ornament title-ornament-right" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg>
+    <div class="title-copy"><p class="eyebrow">THAYKHAIEDU · ĐỒNG HÀNH CÙNG GIÁO VIÊN</p><h1>Nhận xét học sinh</h1><p class="page-description">Tải danh sách, kiểm tra từng em và xuất file Excel.</p></div>
+  </div>
+    <div class="primary-actions page-actions"><button type="button" id="primaryUpload" class="button-secondary" onclick="document.getElementById('excelUpload').click()"><i data-lucide="upload" aria-hidden="true"></i>Tải danh sách Excel</button><input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event)" onclick="this.value=null"><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i>Xuất Excel</button><button type="button" id="installAppButton" class="button-quiet" onclick="installApp()">Cài trên máy</button></div>
+  <ol class="workflow" aria-label="Quy trình sử dụng"><li><span>1</span>Tải danh sách</li><li><span>2</span>Kiểm tra nhận xét</li><li><span>3</span>Xuất Excel</li></ol>
+  <section class="context-panel" aria-label="Danh sách và kỳ đánh giá">
+    <div id="loadedFileNameBox" class="file-summary"><span class="field-caption">Danh sách đang mở</span><span id="loadedFileName" class="file-name"></span><span id="fileTypeBadge" class="muted-badge"></span></div>
+    <div class="field"><label for="gradeSelect">Khối lớp</label><select id="gradeSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
+                                    <option value="1">Lớp 1 (6t)</option>
+                                    <option value="2">Lớp 2 (7t)</option>
+                                    <option value="3">Lớp 3 (8t)</option>
+                                    <option value="4" selected>Lớp 4 (9t)</option>
+                                    <option value="5">Lớp 5 (10t)</option>
+                                </select></div><div class="field"><label for="periodSelect">Kỳ đánh giá</label><select id="periodSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
+                                    <option value="GK1" selected>Giữa HK1 (GK1)</option>
+                                    <option value="CK1">Cuối HK1 (CK1)</option>
+                                    <option value="GK2">Giữa HK2 (GK2)</option>
+                                    <option value="CK2">Cuối năm (CK2)</option>
+                                </select></div><div class="field style-field"><label for="styleSelect">Phong cách nhận xét</label><select id="styleSelect" onchange="regenerateAllComments()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
+                                <option value="khichle" selected>🌟 Khích lệ, ấm áp & vì sự tiến bộ</option>
+                                <option value="ancan">💖 Ân cần, sát sao & tỉ mỉ (Chủ nhiệm)</option>
+                                <option value="ngangon">⚡ Ngắn gọn, súc tích & chuẩn TT27</option>
+                                <option value="nghiemtuc">🎯 Khách quan, chuẩn mực & rõ ràng</option>
+                            </select></div>
+  </section>
+  <section class="resources" aria-label="Học liệu bổ trợ">
+    <span class="resource-label">Học liệu</span><button type="button"  class="button-secondary" onclick="openModal('modalBank')"><i data-lucide="book-open" aria-hidden="true"></i>Ngân hàng mẫu câu <span id="customBankBadge" class="hidden muted-badge"></span></button><button type="button"  class="button-secondary" onclick="openModal('modalPPCT')"><i data-lucide="calendar-range" aria-hidden="true"></i>Phân phối chương trình <span id="ppctActiveBadge" class="muted-badge">Đang bật</span></button>
+    <details id="workflowSettings" class="settings-menu"><summary>Thiết lập nhận xét</summary><div class="settings-content">
+      <section><h2>Phạm vi cần viết nhận xét</h2><div class="scope-options"><label><input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()"> Tất cả danh mục</label><label><input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()"> Tự chọn danh mục</label></div><div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-3">
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs font-extrabold text-[#3d2812]">Tích chọn mục cần nhận xét:</span>
                                     <div class="flex gap-2 text-xs font-bold">
@@ -313,269 +265,37 @@
                                     <i data-lucide="check" class="w-4 h-4"></i>
                                     <span>Xong - Áp dụng mục đã chọn</span>
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- THẺ 3D SỐ 2: TẢI MẪU NHẬN XÉT THAM KHẢO (ĐÃ SỬA LỖI ĐỌC MỌI FILE EXCEL .XLSX, .XLS) -->
-                <div class="card-3d-amber overflow-hidden">
-                    <div class="bg-gradient-to-r from-[#6e1e2a] via-[#882938] to-[#6e1e2a] border-b-4 border-[#e6c670] px-5 py-3.5 text-[#fff8e7] flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#2b1803] font-black text-base flex items-center justify-center shadow">2</span>
-                            <div>
-                                <h2 class="font-serif font-bold text-lg leading-tight">Ngân Hàng Mẫu Nhận Xét</h2>
-                                <p class="text-xs text-[#f8d89c] font-medium">Tải file Excel (.xlsx, .xls), Word, Text mẫu câu</p>
-                            </div>
-                        </div>
-                        <i data-lucide="book-marked" class="w-6 h-6 text-[#f3c65f]"></i>
-                    </div>
-
-                    <div class="p-5 space-y-3.5">
-                        <p class="text-sm font-semibold text-[#3d250a]">
-                            Tải file mẫu câu để bổ sung vào kho hiện có; xem kết quả đọc và phân loại từng sheet:
-                        </p>
-
-                        <!-- Nút tải trực tiếp file Excel mẫu nhận xét ngay trên Sidebar -->
-                        <label for="sidebarBankFileUpload" class="btn-3d-gold w-full py-3 px-4 rounded-xl font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer">
-                            <i data-lucide="file-up" class="w-5 h-5"></i>
-                            <span>Tải File Mẫu Nhận Xét (.xlsx, .xls, .docx, .txt)</span>
-                        </label>
-                        <input type="file" id="sidebarBankFileUpload" accept=".xlsx,.xls,.csv,.txt,.docx" class="hidden" onchange="handleBankFileUpload(event, true)" onclick="this.value=null">
-
-                        <!-- Trạng thái nạp mẫu câu -->
-                        <div id="sidebarBankStatusBox" class="p-3 rounded-xl bg-[#fffdf8] border-2 border-[#c89d54] text-sm font-bold text-[#2b1d0e] flex items-center justify-between gap-2">
-                            <span id="sidebarBankStatusText">Đang dùng: Kho câu chuẩn TT27 tích hợp sẵn</span>
-                            <button type="button" onclick="openModal('modalBank')" class="text-xs font-extrabold text-[#6e1e2a] underline shrink-0">
-                                Xem / Sửa kho
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between pt-1">
-                            <button type="button" onclick="downloadSampleCommentBankExcel()" class="text-xs sm:text-sm font-extrabold text-[#163832] hover:underline flex items-center gap-1">
-                                <i data-lucide="download" class="w-4 h-4"></i>
-                                <span>Tải file Excel mẫu Ngân hàng (.xlsx)</span>
-                            </button>
-                            <button type="button" onclick="openModal('modalBank')" class="text-xs sm:text-sm font-extrabold text-[#6e1e2a] hover:underline">
-                                Mở trình quản lý &rarr;
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- THẺ 3D SỐ 3: CẤU HÌNH CHUẨN THÔNG TƯ 27 (T/H/C CHO MÔN HỌC & T/Đ/C CHO NL-PC) -->
-                <div class="card-3d overflow-hidden">
-                    <div class="card-3d-header px-5 py-3.5 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-base flex items-center justify-center shadow">3</span>
-                            <h2 class="font-serif font-bold text-lg tracking-wide">Cấu Hình Đánh Giá TT27</h2>
-                        </div>
-                        <span class="text-xs font-bold text-[#f3c65f]">Lớp 1 - Lớp 5</span>
-                    </div>
-
-                    <div class="p-5 space-y-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Khối lớp:</label>
-                                <select id="gradeSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
-                                    <option value="1">Lớp 1 (6t)</option>
-                                    <option value="2">Lớp 2 (7t)</option>
-                                    <option value="3">Lớp 3 (8t)</option>
-                                    <option value="4" selected>Lớp 4 (9t)</option>
-                                    <option value="5">Lớp 5 (10t)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Kỳ đánh giá:</label>
-                                <select id="periodSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
-                                    <option value="GK1" selected>Giữa HK1 (GK1)</option>
-                                    <option value="CK1">Cuối HK1 (CK1)</option>
-                                    <option value="GK2">Giữa HK2 (GK2)</option>
-                                    <option value="CK2">Cuối năm (CK2)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">Phong cách lời văn nhận xét:</label>
-                            <select id="styleSelect" onchange="regenerateAllComments()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
-                                <option value="khichle" selected>🌟 Khích lệ, ấm áp & vì sự tiến bộ</option>
-                                <option value="ancan">💖 Ân cần, sát sao & tỉ mỉ (Chủ nhiệm)</option>
-                                <option value="ngangon">⚡ Ngắn gọn, súc tích & chuẩn TT27</option>
-                                <option value="nghiemtuc">🎯 Khách quan, chuẩn mực & rõ ràng</option>
-                            </select>
-                        </div>
-
-                        <!-- Mức đánh giá tự động đổi nhãn chuẩn theo Thông tư 27 -->
-                        <div class="p-3.5 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-extrabold text-[#2b1d0e]">Phân loại mức đạt chuẩn TT27:</label>
-                                <span id="tt27ScaleHintBadge" class="px-2 py-0.5 rounded bg-[#163832] text-[#fce89c] text-xs font-extrabold">
+                            </div></section>
+      <section><h2>Mức đánh giá và xuất file</h2><span id="tt27ScaleHintBadge" class="px-2 py-0.5 rounded bg-[#163832] text-[#fce89c] text-xs font-extrabold">
                                     Môn học: T / H / C
-                                </span>
-                            </div>
-                            <select id="defaultLevelMode" onchange="applyDefaultLevelsToStudents()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-sm sm:text-base">
+                                </span><select id="defaultLevelMode" onchange="applyDefaultLevelsToStudents()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-sm sm:text-base">
                                 <option value="2LEVELS" selected id="opt2Levels">Mặc định 2 mức: Hoàn thành tốt (T) & Hoàn thành (H)</option>
                                 <option value="ALL_T" id="optAllT">Đồng loạt mức cao nhất: Hoàn thành tốt (T)</option>
                                 <option value="ALL_MID" id="optAllMid">Đồng loạt mức đạt chuẩn: Hoàn thành (H)</option>
                                 <option value="3LEVELS" id="opt3Levels">Phân hóa 3 mức: Tốt (T) / Hoàn thành (H) / Chưa HT (C)</option>
-                            </select>
-                            <p id="tt27RuleNote" class="text-xs font-bold text-[#5c3a21] leading-snug">
+                            </select><p id="tt27RuleNote" class="text-xs font-bold text-[#5c3a21] leading-snug">
                                 • Chuẩn TT27: Môn học dùng <strong>Hoàn thành tốt (T), Hoàn thành (H), Chưa hoàn thành (C)</strong>. Năng lực & Phẩm chất dùng <strong>Tốt (T), Đạt (Đ), Cần cố gắng (C)</strong>.
-                            </p>
-                        </div>
-
-                        <label class="flex items-center gap-3 p-3 rounded-xl bg-[#fffdf9] border border-[#b59469] cursor-pointer">
-                            <input type="checkbox" id="autoFillLevelCode" checked class="w-5 h-5 accent-[#163832] rounded">
-                            <span class="text-sm font-bold text-[#2b1d0e]">Tự động điền mã mức đạt (T/H/C hoặc T/Đ/C) vào Excel</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- THẺ 3D SỐ 4: PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG -->
-                <div class="card-3d overflow-hidden">
-                    <div class="bg-gradient-to-r from-[#5c3a21] via-[#7a4b27] to-[#5c3a21] border-b-4 border-[#e6c670] px-5 py-3.5 text-[#fff8e7] flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#2b1803] font-black text-base flex items-center justify-center shadow">4</span>
-                            <div>
-                                <h2 class="font-serif font-bold text-lg leading-tight">Phân Phối Chương Trình</h2>
-                                <p class="text-xs text-[#f3d999] font-medium">Lồng ghép kiến thức thực tế từng giai đoạn</p>
-                            </div>
-                        </div>
-                        <i data-lucide="book-open-check" class="w-6 h-6 text-[#f3c65f]"></i>
-                    </div>
-
-                    <div class="p-5 space-y-3.5">
-                        <label class="flex items-center justify-between p-3 rounded-xl bg-[#fffdf7] border-2 border-[#b07d2b] cursor-pointer shadow-sm">
-                            <span class="text-sm sm:text-base font-extrabold text-[#3d250a]">Lồng ghép bài học PPCT vào câu:</span>
-                            <input type="checkbox" id="usePPCTToggle" checked onchange="onTogglePPCT()" class="w-5 h-5 accent-[#163832]">
-                        </label>
-
-                        <div>
-                            <label for="ppctQuickUpload" class="btn-3d-cream w-full py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer">
-                                <i data-lucide="file-up" class="w-4 h-4 text-[#6e1e2a]"></i>
-                                <span>Tải File PPCT (.xlsx, .xls, .docx, .pdf, .txt, .json)</span>
-                            </label>
-                            <input type="file" id="ppctQuickUpload" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
-                        </div>
-
-                        <div class="p-3.5 rounded-xl bg-[#fffdf8] border-2 border-[#c89d54] space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span id="ppctCurrentStageLabel" class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded bg-[#163832] text-[#fce89c]">
+                            </p><label class="checkbox-line"><input type="checkbox" id="autoFillLevelCode" checked class="w-5 h-5 accent-[#163832] rounded"> Tự điền mã mức đạt đã chọn khi xuất Excel</label><p class="settings-note">Chỉ chọn áp dụng đồng loạt khi đã kiểm tra kết quả đánh giá của cả lớp.</p></section>
+      <section><h2>Phân phối chương trình</h2><label class="checkbox-line"><input type="checkbox" id="usePPCTToggle" checked onchange="onTogglePPCT()" class="w-5 h-5 accent-[#163832]"> Lồng ghép kiến thức PPCT vào nhận xét</label><label for="ppctQuickUpload" class="file-link">Tải file PPCT (Excel, Word, PDF, TXT, CSV, JSON)</label><input type="file" id="ppctQuickUpload" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null"><span id="ppctCurrentStageLabel" class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded bg-[#163832] text-[#fce89c]">
                                     Lớp 4 • Giữa HK1
-                                </span>
-                                <button type="button" onclick="openModal('modalPPCT')" class="text-xs font-extrabold text-[#6e1e2a] hover:underline flex items-center gap-1">
-                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Xem & Sửa PPCT
-                                </button>
-                            </div>
-                            <p id="ppctPreviewSummaryText" class="text-sm font-semibold text-[#2b1d0e] leading-relaxed line-clamp-3">
+                                </span><p id="ppctPreviewSummaryText" class="text-sm font-semibold text-[#2b1d0e] leading-relaxed line-clamp-3">
                                 Đang áp dụng kiến thức trọng tâm giai đoạn Giữa Học kỳ I.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- THẺ 3D SỐ 5: CHẾ ĐỘ HOẠT ĐỘNG (MIỄN PHÍ 100% KHÔNG CẦN API KEY HOẶC GEMINI AI) -->
-                <div class="card-3d overflow-hidden">
-                    <div class="card-3d-header px-5 py-3.5 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-base flex items-center justify-center shadow">5</span>
-                            <div>
-                                <h2 class="font-serif font-bold text-base sm:text-lg leading-tight">Bộ Máy AI & Quy Tắc TT27</h2>
-                                <p class="text-xs text-[#d8e8df]">Miễn phí 100% không cần Key hoặc Gemini API</p>
-                            </div>
-                        </div>
-                        <i data-lucide="sparkles" class="w-5 h-5 text-[#f3c65f]"></i>
-                    </div>
-                    <div class="p-5 space-y-3 text-sm">
-                        <div class="p-3 rounded-xl bg-[#e9f5ef] border-2 border-[#163832] text-[#122b24] space-y-1">
-                            <div class="font-extrabold flex items-center gap-1.5 text-sm sm:text-base">
-                                <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-700 shrink-0"></i>
-                                <span>Mặc định: Miễn phí 100% (Không cần API Key)</span>
-                            </div>
-                            <p class="text-xs sm:text-sm font-medium leading-relaxed">
-                                App đã tích hợp sẵn toàn bộ quy tắc <strong>Thông tư 27</strong> + <strong>PPCT</strong> + <strong>Từ khóa thông minh</strong>, xử lý tức thì cho cả lớp hoàn toàn miễn phí và không giới hạn!
-                            </p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <button type="button" onclick="openModal('modalTT27Rules')" class="btn-3d-cream py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
-                                <i data-lucide="file-badge" class="w-4 h-4 text-[#163832]"></i>
-                                <span>Chuẩn TT27 & Văn bản</span>
-                            </button>
-                            <button type="button" onclick="openModal('modalAIKey')" class="btn-3d-cream py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
-                                <i data-lucide="key" class="w-4 h-4 text-[#8c4a08]"></i>
-                                <span>Gemini API (Tùy chọn)</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </aside>
-
-            <!-- ================================================================= -->
-            <!-- KHU VỰC 2 (Ở GIỮA - 8/12): MÀN HÌNH VIEW & NHẬP TỪ KHÓA HỌC SINH    -->
-            <!-- ================================================================= -->
-            <section class="lg:col-span-8 space-y-6">
-
-                <div class="card-3d overflow-hidden">
-                    <!-- THANH TIÊU ĐỀ MÀN HÌNH VIEW + NÚT PHƯƠNG ÁN 1: "BỎ QUA NHẬP LIỆU & XUẤT NHANH" -->
-                    <div class="card-3d-header px-5 sm:px-6 py-4 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-3">
-                                <span class="px-3 py-1 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-sm shadow">
-                                    MÀN HÌNH VIEW TRUNG TÂM
-                                </span>
-                                <h2 class="font-serif font-bold text-xl text-[#fefae0]">
-                                    Danh Sách Học Sinh & Xem Trước Nhận Xét
-                                </h2>
-                                <span id="studentCountBadge" class="px-3 py-0.5 rounded-full text-sm font-extrabold bg-emerald-800 text-[#fce89c] border border-emerald-400">
-                                    35 học sinh
-                                </span>
-                            </div>
-                            <p class="text-sm text-[#d8e8df] font-medium">
-                                Thầy/cô có thể nhập vài từ khóa cơ bản bên dưới hoặc bấm <strong>"Bỏ qua nhập liệu & Xuất nhanh"</strong> để máy tự viết 100%.
-                            </p>
-                        </div>
-
-                        <!-- PHƯƠNG ÁN 1: NÚT BỎ QUA NHẬP LIỆU & XUẤT NHANH RÕ NGHĨA -->
-                        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
-                            <button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#f3c65f]">
+                            </p></section>
+      <section><h2>Ngân hàng mẫu câu</h2><label for="sidebarBankFileUpload" class="file-link">Nạp thêm file mẫu câu</label><input type="file" id="sidebarBankFileUpload" accept=".xlsx,.xls,.csv,.txt,.docx" class="hidden" onchange="handleBankFileUpload(event, true)" onclick="this.value=null"><div id="sidebarBankStatusBox"><p id="sidebarBankStatusText"></p></div><button type="button"  class="button-quiet" onclick="downloadSampleCommentBankExcel()">Tải Excel mẫu ngân hàng</button></section>
+      <section><h2>Chế độ hoạt động</h2><button type="button"  class="button-secondary" onclick="openModal('modalAIKey')">Thiết lập chế độ / Gemini</button></section>
+      <details class="demo-data"><summary>Dùng dữ liệu giả để trải nghiệm</summary><p>Thay danh sách hiện tại bằng 35 học sinh giả.</p><div class="scope-options"><button type="button"  class="button-secondary" onclick="loadDemoData('MON_HOC')">Mẫu môn học</button><button type="button"  class="button-secondary" onclick="loadDemoData('NLPC')">Mẫu năng lực, phẩm chất</button></div></details>
+    </div></details>
+  </section>
+  <p id="ppctUploadFeedback" class="hidden" role="status" aria-live="polite"></p>
+  <section class="workspace" aria-labelledby="workspace-title">
+    <div class="workspace-heading"><div><h2 id="workspace-title">Danh sách và nhận xét <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div><div class="workspace-actions"><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#f3c65f]">
                                 <i data-lucide="sparkles" class="w-4 h-4 text-[#f3c65f]"></i>
                                 <span>Viết bằng Gemini AI</span>
-                            </button>
-                            <button type="button" onclick="regenerateAllComments(true)" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5">
-                                <i data-lucide="refresh-cw" class="w-4 h-4 text-[#163832]"></i>
-                                <span>Đổi Câu Toàn Lớp</span>
-                            </button>
-                            <button type="button" onclick="exportExcelFile()" class="btn-3d-gold px-4 py-2.5 rounded-xl font-extrabold text-sm sm:text-base flex items-center gap-2" title="Không cần nhập từ khóa từng em, xuất ngay file Excel hoàn chỉnh">
-                                <i data-lucide="zap" class="w-5 h-5"></i>
-                                <span>Bỏ qua nhập liệu & Xuất nhanh</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- THANH HIỂN THỊ KIẾN THỨC PPCT CỦA MÔN ĐANG XEM + CHỌN MÔN XEM TRƯỚC -->
-                    <div class="p-4 sm:px-6 bg-[#f5ebd6] border-b-2 border-[#c8ad82] flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <!-- Chọn Môn học / Năng lực Phẩm chất để Xem & Sửa trên màn hình View -->
-                        <div class="flex flex-wrap items-center gap-3">
-                            <span class="text-base font-extrabold text-[#3d250a] flex items-center gap-1.5">
-                                <i data-lucide="eye" class="w-5 h-5 text-[#163832]"></i>
-                                Đang xem & chỉnh sửa:
-                            </span>
-                            <select id="activePreviewTarget" onchange="renderStudentTable()" class="input-vintage rounded-xl px-4 py-2 text-base font-extrabold text-[#163832] cursor-pointer min-w-[240px]">
+                            </button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button></div></div>
+    <div class="table-toolbar"><div class="field subject-field"><label for="activePreviewTarget">Môn / mục đang xem</label><select id="activePreviewTarget" onchange="renderStudentTable()" class="input-vintage rounded-xl px-4 py-2 text-base font-extrabold text-[#163832] cursor-pointer min-w-[240px]">
                                 <!-- Tự động điền các Sheet môn học hoặc NLPC -->
-                            </select>
-                        </div>
-
-                        <!-- Ô tìm kiếm tên học sinh -->
-                        <div class="relative w-full md:w-64">
-                            <i data-lucide="search" class="w-5 h-5 text-[#6e522d] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                            <input type="text" id="searchStudentInput" oninput="renderStudentTable()" placeholder="Tìm tên hoặc mã học sinh..." class="w-full input-vintage pl-10 pr-4 py-2 rounded-xl text-base">
-                        </div>
-                    </div>
-
-                    <!-- BANNER KIẾN THỨC PPCT ĐANG ÁP DỤNG CHO MÔN ĐANG CHỌN -->
-                    <div id="activeSubjectPPCTBanner" class="px-5 py-3 bg-[#fdf8eb] border-b-2 border-[#dfc89e] flex flex-wrap items-center justify-between gap-2">
+                            </select></div><div class="field search-field"><label for="searchStudentInput">Tìm học sinh</label><input type="text" id="searchStudentInput" oninput="renderStudentTable()" placeholder="Tìm tên hoặc mã học sinh..." class="w-full input-vintage pl-10 pr-4 py-2 rounded-xl text-base"></div></div>
+    <div class="contextual-tools"><details class="ppct-context"><summary>Nội dung PPCT đang áp dụng</summary><div id="activeSubjectPPCTBanner" class="px-5 py-3 bg-[#fdf8eb] border-b-2 border-[#dfc89e] flex flex-wrap items-center justify-between gap-2">
                         <div class="flex items-center gap-2.5 text-sm sm:text-base">
                             <span class="px-2.5 py-0.5 rounded-md bg-[#6e1e2a] text-[#fce89c] font-bold text-xs uppercase shrink-0">
                                 Kiến thức PPCT
@@ -587,19 +307,9 @@
                         <button type="button" onclick="openModal('modalPPCT')" class="text-xs sm:text-sm font-extrabold text-[#163832] underline shrink-0">
                             Thay đổi nội dung PPCT
                         </button>
-                    </div>
-
-                    <!-- THANH GỢI Ý TỪ KHÓA NHANH (CHỮ TO RÕ) -->
-                    <div class="px-5 py-3 bg-[#efe3c8] border-b-2 border-[#c8ad82] flex items-center gap-2.5 overflow-x-auto custom-scrollbar">
-                        <span class="text-sm font-extrabold text-[#3d250a] shrink-0 flex items-center gap-1.5">
-                            <i data-lucide="wand-2" class="w-4 h-4 text-[#6e1e2a]"></i>
-                            Chèn nhanh từ khóa (HS đang chọn):
-                        </span>
-                        <div id="quickKeywordChips" class="flex items-center gap-2 shrink-0"></div>
-                    </div>
-
-                    <!-- BẢNG DANH SÁCH HỌC SINH (CHỮ TO RÕ, DỄ NHÌN) -->
-                    <div class="overflow-x-auto custom-scrollbar max-h-[680px]">
+                    </div></details>
+    <details class="keyword-tools"><summary>Gợi ý từ khóa cho học sinh đang chọn</summary><div id="quickKeywordChips" class="keyword-chips"></div></details></div>
+    <div class="student-table-scroll custom-scrollbar">
                         <table class="w-full text-left border-collapse">
                             <thead class="bg-[#163832] text-[#fce89c] text-sm sm:text-base uppercase font-extrabold sticky top-0 z-20 shadow-md border-b-2 border-[#c59b27]">
                                 <tr>
@@ -625,61 +335,11 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <!-- ================================================================= -->
-                <!-- KHU VỰC 3 (CUỐI TRANG): MỤC 3 CHÍNH THỨC - HOÀN TẤT & XUẤT FILE    -->
-                <!-- ================================================================= -->
-                <div class="card-3d overflow-hidden border-4 border-[#163832]">
-                    <div class="bg-gradient-to-r from-[#163832] via-[#235347] to-[#163832] px-6 py-5 text-[#fefae0] flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-                        <div class="space-y-1.5">
-                            <div class="flex items-center gap-3">
-                                <span class="w-9 h-9 rounded-xl bg-[#f3c65f] text-[#1e1b18] font-black text-lg flex items-center justify-center shadow-md">3</span>
-                                <h3 class="font-serif font-black text-xl sm:text-2xl text-[#fce89c]">
-                                    Hoàn Tất & Xuất File Excel Chuẩn Hệ Thống Ngành
-                                </h3>
-                            </div>
-                            <p class="text-sm sm:text-base text-[#e2f0e8] font-medium">
-                                Giữ nguyên 100% định dạng khung bảng, ô gộp, tên file gốc (<span id="footerFileNamePreview" class="font-bold text-[#fce89c] underline">danhgia_dinhky_tt27_2020GK1_4_1.xlsx</span>) và đồng bộ phông chữ <strong>Times New Roman, cỡ chữ 11</strong>.
-                            </p>
-                            <div class="flex flex-wrap items-center gap-4 pt-1 text-xs sm:text-sm font-bold text-[#f3c65f]">
-                                <span id="statTotalStudents">• Tổng số: 35 học sinh</span>
-                                <span id="statTotalSubjects">• Số môn/mục nhận xét: 7</span>
-                                <span id="statPPCTStatus">• Kiến thức PPCT: Đang lồng ghép</span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap items-center gap-3 shrink-0">
-                            <button type="button" onclick="downloadSampleTemplate(currentFileMode)" class="btn-3d-cream px-4 py-3.5 rounded-2xl font-extrabold text-sm sm:text-base flex items-center gap-2">
-                                <i data-lucide="file-down" class="w-5 h-5 text-[#6e1e2a]"></i>
-                                <span>Tải File Mẫu Trắng</span>
-                            </button>
-                            <button type="button" onclick="exportExcelFile()" class="btn-3d-gold px-7 py-4 rounded-2xl font-black text-base sm:text-lg flex items-center gap-2.5 shadow-2xl">
-                                <i data-lucide="file-check-2" class="w-6 h-6"></i>
-                                <span>HOÀN TẤT & XUẤT FILE EXCEL</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </section>
-        </div>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="bg-[#163832] border-t-4 border-[#c59b27] text-[#e2f0e8] mt-8 py-5">
-        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm font-semibold">
-            <div class="flex items-center gap-2">
-                <span class="font-serif font-bold text-lg text-[#fce89c]">ThayKhaiEdu</span>
-                <span>•</span>
-                <span>Hệ thống Trợ lý Viết Nhận xét Học sinh Tiểu học theo Thông tư 27/2020/TT-BGDĐT</span>
-            </div>
-            <div class="text-[#f3c65f]">
-                <span>Chuẩn hóa định dạng Excel hệ thống ngành • Font Times New Roman, Size 11</span>
-            </div>
-        </div>
-    </footer>
+    <div class="table-footer"><div class="footer-stats"><span id="statTotalStudents"></span><span id="statTotalSubjects"></span><span id="statPPCTStatus"></span></div><button type="button"  class="button-quiet" onclick="downloadSampleTemplate(currentFileMode)">Tải file Excel mẫu trắng</button></div>
+  </section>
+  <p class="export-note">Tệp xuất: <span id="footerFileNamePreview"></span> · Phông Times New Roman, cỡ 11.</p>
+</main>
+<footer class="app-footer"><span>ThayKhaiEdu · Nhận xét học sinh tiểu học</span><span>Kiểm tra nội dung trước khi xuất và sử dụng.</span></footer>
 
     <!-- ========================================================================= -->
     <!-- MODAL 2: NGÂN HÀNG MẪU CÂU THAM KHẢO (ĐÃ KHẮC PHỤC LỖI TẢI FILE EXCEL)    -->
@@ -947,9 +607,10 @@
                         <input type="file" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
                     </label>
                 </div>
-                    <p class="text-sm mt-2">JSON: ["Nội dung bài học"] hoặc {"topics":["Nội dung bài học"]}. Nạp cho lớp, kỳ và môn đang chọn ở màn hình chính; các chủ đề trùng được gộp.</p>
+                    <p class="text-sm mt-2">JSON: ["Nội dung bài học"] hoặc {"topics":["Nội dung bài học"]}. Nạp theo lớp, kỳ và môn đang chọn trong khung này; các chủ đề trùng được gộp.</p>
                 <button type="button" onclick="downloadPPCTJSONTemplate()" class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm">Tải mẫu JSON</button>
 
+                <p id="ppctImportFeedback" class="hidden" role="status" aria-live="polite"></p>
                 <!-- Bộ lọc chọn Khối - Kỳ - Môn học trong kho PPCT -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
@@ -1593,9 +1254,11 @@
             const topics = getPPCTTopicsForSubject(period, catKey);
             const usePPCT = document.getElementById("usePPCTToggle").checked;
 
+            const hasSavedPPCT = Object.prototype.hasOwnProperty.call(customPPCTStore, `${grade}_${period}_${catKey}`);
+            const sourceLabel = hasSavedPPCT ? "PPCT đã lưu" : "Gợi ý tích hợp — cần đối chiếu với kế hoạch dạy học";
             const summaryText = topics.length > 0
-                ? `Trọng tâm ${catKey} (${periodNames[period]}): Em ${topics[0]}.`
-                : `Đang áp dụng chuẩn kiến thức Khối ${grade} giai đoạn ${periodNames[period]}.`;
+                ? `${sourceLabel} · ${catKey} (${periodNames[period]}): ${topics[0]}.`
+                : `Chưa có chủ đề PPCT cho Lớp ${grade}, ${periodNames[period]}, ${catKey}.`;
 
             document.getElementById("ppctPreviewSummaryText").innerText = summaryText;
 
@@ -1603,7 +1266,7 @@
             const bannerTextEl = document.getElementById("activeSubjectPPCTText");
             if (usePPCT && topics.length > 0) {
                 bannerEl.classList.remove("hidden");
-                bannerTextEl.innerText = `Môn ${catKey} (${periodNames[period]}): Lồng ghép nội dung "${topics[0]}"`;
+                bannerTextEl.innerText = `Nguồn: ${sourceLabel}. Môn ${catKey} (${periodNames[period]}): "${topics[0]}"`;
             } else if (!usePPCT) {
                 bannerTextEl.innerText = "Đang tắt chế độ lồng ghép kiến thức chi tiết từ PPCT.";
             } else {
@@ -1931,6 +1594,40 @@
             saveAs(new Blob([JSON.stringify(sample, null, 2)], { type: "application/json;charset=utf-8" }), "ppct-mau.json");
         }
 
+        let deferredInstallPrompt = null;
+        window.addEventListener("beforeinstallprompt", event => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+        });
+
+        async function installApp() {
+            if (deferredInstallPrompt) {
+                const prompt = deferredInstallPrompt;
+                deferredInstallPrompt = null;
+                await prompt.prompt();
+                await prompt.userChoice;
+            } else {
+                showToast("Trong Edge/Chrome: mở menu ⋯ → Ứng dụng / Cài đặt trang này làm ứng dụng. Chọn tạo lối tắt trên màn hình khi trình duyệt đề nghị.");
+            }
+        }
+
+        function setPPCTImportFeedback(message, isError = false) {
+            ["ppctUploadFeedback", "ppctImportFeedback"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = message;
+                    el.className = isError ? "ppct-feedback ppct-feedback-error" : "ppct-feedback";
+                }
+            });
+        }
+
+        function syncPPCTSelection(grade, period, subject) {
+            document.getElementById("gradeSelect").value = grade;
+            document.getElementById("periodSelect").value = period;
+            const target = availableSheetsOrTargets.find(item => normalizeSubjectCategory(item.key) === subject);
+            if (target) document.getElementById("activePreviewTarget").value = target.key;
+        }
+
         function parsePPCTJSON(text) {
             const data = JSON.parse(text.replace(/^\uFEFF/, ""));
             const topics = Array.isArray(data) ? data : data && data.topics;
@@ -1947,6 +1644,12 @@
             if (!file) return;
 
             const ext = file.name.split(".").pop().toLowerCase();
+            const modal = document.getElementById("modalPPCT");
+            const fromModal = !!modal?.classList && !modal.classList.contains("hidden");
+            const grade = document.getElementById(fromModal ? "ppctModalGrade" : "gradeSelect").value;
+            const period = document.getElementById(fromModal ? "ppctModalPeriod" : "periodSelect").value;
+            const activeTarget = document.getElementById(fromModal ? "ppctModalSubject" : "activePreviewTarget")?.value || "Tiếng việt";
+            const catKey = normalizeSubjectCategory(activeTarget);
             showToast(`Đang phân tích file Phân phối chương trình "${file.name}"...`);
 
             try {
@@ -2005,11 +1708,6 @@
                     });
 
                 if (cleanTopics.length > 0) {
-                    const grade = document.getElementById("gradeSelect").value;
-                    const period = document.getElementById("periodSelect").value;
-                    const activeTarget = document.getElementById("activePreviewTarget")?.value || "Tiếng việt";
-                    const catKey = normalizeSubjectCategory(activeTarget);
-
                     const storeKey = `${grade}_${period}_${catKey}`;
                     customPPCTStore[storeKey] = cleanTopics;
                     localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
@@ -2020,20 +1718,24 @@
                     document.getElementById("ppctModalSubject").value = catKey;
                     document.getElementById("ppctModalTextarea").value = cleanTopics.join("\n");
 
-                    openModal("modalPPCT");
+                    syncPPCTSelection(grade, period, catKey);
+                    if (!fromModal) openModal("modalPPCT");
                     updatePPCTSummaryBox();
                     regenerateAllComments();
-                    showToast(`Đã trích xuất ${cleanTopics.length} chủ đề bài học từ file "${file.name}"!`);
+                    const message = `Đã nạp "${file.name}": ${cleanTopics.length} chủ đề → Lớp ${grade} · ${period} · ${catKey}. Kiểm tra nội dung bên dưới trước khi sử dụng.`;
+                    setPPCTImportFeedback(message);
+                    showToast(message);
                 } else {
                     showToast("File không có đủ văn bản bài học. Thầy/cô có thể dán trực tiếp vào ô PPCT!");
                     openModal("modalPPCT");
                 }
             } catch (err) {
                 console.error(err);
-                showToast(ext === "json"
-                    ? 'Không thể nạp JSON. Dùng ["Nội dung bài học"] hoặc {"topics":["Nội dung bài học"]}, không để trống. Nội dung đã lưu được giữ nguyên.'
-                    : "Đã mở khung PPCT để thầy/cô kiểm tra hoặc dán nội dung bài học.");
-                openModal("modalPPCT");
+                const message = ext === "json"
+                    ? `CHƯA NẠP "${file.name}": JSON chưa đúng cấu trúc. Hỗ trợ danh sách chuỗi hoặc {"topics":["Nội dung bài học"]}. Kiến thức cũ và nội dung đang sửa được giữ nguyên.`
+                    : `CHƯA NẠP "${file.name}". Vui lòng kiểm tra định dạng file.`;
+                setPPCTImportFeedback(message, true);
+                showToast(message);
             }
         }
 
@@ -2062,8 +1764,7 @@
             localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
 
             // Đồng bộ ra ngoài nếu cùng khối/kỳ
-            document.getElementById("gradeSelect").value = grade;
-            document.getElementById("periodSelect").value = period;
+            syncPPCTSelection(grade, period, subj);
 
             updatePPCTSummaryBox();
             regenerateAllComments();
@@ -2886,5 +2587,6 @@ Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
     </script>
 </body>
 </html>
+
 
 

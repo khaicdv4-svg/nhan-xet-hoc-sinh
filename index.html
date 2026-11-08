@@ -454,9 +454,9 @@
                         <div>
                             <label for="ppctQuickUpload" class="btn-3d-cream w-full py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer">
                                 <i data-lucide="file-up" class="w-4 h-4 text-[#6e1e2a]"></i>
-                                <span>Tải File PPCT (.xlsx, .xls, .docx, .pdf, .txt)</span>
+                                <span>Tải File PPCT (.xlsx, .xls, .docx, .pdf, .txt, .json)</span>
                             </label>
-                            <input type="file" id="ppctQuickUpload" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
+                            <input type="file" id="ppctQuickUpload" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
                         </div>
 
                         <div class="p-3.5 rounded-xl bg-[#fffdf8] border-2 border-[#c89d54] space-y-2">
@@ -935,7 +935,7 @@
                     <div class="space-y-1">
                         <div class="font-extrabold text-[#3d250a] text-base flex items-center gap-2">
                             <i data-lucide="file-up" class="w-5 h-5 text-[#6e1e2a]"></i>
-                            <span>Nhập File Phân Phối Chương Trình (Excel, Word, PDF, Text, CSV):</span>
+                            <span>Nhập File Phân Phối Chương Trình (Excel, Word, PDF, Text, CSV, JSON):</span>
                         </div>
                         <p class="text-sm text-[#5c3a21] font-medium">
                             App tự động bóc tách tên chủ đề/bài học trong file PPCT của thầy/cô để đưa vào kho kiến thức của giai đoạn đang chọn.
@@ -943,10 +943,12 @@
                     </div>
                     <label class="btn-3d-gold px-5 py-2.5 rounded-xl font-extrabold text-sm cursor-pointer shrink-0 flex items-center gap-2">
                         <i data-lucide="upload-cloud" class="w-5 h-5"></i>
-                        <span>Chọn File PPCT (.xlsx, .docx, .pdf, .txt)</span>
-                        <input type="file" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
+                        <span>Chọn File PPCT (.xlsx, .docx, .pdf, .txt, .json)</span>
+                        <input type="file" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
                     </label>
                 </div>
+                    <p class="text-sm mt-2">JSON: ["Nội dung bài học"] hoặc {"topics":["Nội dung bài học"]}. Nạp cho lớp, kỳ và môn đang chọn ở màn hình chính; các chủ đề trùng được gộp.</p>
+                <button type="button" onclick="downloadPPCTJSONTemplate()" class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm">Tải mẫu JSON</button>
 
                 <!-- Bộ lọc chọn Khối - Kỳ - Môn học trong kho PPCT -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1920,7 +1922,26 @@
             studentsData = parsed;
         }
 
-        // 10. ĐỌC FILE PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG (.XLSX, .DOCX, .PDF, .TXT, .CSV)
+        function downloadPPCTJSONTemplate() {
+            const sample = { topics: [
+                "hiểu ý nghĩa của phân số",
+                "biết so sánh các phân số cùng mẫu số",
+                "thực hiện phép cộng các phân số cùng mẫu số"
+            ] };
+            saveAs(new Blob([JSON.stringify(sample, null, 2)], { type: "application/json;charset=utf-8" }), "ppct-mau.json");
+        }
+
+        function parsePPCTJSON(text) {
+            const data = JSON.parse(text.replace(/^\uFEFF/, ""));
+            const topics = Array.isArray(data) ? data : data && data.topics;
+            if (!Array.isArray(topics) || !topics.length ||
+                topics.some(topic => typeof topic !== "string" || !topic.trim())) {
+                throw new Error('JSON phải là danh sách chuỗi hoặc {"topics":["Nội dung bài học"]}.');
+            }
+            return topics.map(topic => topic.trim());
+        }
+
+        // 10. ĐỌC FILE PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG (.XLSX, .DOCX, .PDF, .TXT, .CSV, .JSON)
         async function handlePPCTFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1931,7 +1952,9 @@
             try {
                 let extractedLines = [];
 
-                if (ext === "txt" || ext === "csv") {
+                if (ext === "json") {
+                    extractedLines = parsePPCTJSON(await file.text());
+                } else if (ext === "txt" || ext === "csv") {
                     const text = await file.text();
                     extractedLines = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 12);
                 } else if (ext === "xlsx" || ext === "xls") {
@@ -1973,7 +1996,7 @@
 
                 // Làm sạch và tạo câu kiến thức PPCT tự nhiên
                 const cleanTopics = Array.from(new Set(extractedLines))
-                    .slice(0, 12)
+                    .slice(0, ext === "json" ? undefined : 12)
                     .map(line => {
                         const clean = line.replace(/^[-•*0-9.)\s]+/, "").trim();
                         return clean.startsWith("nắm") || clean.startsWith("hiểu") || clean.startsWith("biết") || clean.startsWith("thực hiện")
@@ -2007,7 +2030,9 @@
                 }
             } catch (err) {
                 console.error(err);
-                showToast("Đã mở khung PPCT để thầy/cô kiểm tra hoặc dán nội dung bài học.");
+                showToast(ext === "json"
+                    ? 'Không thể nạp JSON. Dùng ["Nội dung bài học"] hoặc {"topics":["Nội dung bài học"]}, không để trống. Nội dung đã lưu được giữ nguyên.'
+                    : "Đã mở khung PPCT để thầy/cô kiểm tra hoặc dán nội dung bài học.");
                 openModal("modalPPCT");
             }
         }
@@ -2861,4 +2886,5 @@ Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
     </script>
 </body>
 </html>
+
 

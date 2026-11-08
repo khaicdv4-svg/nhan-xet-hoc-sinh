@@ -234,6 +234,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
 @media(max-width:900px){.work-layout{grid-template-columns:1fr;gap:14px}.function-sidebar{position:static;max-height:none;overflow:visible;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}.function-sidebar>*{margin-bottom:0!important}.function-sidebar .import-panel{grid-column:1/-1}.function-sidebar .import-actions{grid-template-columns:1fr 1fr}.function-sidebar .support-tools{grid-column:1/-1}.sidebar-settings{grid-column:1/-1}.sidebar-settings .header-links{flex-direction:row;flex-wrap:wrap}.sidebar-settings .header-links .button-quiet{display:inline-flex}.work-content .student-table-scroll{max-height:560px}.header-note{font-size:10px;max-width:130px;text-align:right}}
 @media(max-width:600px){.function-sidebar{display:block}.function-sidebar>*{margin-bottom:14px!important}.function-sidebar .import-actions{grid-template-columns:1fr}.function-sidebar .mode-import-button>span{font-size:15px}.work-content .table-toolbar{grid-template-columns:1fr}.work-content .workspace-heading h2{font-size:18px}.header-note{display:none}.work-content .student-table-scroll{max-height:520px}.function-sidebar .field select{font-size:13px}.work-content .contextual-tools{display:block}.sidebar-settings .header-links .button-quiet:last-child{display:inline-flex}}
 </style>
+<style>.ppct-review-panel{padding:14px 20px;border-top:2px solid #c09c49;background:#fff5d5;color:#684b19;font-size:13px;line-height:1.7}.ppct-review-panel strong{display:block;font-weight:800}.ppct-review-panel p{font-size:12px;margin:5px 0}.ppct-review-panel label{display:flex;align-items:center;gap:9px;font-weight:700;margin:10px 0;cursor:pointer}.ppct-review-panel input{width:18px;height:18px;flex-shrink:0}.ppct-review-panel button{font-size:12px}</style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
@@ -642,8 +643,8 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                         <input type="file" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
                     </label>
                 </div>
-                    <p class="text-sm mt-2">JSON: ["Nội dung bài học"] hoặc {"topics":["Nội dung bài học"]}. Nạp theo lớp, kỳ và môn đang chọn trong khung này; các chủ đề trùng được gộp.</p>
-                <button type="button" onclick="downloadPPCTJSONTemplate()" class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm">Tải mẫu JSON</button>
+                    <p class="text-sm mt-2">File JSON cần ghi đúng lớp, kỳ và môn. File không ghi các thông tin này chỉ được đọc thành bản nháp để kiểm tra. Khung tải xuống để trống bài học; thầy/cô điền nội dung PPCT thật rồi lưu sau khi đối chiếu.</p>
+                <button type="button" onclick="downloadPPCTJSONTemplate()" class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm">Tải khung JSON đúng môn đang chọn</button>
 
                 <p id="ppctImportFeedback" class="hidden" role="status" aria-live="polite"></p>
                 <!-- Bộ lọc chọn Khối - Kỳ - Môn học trong kho PPCT -->
@@ -685,10 +686,16 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                     <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">
                         Nội dung kiến thức / kỹ năng học sinh học trong giai đoạn này (Mỗi dòng 1 cụm kiến thức để App ghép vào câu):
                     </label>
-                    <textarea id="ppctModalTextarea" rows="7" class="w-full input-vintage rounded-xl p-4 text-base leading-relaxed custom-scrollbar" placeholder="Ví dụ: nắm vững cách đọc, viết số có nhiều chữ số và giải toán có lời văn..."></textarea>
+                    <textarea id="ppctModalTextarea" oninput="document.getElementById('ppctContextConfirmed').checked=false" rows="7" class="w-full input-vintage rounded-xl p-4 text-base leading-relaxed custom-scrollbar" placeholder="Ví dụ: nắm vững cách đọc, viết số có nhiều chữ số và giải toán có lời văn..."></textarea>
                 </div>
             </div>
 
+                <div id="ppctReviewPanel" class="hidden ppct-review-panel">
+                    <strong>BẢN NHÁP — CHƯA ÁP DỤNG</strong>
+                    <p>Đọc lại nội dung và đối chiếu PPCT thực tế. App kiểm tra cấu trúc, không tự thẩm định bài học thuộc đúng tuần/kỳ.</p>
+                    <label><input type="checkbox" id="ppctContextConfirmed"> Tôi đã kiểm tra nội dung đúng môn, lớp và kỳ đang chọn.</label>
+                    <button type="button" class="btn-3d-cream px-3 py-2" onclick="cancelPPCTImportDraft()">Hủy bản nháp</button>
+                </div>
             <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex flex-wrap items-center justify-between gap-3">
                 <button type="button" onclick="resetPPCTData()" class="text-sm font-extrabold text-[#6e1e2a] hover:underline">
                     Khôi phục PPCT chuẩn mặc định
@@ -1224,6 +1231,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 document.getElementById("customDirectiveTextarea").value = customSchoolDirective;
             }
             initializeEmptyStudentWorkspace();
+            warnAboutMisassignedPPCT();
             updatePPCTSummaryBox();
         });
 
@@ -1256,6 +1264,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
             const grade = document.getElementById("gradeSelect").value;
             const customKey = `${grade}_${period}_${categoryKey}`;
             if (customPPCTStore[customKey] && customPPCTStore[customKey].length > 0) {
+                if (hasMisassignedPPCT(customPPCTStore[customKey], categoryKey)) return [];
                 return customPPCTStore[customKey];
             }
             const stageObj = DEFAULT_PPCT_DATABASE[period] || DEFAULT_PPCT_DATABASE["GK1"];
@@ -1775,12 +1784,14 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         }
 
         function downloadPPCTJSONTemplate() {
-            const sample = { topics: [
-                "hiểu ý nghĩa của phân số",
-                "biết so sánh các phân số cùng mẫu số",
-                "thực hiện phép cộng các phân số cùng mẫu số"
-            ] };
+            const sample = {
+                grade: document.getElementById("ppctModalGrade").value,
+                period: document.getElementById("ppctModalPeriod").value,
+                subject: document.getElementById("ppctModalSubject").value,
+                topics: []
+            };
             saveAs(new Blob([JSON.stringify(sample, null, 2)], { type: "application/json;charset=utf-8" }), "ppct-mau.json");
+            setPPCTImportFeedback("Đã tải khung JSON theo lớp/kỳ/môn đang chọn. Điền topics bằng nội dung PPCT thật; khung mẫu không chứa sẵn bài học.");
         }
 
         let deferredInstallPrompt = null;
@@ -1817,14 +1828,61 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             if (target) document.getElementById("activePreviewTarget").value = target.key;
         }
 
-        function parsePPCTJSON(text) {
+        let pendingPPCTImport = null;
+
+        function isLegacyMathPPCTSample(topics) {
+            const sample = ["hiểu ý nghĩa của phân số", "biết so sánh các phân số cùng mẫu số", "thực hiện phép cộng các phân số cùng mẫu số"];
+            return Array.isArray(topics) && topics.length === sample.length && topics.every((topic, index) =>
+                String(topic).trim().replace(/[.!;]+$/, "").toLowerCase() === sample[index]);
+        }
+
+        function hasMisassignedPPCT(topics, subject) {
+            return subject !== "Toán" && isLegacyMathPPCTSample(topics);
+        }
+
+        function warnAboutMisassignedPPCT() {
+            const count = Object.entries(customPPCTStore).filter(([key, topics]) => {
+                const match = key.match(/^[1-5]_(?:GK1|CK1|GK2|CK2)_(.+)$/);
+                return match && hasMisassignedPPCT(topics, match[1]);
+            }).length;
+            if (count) setPPCTImportFeedback(`Đã tạm ngừng dùng ${count} mục PPCT chứa ba câu mẫu Toán bị gán sang môn khác. Dữ liệu cũ được giữ để đối chiếu; hãy nhập PPCT đúng môn.`, true);
+        }
+
+        function parsePPCTJSON(text, context = null) {
             const data = JSON.parse(text.replace(/^\uFEFF/, ""));
             const topics = Array.isArray(data) ? data : data && data.topics;
-            if (!Array.isArray(topics) || !topics.length ||
-                topics.some(topic => typeof topic !== "string" || !topic.trim())) {
-                throw new Error('JSON phải là danh sách chuỗi hoặc {"topics":["Nội dung bài học"]}.');
+            if (!Array.isArray(topics) || !topics.length || topics.some(topic => typeof topic !== "string" || !topic.trim())) {
+                throw new Error('Danh sách kiến thức trong JSON cần có nội dung bài học thật, không để trống.');
             }
-            return topics.map(topic => topic.trim());
+            const lines = topics.map(topic => topic.trim());
+            if (context && hasMisassignedPPCT(lines, context.subject)) {
+                throw new Error(`File chỉ chứa ba câu mẫu Toán về phân số, không thể gán vào môn ${context.subject}. Cần PPCT thật theo đúng lớp và kỳ.`);
+            }
+            if (!Array.isArray(data) && ["grade", "period", "subject"].some(key => data[key] !== undefined)) {
+                const subject = typeof data.subject === "string" ? detectBankCategoryByName(data.subject) : null;
+                const grade = String(data.grade || "").trim(), period = String(data.period || "").trim().toUpperCase();
+                if (!["1","2","3","4","5"].includes(grade) || !["GK1","CK1","GK2","CK2"].includes(period) ||
+                    !["Tiếng việt","Toán","Đạo đức","Khoa học","Lịch sử và Địa lý","TH-CN (Công nghệ)","Hoạt động trải nghiệm"].includes(subject)) {
+                    throw new Error("Thông tin lớp, kỳ hoặc môn trong file còn thiếu hoặc không hợp lệ. Dùng nút tải khung JSON để xem cấu trúc.");
+                }
+                if (context && (grade !== context.grade || period !== context.period || subject !== context.subject)) {
+                    throw new Error(`File ghi Lớp ${grade} · ${period} · ${subject}, khác lựa chọn Lớp ${context.grade} · ${context.period} · ${context.subject}. Chọn đúng mục trước khi nhập.`);
+                }
+            }
+            return lines;
+        }
+
+        function cancelPPCTImportDraft() {
+            pendingPPCTImport = null;
+            document.getElementById("ppctReviewPanel").classList.add("hidden");
+            document.getElementById("ppctContextConfirmed").checked = false;
+            loadPPCTModalContent();
+            const grade = document.getElementById("ppctModalGrade").value;
+            const period = document.getElementById("ppctModalPeriod").value;
+            const subject = document.getElementById("ppctModalSubject").value;
+            if (!hasMisassignedPPCT(customPPCTStore[`${grade}_${period}_${subject}`], subject)) {
+                setPPCTImportFeedback("Đã hủy bản nháp. Nội dung đã lưu được giữ nguyên.");
+            }
         }
 
         // 10. ĐỌC FILE PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG (.XLSX, .DOCX, .PDF, .TXT, .CSV, .JSON)
@@ -1845,7 +1903,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 let extractedLines = [];
 
                 if (ext === "json") {
-                    extractedLines = parsePPCTJSON(await file.text());
+                    extractedLines = parsePPCTJSON(await file.text(), { grade, period, subject: catKey });
                 } else if (ext === "txt" || ext === "csv") {
                     const text = await file.text();
                     extractedLines = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 12);
@@ -1897,7 +1955,26 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     });
 
                 if (cleanTopics.length > 0) {
+                    if (hasMisassignedPPCT(cleanTopics, catKey)) throw new Error("Nội dung là ba câu mẫu Toán, không khớp môn đang chọn.");
                     const storeKey = `${grade}_${period}_${catKey}`;
+                    if (ext === "json") {
+                        pendingPPCTImport = { key: storeKey, grade, period, subject: catKey, topics: cleanTopics, fileName: file.name };
+                        if (!fromModal) openModal("modalPPCT");
+                        document.getElementById("ppctModalGrade").value = grade;
+                        document.getElementById("ppctModalPeriod").value = period;
+                        document.getElementById("ppctModalSubject").value = catKey;
+                        document.getElementById("ppctModalTextarea").value = cleanTopics.join("\n");
+                        document.getElementById("ppctReviewPanel").classList.remove("hidden");
+                        document.getElementById("ppctContextConfirmed").checked = false;
+                        const warning = isLegacyMathPPCTSample(cleanTopics) ? " Đây là ba câu Toán minh họa của mẫu cũ; cần đối chiếu PPCT thật." : "";
+                        const message = `Đã đọc "${file.name}": ${cleanTopics.length} chủ đề cho Lớp ${grade} · ${period} · ${catKey}. CHƯA LƯU, CHƯA ÁP DỤNG. Kiểm tra nội dung, xác nhận đúng môn/lớp/kỳ rồi bấm Lưu.${warning}`;
+                        setPPCTImportFeedback(message, true);
+                        showToast(message);
+                        return;
+                    }
+                    pendingPPCTImport = null;
+                    document.getElementById("ppctReviewPanel").classList.add("hidden");
+                    document.getElementById("ppctContextConfirmed").checked = false;
                     customPPCTStore[storeKey] = cleanTopics;
                     localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
 
@@ -1921,7 +1998,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             } catch (err) {
                 console.error(err);
                 const message = ext === "json"
-                    ? `CHƯA NẠP "${file.name}": JSON chưa đúng cấu trúc. Hỗ trợ danh sách chuỗi hoặc {"topics":["Nội dung bài học"]}. Kiến thức cũ và nội dung đang sửa được giữ nguyên.`
+                    ? `CHƯA NẠP "${file.name}": ${err instanceof SyntaxError ? "JSON không hợp lệ." : String(err.message).slice(0, 350)} Dữ liệu đã lưu và bản nháp được giữ nguyên.`
                     : `CHƯA NẠP "${file.name}". Vui lòng kiểm tra định dạng file.`;
                 setPPCTImportFeedback(message, true);
                 showToast(message);
@@ -1933,9 +2010,22 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             const period = document.getElementById("ppctModalPeriod").value;
             const subj = document.getElementById("ppctModalSubject").value;
             const key = `${grade}_${period}_${subj}`;
-
-            const list = customPPCTStore[key] || ((DEFAULT_PPCT_DATABASE[period] && DEFAULT_PPCT_DATABASE[period][subj]) || []);
-            document.getElementById("ppctModalTextarea").value = list.join("\n");
+            const saved = customPPCTStore[key];
+            const review = document.getElementById("ppctReviewPanel");
+            review.classList.toggle("hidden", !pendingPPCTImport);
+            document.getElementById("ppctContextConfirmed").checked = false;
+            if (pendingPPCTImport && pendingPPCTImport.key === key) {
+                document.getElementById("ppctModalTextarea").value = pendingPPCTImport.topics.join("\n");
+            } else if (hasMisassignedPPCT(saved, subj)) {
+                document.getElementById("ppctModalTextarea").value = "";
+                setPPCTImportFeedback(`PPCT cũ của ${subj} chứa ba câu mẫu Toán về phân số. Đã tạm ngừng sử dụng và không trình bày thành kiến thức ${subj}. Nhập nội dung đúng; bản cũ vẫn được giữ để đối chiếu.`, true);
+            } else {
+                const list = saved || ((DEFAULT_PPCT_DATABASE[period] && DEFAULT_PPCT_DATABASE[period][subj]) || []);
+                document.getElementById("ppctModalTextarea").value = list.join("\n");
+            }
+            if (pendingPPCTImport && pendingPPCTImport.key !== key) {
+                setPPCTImportFeedback(`Có bản nháp "${pendingPPCTImport.fileName}" cho Lớp ${pendingPPCTImport.grade} · ${pendingPPCTImport.period} · ${pendingPPCTImport.subject}. Chọn lại đúng mục hoặc hủy bản nháp; chưa được áp dụng sang mục khác.`, true);
+            }
         }
 
         function savePPCTModalContent() {
@@ -1949,8 +2039,19 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 .map(s => s.trim())
                 .filter(s => s.length > 5);
 
+            if (hasMisassignedPPCT(lines, subj)) {
+                setPPCTImportFeedback(`Không thể lưu ba câu mẫu Toán về phân số vào môn ${subj}. Cần nội dung PPCT đúng môn.`, true);
+                return;
+            }
+            if (pendingPPCTImport && (pendingPPCTImport.key !== key || !document.getElementById("ppctContextConfirmed").checked || !lines.length)) {
+                setPPCTImportFeedback("CHƯA LƯU: kiểm tra đúng lớp, kỳ, môn của bản nháp, điền nội dung và tích xác nhận trước khi áp dụng.", true);
+                return;
+            }
             customPPCTStore[key] = lines;
             localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
+            pendingPPCTImport = null;
+            document.getElementById("ppctReviewPanel").classList.add("hidden");
+            setPPCTImportFeedback(`ĐÃ ÁP DỤNG: ${lines.length} chủ đề cho Lớp ${grade} · ${period} · ${subj}.`);
 
             // Đồng bộ ra ngoài nếu cùng khối/kỳ
             syncPPCTSelection(grade, period, subj);
@@ -1962,6 +2063,9 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         }
 
         function resetPPCTData() {
+            pendingPPCTImport = null;
+            document.getElementById("ppctReviewPanel").classList.add("hidden");
+            document.getElementById("ppctContextConfirmed").checked = false;
             customPPCTStore = {};
             localStorage.removeItem("THAYKHAIEDU_PPCT_STORE");
             loadPPCTModalContent();
@@ -2783,6 +2887,7 @@ Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
     </script>
 </body>
 </html>
+
 
 
 

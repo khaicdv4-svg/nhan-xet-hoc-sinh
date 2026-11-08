@@ -1,0 +1,2847 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThayKhaiEdu - Hệ thống Trợ lý Nhận xét Học sinh Tiểu học TT27</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Merriweather (Cổ kính) & Be Vietnam Pro (To rõ, dễ đọc) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+    <!-- ExcelJS for 100% style & formatting preservation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <!-- SheetJS (XLSX) for rock-solid reading of any .xlsx / .xls / .csv comment bank files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- FileSaver.js for saving exact filename -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Mammoth.js for reading .docx PPCT files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <!-- PDF.js for reading .pdf PPCT files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Be Vietnam Pro"', 'sans-serif'],
+                        serif: ['"Merriweather"', 'serif'],
+                    },
+                    colors: {
+                        vintage: {
+                            bg: '#f4efe6',
+                            paper: '#fdfbf7',
+                            cream: '#f9f4e8',
+                            gold: '#b8860b',
+                            goldLight: '#e6c670',
+                            bronze: '#8c6239',
+                            wood: '#5c3a21',
+                            teal: '#163832',
+                            tealLight: '#235347',
+                            ink: '#1e1b18',
+                            burgundy: '#6e1e2a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #ece4d4;
+            background-image: 
+                radial-gradient(#c8b698 1px, transparent 1px),
+                linear-gradient(135deg, #f3ede0 0%, #e5dac3 100%);
+            background-size: 26px 26px, 100% 100%;
+            color: #1e1b18;
+            font-size: 16.5px;
+        }
+
+        /* THẺ 3D CỔ KÍNH NỔI BẬT (ROYAL VINTAGE 3D CARD) */
+        .card-3d {
+            background: linear-gradient(180deg, #fffdf9 0%, #f9f3e6 100%);
+            border: 2px solid #9c7444;
+            border-radius: 18px;
+            box-shadow: 
+                0 6px 0 #694923,
+                0 12px 24px rgba(58, 38, 18, 0.18),
+                inset 0 2px 0 rgba(255, 255, 255, 0.9);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-3d-header {
+            background: linear-gradient(135deg, #1b4332 0%, #102a20 100%);
+            border-bottom: 3px solid #c59b27;
+            color: #fefae0;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .card-3d-amber {
+            background: linear-gradient(180deg, #fffcf2 0%, #f6ead1 100%);
+            border: 2px solid #b07d2b;
+            border-radius: 18px;
+            box-shadow: 
+                0 6px 0 #7a5213,
+                0 12px 22px rgba(77, 52, 12, 0.16),
+                inset 0 2px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        /* NÚT BẤM 3D NỔI KHỐI CỔ KÍNH */
+        .btn-3d-gold {
+            background: linear-gradient(180deg, #f3c65f 0%, #cf9619 100%);
+            color: #2b1803;
+            border: 2px solid #7c5307;
+            box-shadow: 0 4px 0 #634104, 0 6px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.6);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+            transition: all 0.12s ease;
+        }
+        .btn-3d-gold:hover {
+            background: linear-gradient(180deg, #f8d278 0%, #dda221 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #634104, 0 8px 15px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.7);
+        }
+        .btn-3d-gold:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #634104;
+        }
+
+        .btn-3d-teal {
+            background: linear-gradient(180deg, #285948 0%, #16382c 100%);
+            color: #fefae0;
+            border: 2px solid #0d261d;
+            box-shadow: 0 4px 0 #091c15, 0 6px 12px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.25);
+            transition: all 0.12s ease;
+        }
+        .btn-3d-teal:hover {
+            background: linear-gradient(180deg, #316b57 0%, #1c4637 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #091c15, 0 8px 16px rgba(0,0,0,0.25);
+        }
+        .btn-3d-teal:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #091c15;
+        }
+
+        .btn-3d-cream {
+            background: linear-gradient(180deg, #fffefb 0%, #ede2cc 100%);
+            color: #3d2812;
+            border: 2px solid #9c7a4c;
+            box-shadow: 0 4px 0 #6e522d, 0 5px 10px rgba(0,0,0,0.12), inset 0 1px 0 #ffffff;
+            transition: all 0.12s ease;
+        }
+        .btn-3d-cream:hover {
+            background: linear-gradient(180deg, #ffffff 0%, #f5ebd8 100%);
+            transform: translateY(-1px);
+        }
+        .btn-3d-cream:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #6e522d;
+        }
+
+        .input-vintage {
+            background-color: #fffdf9;
+            border: 2px solid #b59469;
+            box-shadow: inset 0 2px 4px rgba(92, 58, 33, 0.08);
+            color: #1e1b18;
+            font-weight: 600;
+        }
+        .input-vintage:focus {
+            border-color: #1b4332;
+            box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.18), inset 0 1px 2px rgba(0,0,0,0.05);
+            outline: none;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e9dec9;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #9c7444;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #755329;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- ========================================================================= -->
+    <!-- HEADER: THƯƠNG HIỆU THAYKHAIEDU Ở GÓC TRÊN BÊN TRÁI (3D ROYAL CLASSIC)     -->
+    <!-- ========================================================================= -->
+    <header class="sticky top-0 z-40 bg-gradient-to-r from-[#132a21] via-[#1b4332] to-[#132a21] border-b-4 border-[#c59b27] shadow-xl">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Góc trên bên trái: Logo Thương hiệu ThayKhaiEdu -->
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-b from-[#f8d57e] to-[#b8860b] p-0.5 shadow-lg border-2 border-[#fff3c4] group-hover:scale-105 transition-transform">
+                    <div class="w-full h-full bg-[#16382c] rounded-[13px] flex items-center justify-center">
+                        <!-- Biểu tượng Sách cổ & Ngôi sao vàng -->
+                        <svg class="w-8 h-8 text-[#f8d57e]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 19.5V5C4 3.89543 4.89543 3 6 3H19.4C19.7314 3 20 3.26863 20 3.6V16.7143" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                            <path d="M6 17H20V21H6C4.89543 21 4 20.1046 4 19C4 17.8954 4.89543 17 6 17Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+                            <path d="M12 6.5L13.3 9.1L16.2 9.5L14.1 11.5L14.6 14.4L12 13L9.4 14.4L9.9 11.5L7.8 9.5L10.7 9.1L12 6.5Z" fill="#facc15" stroke="#facc15" stroke-width="1.2" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 border-2 border-[#132a21] rounded-full"></span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-serif font-black text-2xl sm:text-3xl tracking-wide text-[#fce89c] drop-shadow-[0_2px_2px_rgba(0,0,0,0.6)]">
+                            ThayKhaiEdu
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-[#c59b27] text-[#1a1306] border border-[#fae596] shadow">
+                            Thông Tư 27 • Chuẩn Ngành
+                        </span>
+                    </div>
+                    <p class="text-sm sm:text-base text-[#d8e8df] font-medium mt-0.5">
+                        Hệ thống Trợ lý Viết Nhận xét Học sinh Tiểu học (Tích hợp Phân phối chương trình)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Phải: Các nút chức năng phụ trợ 3D -->
+            <div class="flex flex-wrap items-center gap-3">
+                <button onclick="openModal('modalTT27Rules')" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-[#163832]"></i>
+                    <span>Quy Tắc Thông Tư 27</span>
+                    <span class="px-2 py-0.5 text-xs bg-[#163832] text-[#fce89c] rounded-full font-extrabold">Tích hợp sẵn</span>
+                </button>
+                <button onclick="openModal('modalPPCT')" class="btn-3d-gold px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
+                    <i data-lucide="calendar-range" class="w-5 h-5"></i>
+                    <span>Kho Phân Phối Chương Trình</span>
+                    <span id="ppctActiveBadge" class="px-2 py-0.5 text-xs bg-[#16382c] text-[#fce89c] rounded-full font-extrabold">Đang bật</span>
+                </button>
+                <button onclick="openModal('modalBank')" class="btn-3d-cream px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
+                    <i data-lucide="book-marked" class="w-5 h-5 text-[#6e1e2a]"></i>
+                    <span>Ngân Hàng Mẫu Câu</span>
+                    <span id="customBankBadge" class="hidden px-2 py-0.5 text-xs bg-emerald-700 text-white rounded-full">Đã nạp</span>
+                </button>
+                <button onclick="openModal('modalAIKey')" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2" title="Cấu hình Chế độ Miễn phí / Gemini API Key">
+                    <i data-lucide="cpu" class="w-5 h-5 text-[#8c4a08]"></i>
+                    <span id="aiModeBadgeHeader">Chế độ: Miễn phí 100%</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- BỐ CỤC CHÍNH: BÊN TRÁI (THẺ CHỨC NĂNG 3D) - Ở GIỮA (MÀN HÌNH VIEW)          -->
+    <!-- ========================================================================= -->
+    <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 space-y-8">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+
+            <!-- ================================================================= -->
+            <!-- KHU VỰC 1 (BÊN TRÁI - 4/12): CÁC THẺ CHỨC NĂNG 3D CỔ KÍNH          -->
+            <!-- ================================================================= -->
+            <aside class="lg:col-span-4 space-y-6">
+
+                <!-- THẺ 3D SỐ 1: TẢI FILE EXCEL HỆ THỐNG NGÀNH -->
+                <div class="card-3d overflow-hidden">
+                    <div class="card-3d-header px-5 py-3.5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-base flex items-center justify-center shadow">1</span>
+                            <h2 class="font-serif font-bold text-lg tracking-wide">Tải File Danh Sách Ngành</h2>
+                        </div>
+                        <span id="fileTypeBadge" class="px-3 py-1 rounded-full text-xs font-extrabold bg-[#f3c65f] text-[#1e1b18]">Mẫu Môn học</span>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+                        <!-- Ô kéo thả file -->
+                        <label for="excelUpload" class="block border-2 border-dashed border-[#8c6239] hover:border-[#163832] rounded-2xl p-4 text-center cursor-pointer bg-[#fdf8ed] hover:bg-[#f6ebd4] transition shadow-inner">
+                            <input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event)" onclick="this.value=null">
+                            <div class="w-12 h-12 rounded-xl bg-[#163832] text-[#fce89c] flex items-center justify-center mx-auto mb-2 shadow-md">
+                                <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+                            </div>
+                            <p class="text-base font-extrabold text-[#2b1d0e]">Bấm chọn File Excel (.xlsx, .xls)</p>
+                            <p class="text-xs sm:text-sm text-[#5c4328] font-medium mt-0.5">Hỗ trợ File Môn học (T/H/C) & File NL-PC (T/Đ/C)</p>
+                            <div id="loadedFileNameBox" class="mt-3 px-3 py-2 rounded-xl bg-[#163832] text-[#fce89c] text-sm font-bold flex items-center justify-center gap-2 shadow">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 text-emerald-400"></i>
+                                <span id="loadedFileName" class="truncate">danhgia_dinhky_tt27_2020GK1_4_1.xlsx</span>
+                            </div>
+                        </label>
+
+                        <!-- Nút nạp nhanh dữ liệu mẫu Lớp 4/1 để dùng thử -->
+                        <div class="space-y-2 pt-1">
+                            <p class="text-xs font-extrabold uppercase tracking-wider text-[#5c3a21]">Hoặc chuyển nhanh chế độ mẫu Lớp 4/1 (35 HS):</p>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <button type="button" onclick="loadDemoData('MON_HOC')" class="btn-3d-cream px-3 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5">
+                                    <i data-lucide="book-open" class="w-4 h-4 text-[#163832]"></i>
+                                    <span>7 Môn Học (T/H/C)</span>
+                                </button>
+                                <button type="button" onclick="loadDemoData('NLPC')" class="btn-3d-cream px-3 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5">
+                                    <i data-lucide="award" class="w-4 h-4 text-[#8c4a08]"></i>
+                                    <span>NL & Phẩm Chất (T/Đ/C)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chọn phạm vi môn học -->
+                        <div class="pt-3 border-t-2 border-[#e3d3b6] space-y-3">
+                            <label class="block text-sm font-extrabold text-[#2b1d0e]">Phạm vi môn học / năng lực cần viết:</label>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <label class="flex items-center gap-2 p-2.5 rounded-xl border-2 border-[#b59469] bg-[#fffdf9] cursor-pointer font-bold text-sm">
+                                    <input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()" class="w-4 h-4 accent-[#163832]">
+                                    <span>Tất cả danh mục</span>
+                                </label>
+                                <label class="flex items-center gap-2 p-2.5 rounded-xl border-2 border-[#b59469] bg-[#fffdf9] cursor-pointer font-bold text-sm">
+                                    <input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()" class="w-4 h-4 accent-[#163832]">
+                                    <span>Tự tích chọn</span>
+                                </label>
+                            </div>
+
+                            <!-- Khung tích chọn môn học -->
+                            <div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-extrabold text-[#3d2812]">Tích chọn mục cần nhận xét:</span>
+                                    <div class="flex gap-2 text-xs font-bold">
+                                        <button type="button" onclick="selectAllSubjects(true)" class="text-[#163832] underline">Chọn hết</button>
+                                        <span>|</span>
+                                        <button type="button" onclick="selectAllSubjects(false)" class="text-[#6e1e2a] underline">Bỏ hết</button>
+                                    </div>
+                                </div>
+                                <div id="subjectCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-44 overflow-y-auto custom-scrollbar pr-1"></div>
+                                <button type="button" onclick="applySubjectFilter()" class="w-full btn-3d-teal py-2 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5">
+                                    <i data-lucide="check" class="w-4 h-4"></i>
+                                    <span>Xong - Áp dụng mục đã chọn</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THẺ 3D SỐ 2: TẢI MẪU NHẬN XÉT THAM KHẢO (ĐÃ SỬA LỖI ĐỌC MỌI FILE EXCEL .XLSX, .XLS) -->
+                <div class="card-3d-amber overflow-hidden">
+                    <div class="bg-gradient-to-r from-[#6e1e2a] via-[#882938] to-[#6e1e2a] border-b-4 border-[#e6c670] px-5 py-3.5 text-[#fff8e7] flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#2b1803] font-black text-base flex items-center justify-center shadow">2</span>
+                            <div>
+                                <h2 class="font-serif font-bold text-lg leading-tight">Ngân Hàng Mẫu Nhận Xét</h2>
+                                <p class="text-xs text-[#f8d89c] font-medium">Tải file Excel (.xlsx, .xls), Word, Text mẫu câu</p>
+                            </div>
+                        </div>
+                        <i data-lucide="book-marked" class="w-6 h-6 text-[#f3c65f]"></i>
+                    </div>
+
+                    <div class="p-5 space-y-3.5">
+                        <p class="text-sm font-semibold text-[#3d250a]">
+                            Tải file chứa các câu nhận xét mẫu của thầy/cô lên để App học theo (Đọc tự động mọi Sheet và mọi cột trong Excel):
+                        </p>
+
+                        <!-- Nút tải trực tiếp file Excel mẫu nhận xét ngay trên Sidebar -->
+                        <label for="sidebarBankFileUpload" class="btn-3d-gold w-full py-3 px-4 rounded-xl font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer">
+                            <i data-lucide="file-up" class="w-5 h-5"></i>
+                            <span>Tải File Mẫu Nhận Xét (.xlsx, .xls, .docx, .txt)</span>
+                        </label>
+                        <input type="file" id="sidebarBankFileUpload" accept=".xlsx,.xls,.csv,.txt,.docx" class="hidden" onchange="handleBankFileUpload(event, true)" onclick="this.value=null">
+
+                        <!-- Trạng thái nạp mẫu câu -->
+                        <div id="sidebarBankStatusBox" class="p-3 rounded-xl bg-[#fffdf8] border-2 border-[#c89d54] text-sm font-bold text-[#2b1d0e] flex items-center justify-between gap-2">
+                            <span id="sidebarBankStatusText">Đang dùng: Kho câu chuẩn TT27 tích hợp sẵn</span>
+                            <button type="button" onclick="openModal('modalBank')" class="text-xs font-extrabold text-[#6e1e2a] underline shrink-0">
+                                Xem / Sửa kho
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <button type="button" onclick="downloadSampleCommentBankExcel()" class="text-xs sm:text-sm font-extrabold text-[#163832] hover:underline flex items-center gap-1">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span>Tải file Excel mẫu Ngân hàng (.xlsx)</span>
+                            </button>
+                            <button type="button" onclick="openModal('modalBank')" class="text-xs sm:text-sm font-extrabold text-[#6e1e2a] hover:underline">
+                                Mở trình quản lý &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THẺ 3D SỐ 3: CẤU HÌNH CHUẨN THÔNG TƯ 27 (T/H/C CHO MÔN HỌC & T/Đ/C CHO NL-PC) -->
+                <div class="card-3d overflow-hidden">
+                    <div class="card-3d-header px-5 py-3.5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-base flex items-center justify-center shadow">3</span>
+                            <h2 class="font-serif font-bold text-lg tracking-wide">Cấu Hình Đánh Giá TT27</h2>
+                        </div>
+                        <span class="text-xs font-bold text-[#f3c65f]">Lớp 1 - Lớp 5</span>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Khối lớp:</label>
+                                <select id="gradeSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
+                                    <option value="1">Lớp 1 (6t)</option>
+                                    <option value="2">Lớp 2 (7t)</option>
+                                    <option value="3">Lớp 3 (8t)</option>
+                                    <option value="4" selected>Lớp 4 (9t)</option>
+                                    <option value="5">Lớp 5 (10t)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Kỳ đánh giá:</label>
+                                <select id="periodSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
+                                    <option value="GK1" selected>Giữa HK1 (GK1)</option>
+                                    <option value="CK1">Cuối HK1 (CK1)</option>
+                                    <option value="GK2">Giữa HK2 (GK2)</option>
+                                    <option value="CK2">Cuối năm (CK2)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">Phong cách lời văn nhận xét:</label>
+                            <select id="styleSelect" onchange="regenerateAllComments()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
+                                <option value="khichle" selected>🌟 Khích lệ, ấm áp & vì sự tiến bộ</option>
+                                <option value="ancan">💖 Ân cần, sát sao & tỉ mỉ (Chủ nhiệm)</option>
+                                <option value="ngangon">⚡ Ngắn gọn, súc tích & chuẩn TT27</option>
+                                <option value="nghiemtuc">🎯 Khách quan, chuẩn mực & rõ ràng</option>
+                            </select>
+                        </div>
+
+                        <!-- Mức đánh giá tự động đổi nhãn chuẩn theo Thông tư 27 -->
+                        <div class="p-3.5 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label class="text-sm font-extrabold text-[#2b1d0e]">Phân loại mức đạt chuẩn TT27:</label>
+                                <span id="tt27ScaleHintBadge" class="px-2 py-0.5 rounded bg-[#163832] text-[#fce89c] text-xs font-extrabold">
+                                    Môn học: T / H / C
+                                </span>
+                            </div>
+                            <select id="defaultLevelMode" onchange="applyDefaultLevelsToStudents()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-sm sm:text-base">
+                                <option value="2LEVELS" selected id="opt2Levels">Mặc định 2 mức: Hoàn thành tốt (T) & Hoàn thành (H)</option>
+                                <option value="ALL_T" id="optAllT">Đồng loạt mức cao nhất: Hoàn thành tốt (T)</option>
+                                <option value="ALL_MID" id="optAllMid">Đồng loạt mức đạt chuẩn: Hoàn thành (H)</option>
+                                <option value="3LEVELS" id="opt3Levels">Phân hóa 3 mức: Tốt (T) / Hoàn thành (H) / Chưa HT (C)</option>
+                            </select>
+                            <p id="tt27RuleNote" class="text-xs font-bold text-[#5c3a21] leading-snug">
+                                • Chuẩn TT27: Môn học dùng <strong>Hoàn thành tốt (T), Hoàn thành (H), Chưa hoàn thành (C)</strong>. Năng lực & Phẩm chất dùng <strong>Tốt (T), Đạt (Đ), Cần cố gắng (C)</strong>.
+                            </p>
+                        </div>
+
+                        <label class="flex items-center gap-3 p-3 rounded-xl bg-[#fffdf9] border border-[#b59469] cursor-pointer">
+                            <input type="checkbox" id="autoFillLevelCode" checked class="w-5 h-5 accent-[#163832] rounded">
+                            <span class="text-sm font-bold text-[#2b1d0e]">Tự động điền mã mức đạt (T/H/C hoặc T/Đ/C) vào Excel</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- THẺ 3D SỐ 4: PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG -->
+                <div class="card-3d overflow-hidden">
+                    <div class="bg-gradient-to-r from-[#5c3a21] via-[#7a4b27] to-[#5c3a21] border-b-4 border-[#e6c670] px-5 py-3.5 text-[#fff8e7] flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#2b1803] font-black text-base flex items-center justify-center shadow">4</span>
+                            <div>
+                                <h2 class="font-serif font-bold text-lg leading-tight">Phân Phối Chương Trình</h2>
+                                <p class="text-xs text-[#f3d999] font-medium">Lồng ghép kiến thức thực tế từng giai đoạn</p>
+                            </div>
+                        </div>
+                        <i data-lucide="book-open-check" class="w-6 h-6 text-[#f3c65f]"></i>
+                    </div>
+
+                    <div class="p-5 space-y-3.5">
+                        <label class="flex items-center justify-between p-3 rounded-xl bg-[#fffdf7] border-2 border-[#b07d2b] cursor-pointer shadow-sm">
+                            <span class="text-sm sm:text-base font-extrabold text-[#3d250a]">Lồng ghép bài học PPCT vào câu:</span>
+                            <input type="checkbox" id="usePPCTToggle" checked onchange="onTogglePPCT()" class="w-5 h-5 accent-[#163832]">
+                        </label>
+
+                        <div>
+                            <label for="ppctQuickUpload" class="btn-3d-cream w-full py-2.5 px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="file-up" class="w-4 h-4 text-[#6e1e2a]"></i>
+                                <span>Tải File PPCT (.xlsx, .xls, .docx, .pdf, .txt)</span>
+                            </label>
+                            <input type="file" id="ppctQuickUpload" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
+                        </div>
+
+                        <div class="p-3.5 rounded-xl bg-[#fffdf8] border-2 border-[#c89d54] space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span id="ppctCurrentStageLabel" class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded bg-[#163832] text-[#fce89c]">
+                                    Lớp 4 • Giữa HK1
+                                </span>
+                                <button type="button" onclick="openModal('modalPPCT')" class="text-xs font-extrabold text-[#6e1e2a] hover:underline flex items-center gap-1">
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Xem & Sửa PPCT
+                                </button>
+                            </div>
+                            <p id="ppctPreviewSummaryText" class="text-sm font-semibold text-[#2b1d0e] leading-relaxed line-clamp-3">
+                                Đang áp dụng kiến thức trọng tâm giai đoạn Giữa Học kỳ I.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THẺ 3D SỐ 5: CHẾ ĐỘ HOẠT ĐỘNG (MIỄN PHÍ 100% KHÔNG CẦN API KEY HOẶC GEMINI AI) -->
+                <div class="card-3d overflow-hidden">
+                    <div class="card-3d-header px-5 py-3.5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-base flex items-center justify-center shadow">5</span>
+                            <div>
+                                <h2 class="font-serif font-bold text-base sm:text-lg leading-tight">Bộ Máy AI & Quy Tắc TT27</h2>
+                                <p class="text-xs text-[#d8e8df]">Miễn phí 100% không cần Key hoặc Gemini API</p>
+                            </div>
+                        </div>
+                        <i data-lucide="sparkles" class="w-5 h-5 text-[#f3c65f]"></i>
+                    </div>
+                    <div class="p-5 space-y-3 text-sm">
+                        <div class="p-3 rounded-xl bg-[#e9f5ef] border-2 border-[#163832] text-[#122b24] space-y-1">
+                            <div class="font-extrabold flex items-center gap-1.5 text-sm sm:text-base">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-700 shrink-0"></i>
+                                <span>Mặc định: Miễn phí 100% (Không cần API Key)</span>
+                            </div>
+                            <p class="text-xs sm:text-sm font-medium leading-relaxed">
+                                App đã tích hợp sẵn toàn bộ quy tắc <strong>Thông tư 27</strong> + <strong>PPCT</strong> + <strong>Từ khóa thông minh</strong>, xử lý tức thì cho cả lớp hoàn toàn miễn phí và không giới hạn!
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button type="button" onclick="openModal('modalTT27Rules')" class="btn-3d-cream py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                                <i data-lucide="file-badge" class="w-4 h-4 text-[#163832]"></i>
+                                <span>Chuẩn TT27 & Văn bản</span>
+                            </button>
+                            <button type="button" onclick="openModal('modalAIKey')" class="btn-3d-cream py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                                <i data-lucide="key" class="w-4 h-4 text-[#8c4a08]"></i>
+                                <span>Gemini API (Tùy chọn)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- ================================================================= -->
+            <!-- KHU VỰC 2 (Ở GIỮA - 8/12): MÀN HÌNH VIEW & NHẬP TỪ KHÓA HỌC SINH    -->
+            <!-- ================================================================= -->
+            <section class="lg:col-span-8 space-y-6">
+
+                <div class="card-3d overflow-hidden">
+                    <!-- THANH TIÊU ĐỀ MÀN HÌNH VIEW + NÚT PHƯƠNG ÁN 1: "BỎ QUA NHẬP LIỆU & XUẤT NHANH" -->
+                    <div class="card-3d-header px-5 sm:px-6 py-4 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 rounded-lg bg-[#f3c65f] text-[#1e1b18] font-black text-sm shadow">
+                                    MÀN HÌNH VIEW TRUNG TÂM
+                                </span>
+                                <h2 class="font-serif font-bold text-xl text-[#fefae0]">
+                                    Danh Sách Học Sinh & Xem Trước Nhận Xét
+                                </h2>
+                                <span id="studentCountBadge" class="px-3 py-0.5 rounded-full text-sm font-extrabold bg-emerald-800 text-[#fce89c] border border-emerald-400">
+                                    35 học sinh
+                                </span>
+                            </div>
+                            <p class="text-sm text-[#d8e8df] font-medium">
+                                Thầy/cô có thể nhập vài từ khóa cơ bản bên dưới hoặc bấm <strong>"Bỏ qua nhập liệu & Xuất nhanh"</strong> để máy tự viết 100%.
+                            </p>
+                        </div>
+
+                        <!-- PHƯƠNG ÁN 1: NÚT BỎ QUA NHẬP LIỆU & XUẤT NHANH RÕ NGHĨA -->
+                        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                            <button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#f3c65f]">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-[#f3c65f]"></i>
+                                <span>Viết bằng Gemini AI</span>
+                            </button>
+                            <button type="button" onclick="regenerateAllComments(true)" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 text-[#163832]"></i>
+                                <span>Đổi Câu Toàn Lớp</span>
+                            </button>
+                            <button type="button" onclick="exportExcelFile()" class="btn-3d-gold px-4 py-2.5 rounded-xl font-extrabold text-sm sm:text-base flex items-center gap-2" title="Không cần nhập từ khóa từng em, xuất ngay file Excel hoàn chỉnh">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                                <span>Bỏ qua nhập liệu & Xuất nhanh</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- THANH HIỂN THỊ KIẾN THỨC PPCT CỦA MÔN ĐANG XEM + CHỌN MÔN XEM TRƯỚC -->
+                    <div class="p-4 sm:px-6 bg-[#f5ebd6] border-b-2 border-[#c8ad82] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <!-- Chọn Môn học / Năng lực Phẩm chất để Xem & Sửa trên màn hình View -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="text-base font-extrabold text-[#3d250a] flex items-center gap-1.5">
+                                <i data-lucide="eye" class="w-5 h-5 text-[#163832]"></i>
+                                Đang xem & chỉnh sửa:
+                            </span>
+                            <select id="activePreviewTarget" onchange="renderStudentTable()" class="input-vintage rounded-xl px-4 py-2 text-base font-extrabold text-[#163832] cursor-pointer min-w-[240px]">
+                                <!-- Tự động điền các Sheet môn học hoặc NLPC -->
+                            </select>
+                        </div>
+
+                        <!-- Ô tìm kiếm tên học sinh -->
+                        <div class="relative w-full md:w-64">
+                            <i data-lucide="search" class="w-5 h-5 text-[#6e522d] absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                            <input type="text" id="searchStudentInput" oninput="renderStudentTable()" placeholder="Tìm tên hoặc mã học sinh..." class="w-full input-vintage pl-10 pr-4 py-2 rounded-xl text-base">
+                        </div>
+                    </div>
+
+                    <!-- BANNER KIẾN THỨC PPCT ĐANG ÁP DỤNG CHO MÔN ĐANG CHỌN -->
+                    <div id="activeSubjectPPCTBanner" class="px-5 py-3 bg-[#fdf8eb] border-b-2 border-[#dfc89e] flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 text-sm sm:text-base">
+                            <span class="px-2.5 py-0.5 rounded-md bg-[#6e1e2a] text-[#fce89c] font-bold text-xs uppercase shrink-0">
+                                Kiến thức PPCT
+                            </span>
+                            <span id="activeSubjectPPCTText" class="font-bold text-[#3d250a]">
+                                Đọc mở rộng, viết đoạn văn miêu tả/kể chuyện, danh từ - động từ - tính từ.
+                            </span>
+                        </div>
+                        <button type="button" onclick="openModal('modalPPCT')" class="text-xs sm:text-sm font-extrabold text-[#163832] underline shrink-0">
+                            Thay đổi nội dung PPCT
+                        </button>
+                    </div>
+
+                    <!-- THANH GỢI Ý TỪ KHÓA NHANH (CHỮ TO RÕ) -->
+                    <div class="px-5 py-3 bg-[#efe3c8] border-b-2 border-[#c8ad82] flex items-center gap-2.5 overflow-x-auto custom-scrollbar">
+                        <span class="text-sm font-extrabold text-[#3d250a] shrink-0 flex items-center gap-1.5">
+                            <i data-lucide="wand-2" class="w-4 h-4 text-[#6e1e2a]"></i>
+                            Chèn nhanh từ khóa (HS đang chọn):
+                        </span>
+                        <div id="quickKeywordChips" class="flex items-center gap-2 shrink-0"></div>
+                    </div>
+
+                    <!-- BẢNG DANH SÁCH HỌC SINH (CHỮ TO RÕ, DỄ NHÌN) -->
+                    <div class="overflow-x-auto custom-scrollbar max-h-[680px]">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-[#163832] text-[#fce89c] text-sm sm:text-base uppercase font-extrabold sticky top-0 z-20 shadow-md border-b-2 border-[#c59b27]">
+                                <tr>
+                                    <th class="py-3.5 px-3 text-center w-14">STT</th>
+                                    <th class="py-3.5 px-4 min-w-[200px]">Họ và Tên Học Sinh</th>
+                                    <th class="py-3.5 px-3 w-56">
+                                        <div id="tableLevelColumnTitle">Mức Đạt Chuẩn TT27</div>
+                                        <div id="tableLevelColumnSub" class="text-xs font-medium text-[#e6c670] normal-case">Môn học: T / H / C</div>
+                                    </th>
+                                    <th class="py-3.5 px-4 min-w-[260px]">
+                                        <div>Từ Khóa Thực Tế (Tùy Chọn)</div>
+                                        <div class="text-xs font-medium text-[#e6c670] normal-case">Bỏ trống máy tự viết theo PPCT</div>
+                                    </th>
+                                    <th class="py-3.5 px-4 min-w-[390px]">
+                                        <div id="previewColumnHeaderTitle">Nội Dung Nhận Xét (Times New Roman, 11pt)</div>
+                                        <div class="text-xs font-medium text-[#e6c670] normal-case">Chuẩn TT27 (&le; 500 ký tự) • Sửa trực tiếp</div>
+                                    </th>
+                                    <th class="py-3.5 px-3 text-center w-20">Đổi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody" class="divide-y-2 divide-[#e2d3b5] text-base bg-[#fffdf9]">
+                                <!-- Được render bằng JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ================================================================= -->
+                <!-- KHU VỰC 3 (CUỐI TRANG): MỤC 3 CHÍNH THỨC - HOÀN TẤT & XUẤT FILE    -->
+                <!-- ================================================================= -->
+                <div class="card-3d overflow-hidden border-4 border-[#163832]">
+                    <div class="bg-gradient-to-r from-[#163832] via-[#235347] to-[#163832] px-6 py-5 text-[#fefae0] flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                        <div class="space-y-1.5">
+                            <div class="flex items-center gap-3">
+                                <span class="w-9 h-9 rounded-xl bg-[#f3c65f] text-[#1e1b18] font-black text-lg flex items-center justify-center shadow-md">3</span>
+                                <h3 class="font-serif font-black text-xl sm:text-2xl text-[#fce89c]">
+                                    Hoàn Tất & Xuất File Excel Chuẩn Hệ Thống Ngành
+                                </h3>
+                            </div>
+                            <p class="text-sm sm:text-base text-[#e2f0e8] font-medium">
+                                Giữ nguyên 100% định dạng khung bảng, ô gộp, tên file gốc (<span id="footerFileNamePreview" class="font-bold text-[#fce89c] underline">danhgia_dinhky_tt27_2020GK1_4_1.xlsx</span>) và đồng bộ phông chữ <strong>Times New Roman, cỡ chữ 11</strong>.
+                            </p>
+                            <div class="flex flex-wrap items-center gap-4 pt-1 text-xs sm:text-sm font-bold text-[#f3c65f]">
+                                <span id="statTotalStudents">• Tổng số: 35 học sinh</span>
+                                <span id="statTotalSubjects">• Số môn/mục nhận xét: 7</span>
+                                <span id="statPPCTStatus">• Kiến thức PPCT: Đang lồng ghép</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 shrink-0">
+                            <button type="button" onclick="downloadSampleTemplate(currentFileMode)" class="btn-3d-cream px-4 py-3.5 rounded-2xl font-extrabold text-sm sm:text-base flex items-center gap-2">
+                                <i data-lucide="file-down" class="w-5 h-5 text-[#6e1e2a]"></i>
+                                <span>Tải File Mẫu Trắng</span>
+                            </button>
+                            <button type="button" onclick="exportExcelFile()" class="btn-3d-gold px-7 py-4 rounded-2xl font-black text-base sm:text-lg flex items-center gap-2.5 shadow-2xl">
+                                <i data-lucide="file-check-2" class="w-6 h-6"></i>
+                                <span>HOÀN TẤT & XUẤT FILE EXCEL</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#163832] border-t-4 border-[#c59b27] text-[#e2f0e8] mt-8 py-5">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm font-semibold">
+            <div class="flex items-center gap-2">
+                <span class="font-serif font-bold text-lg text-[#fce89c]">ThayKhaiEdu</span>
+                <span>•</span>
+                <span>Hệ thống Trợ lý Viết Nhận xét Học sinh Tiểu học theo Thông tư 27/2020/TT-BGDĐT</span>
+            </div>
+            <div class="text-[#f3c65f]">
+                <span>Chuẩn hóa định dạng Excel hệ thống ngành • Font Times New Roman, Size 11</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL 2: NGÂN HÀNG MẪU CÂU THAM KHẢO (ĐÃ KHẮC PHỤC LỖI TẢI FILE EXCEL)    -->
+    <!-- ========================================================================= -->
+    <div id="modalBank" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="card-3d max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="card-3d-header px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                        <i data-lucide="library" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Ngân Hàng Mẫu Câu Nhận Xét (Hỗ trợ .xlsx, .xls, .docx, .txt)</h3>
+                        <p class="text-xs sm:text-sm text-[#d8e8df]">Đọc tự động tất cả các Sheet và các cột trong file Excel mẫu câu của giáo viên</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modalBank')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fdfbf7]">
+                <!-- Khu vực tải file Excel mẫu nhận xét nổi bật -->
+                <div class="p-4 rounded-2xl bg-[#f5ebd6] border-2 border-[#b07d2b] flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="font-extrabold text-[#3d250a] text-base flex items-center gap-2">
+                            <i data-lucide="file-spreadsheet" class="w-5 h-5 text-[#163832]"></i>
+                            <span>Tải File Excel Mẫu Nhận Xét (.xlsx, .xls) hoặc Word (.docx), Text (.txt):</span>
+                        </div>
+                        <p class="text-sm text-[#5c3a21] font-medium">
+                            Nếu file Excel của thầy/cô có nhiều Sheet (Toán, Tiếng Việt, Năng lực, Phẩm chất...), App sẽ <strong>tự động phân loại vào đúng môn</strong> hoặc nạp vào mục đang chọn!
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                        <button type="button" onclick="downloadSampleCommentBankExcel()" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-1.5">
+                            <i data-lucide="download" class="w-4 h-4 text-[#163832]"></i>
+                            <span>Tải File Mẫu (.xlsx)</span>
+                        </button>
+                        <label class="btn-3d-gold px-5 py-2.5 rounded-xl font-extrabold text-sm sm:text-base cursor-pointer flex items-center gap-2">
+                            <i data-lucide="upload" class="w-5 h-5"></i>
+                            <span>Chọn File Mẫu Nhận Xét</span>
+                            <input type="file" id="bankFileUpload" accept=".xlsx,.xls,.csv,.txt,.docx" class="hidden" onchange="handleBankFileUpload(event, false)" onclick="this.value=null">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hộp thông báo kết quả đọc file Excel mẫu câu -->
+                <div id="bankUploadResultBanner" class="hidden p-3.5 rounded-xl bg-emerald-100 border-2 border-emerald-700 text-emerald-950 font-bold text-sm flex items-center justify-between">
+                    <span id="bankUploadResultText">Đã nạp thành công mẫu câu từ file Excel!</span>
+                    <span class="text-xs uppercase px-2 py-0.5 rounded bg-emerald-800 text-white">Đã kích hoạt</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">Chọn Môn học / Năng lực - Phẩm chất để xem hoặc sửa:</label>
+                        <select id="bankCategorySelect" onchange="loadCustomBankCategoryPreview()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
+                            <option value="Tiếng việt">Môn: Tiếng Việt</option>
+                            <option value="Toán">Môn: Toán</option>
+                            <option value="Đạo đức">Môn: Đạo đức</option>
+                            <option value="Khoa học">Môn: Khoa học / TN&XH</option>
+                            <option value="Lịch sử và Địa lý">Môn: Lịch sử và Địa lý</option>
+                            <option value="TH-CN (Công nghệ)">Môn: Tin học và Công nghệ</option>
+                            <option value="Hoạt động trải nghiệm">Hoạt động trải nghiệm</option>
+                            <option value="NL_CHUNG">Năng lực chung (Tự chủ, Giao tiếp, GQVĐ)</option>
+                            <option value="NL_DACTHU">Năng lực đặc thù (Ngôn ngữ, Tính toán...)</option>
+                            <option value="PHAM_CHAT">Phẩm chất chủ yếu (Yêu nước, Nhân ái, Chăm chỉ...)</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col justify-end">
+                        <div class="p-2.5 rounded-xl bg-[#f4ead5] border border-[#b59469] text-xs sm:text-sm font-semibold text-[#3d250a]">
+                            💡 Mẹo: Thầy/cô cũng có thể copy cột nhận xét từ Excel và dán thẳng vào ô văn bản bên dưới (mỗi dòng 1 câu nhận xét).
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">Danh sách câu nhận xét mẫu của mục đang chọn (Mỗi dòng 1 câu):</label>
+                    <textarea id="customBankTextarea" rows="7" class="w-full input-vintage rounded-xl p-3.5 text-base custom-scrollbar" placeholder="Nhập hoặc tải file Excel chứa các câu nhận xét mẫu..."></textarea>
+                </div>
+            </div>
+
+            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex flex-wrap items-center justify-between gap-3">
+                <button onclick="resetCustomBank()" class="text-sm font-extrabold text-[#6e1e2a] hover:underline">Khôi phục ngân hàng chuẩn mặc định</button>
+                <div class="flex gap-3">
+                    <button onclick="closeModal('modalBank')" class="btn-3d-cream px-5 py-2.5 rounded-xl font-bold text-sm">Đóng</button>
+                    <button onclick="saveCustomBank()" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Lưu & Áp Dụng Ngân Hàng Mẫu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL 4 (MỚI): QUY TẮC CỐT LÕI THÔNG TƯ 27 TÍCH HỢP SẴN + TẢI VĂN BẢN      -->
+    <!-- ========================================================================= -->
+    <div id="modalTT27Rules" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="card-3d max-w-3xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="card-3d-header px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Quy Tắc Cốt Lõi Thông Tư 27/2020/TT-BGDĐT (Đã Tích Hợp Sẵn)</h3>
+                        <p class="text-xs sm:text-sm text-[#d8e8df]">App đã nạp sẵn toàn bộ chuẩn đánh giá TT27 mà không cần tải lại mỗi lần dùng</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modalTT27Rules')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fdfbf7]">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl bg-[#e9f5ef] border-2 border-[#163832] space-y-2">
+                        <h4 class="font-extrabold text-[#163832] text-base flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                            <span>1. Đánh giá Môn học & Hoạt động GD</span>
+                        </h4>
+                        <ul class="list-disc list-inside text-sm font-semibold text-[#1e1b18] space-y-1">
+                            <li><strong>Hoàn thành tốt (Ký hiệu: T):</strong> Thực hiện tốt các yêu cầu học tập, thường xuyên thể hiện sự tiến bộ, sáng tạo.</li>
+                            <li><strong>Hoàn thành (Ký hiệu: H):</strong> Thực hiện được các yêu cầu học tập cơ bản của môn học.</li>
+                            <li><strong>Chưa hoàn thành (Ký hiệu: C):</strong> Chưa thực hiện được một số yêu cầu, cần hướng dẫn và hỗ trợ thêm.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-[#fdf4e3] border-2 border-[#b07d2b] space-y-2">
+                        <h4 class="font-extrabold text-[#5c3a21] text-base flex items-center gap-2">
+                            <i data-lucide="award" class="w-5 h-5"></i>
+                            <span>2. Đánh giá Năng lực & Phẩm chất (3N - 5P)</span>
+                        </h4>
+                        <ul class="list-disc list-inside text-sm font-semibold text-[#1e1b18] space-y-1">
+                            <li><strong>Tốt (Ký hiệu: T):</strong> Đáp ứng tốt yêu cầu giáo dục, biểu hiện rõ và thường xuyên.</li>
+                            <li><strong>Đạt (Ký hiệu: Đ):</strong> Đáp ứng được yêu cầu giáo dục, biểu hiện nhưng chưa thường xuyên.</li>
+                            <li><strong>Cần cố gắng (Ký hiệu: C):</strong> Chưa đáp ứng được đầy đủ yêu cầu, biểu hiện chưa rõ.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-2 text-sm font-semibold text-[#2b1d0e]">
+                    <div class="font-extrabold text-base text-[#6e1e2a]">3. Cấu trúc 3 Năng lực chung - 7 Năng lực đặc thù - 5 Phẩm chất chủ yếu (Đã nạp sẵn):</div>
+                    <p>• <strong>3 Năng lực chung:</strong> Tự chủ và tự học; Giao tiếp và hợp tác; Giải quyết vấn đề và sáng tạo.</p>
+                    <p>• <strong>7 Năng lực đặc thù:</strong> Ngôn ngữ; Tính toán; Khoa học; Công nghệ; Tin học; Thẩm mĩ; Thể chất.</p>
+                    <p>• <strong>5 Phẩm chất chủ yếu:</strong> Yêu nước; Nhân ái; Chăm chỉ; Trung thực; Trách nhiệm.</p>
+                </div>
+
+                <!-- Tùy chọn tải thêm văn bản chỉ đạo đặc thù của trường/phòng -->
+                <div class="p-4 rounded-xl bg-white border-2 border-[#b59469] space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h4 class="font-extrabold text-[#163832] text-base">Tải thêm Văn bản chỉ đạo đặc thù của Trường / Phòng GD (Tùy chọn):</h4>
+                            <p class="text-xs sm:text-sm text-[#5c3a21] font-medium">Nếu trường của thầy có quy định từ ngữ riêng, thầy có thể tải file (.docx, .xlsx, .txt) hoặc ghi chú vào dưới đây:</p>
+                        </div>
+                        <label class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm cursor-pointer shrink-0 flex items-center gap-1.5">
+                            <i data-lucide="file-up" class="w-4 h-4 text-[#6e1e2a]"></i>
+                            <span>Tải Văn Bản (.docx, .txt, .xlsx)</span>
+                            <input type="file" accept=".docx,.txt,.xlsx,.xls" class="hidden" onchange="handleCustomDirectiveUpload(event)" onclick="this.value=null">
+                        </label>
+                    </div>
+                    <textarea id="customDirectiveTextarea" rows="3" class="w-full input-vintage rounded-xl p-3 text-sm" placeholder="Ghi chú quy định riêng của trường (Ví dụ: Không viết tắt, luôn bắt đầu bằng chữ 'Em', nhấn mạnh sự tiến bộ...)"></textarea>
+                </div>
+            </div>
+
+            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex justify-end gap-3">
+                <button onclick="saveCustomDirective()" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm">Lưu Cấu Hình Quy Tắc</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL 5 (MỚI): GIẢI ĐÁP VỀ API KEY & CẤU HÌNH CHẾ ĐỘ KÉP (MIỄN PHÍ / AI)   -->
+    <!-- ========================================================================= -->
+    <div id="modalAIKey" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="card-3d max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="card-3d-header px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                        <i data-lucide="cpu" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Cấu Hình Bộ Máy Viết Nhận Xét & Gemini API Key</h3>
+                        <p class="text-xs sm:text-sm text-[#d8e8df]">Hoạt động miễn phí 100% không cần Key hoặc kết nối Google Gemini AI</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modalAIKey')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fdfbf7]">
+                <div class="p-4 rounded-xl bg-[#e9f5ef] border-2 border-[#163832] space-y-1.5">
+                    <div class="font-extrabold text-[#163832] text-lg flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-700"></i>
+                        <span>Chế độ 1 (Mặc định): Bộ Máy Thông Minh Nội Bộ — MIỄN PHÍ 100% VĨNH VIỄN</span>
+                    </div>
+                    <p class="text-sm text-[#1e1b18] font-medium leading-relaxed">
+                        <strong>Không cần bất kỳ API Key nào!</strong> App tự động phân tích từ khóa của học sinh + Kiến thức Phân phối chương trình + Ngân hàng mẫu câu của thầy để viết lời nhận xét chuẩn Thông tư 27 chỉ trong <strong>0.1 giây</strong> cho cả lớp, không bao giờ hết hạn mức.
+                    </p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-[#fdf4e3] border-2 border-[#b07d2b] space-y-3">
+                    <div class="font-extrabold text-[#5c3a21] text-lg flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-[#8c4a08]"></i>
+                        <span>Chế độ 2 (Tùy chọn nâng cao): Kết nối Google Gemini AI (Miễn phí 1.500 lượt/ngày)</span>
+                    </div>
+                    <p class="text-sm text-[#2b1d0e] font-medium leading-relaxed">
+                        Nếu thầy muốn sử dụng mô hình ngôn ngữ lớn Gemini để diễn đạt câu văn biến hóa hơn nữa: Google cấp miễn phí khóa API Key tại <strong>aistudio.google.com</strong> với hạn mức <strong>15 lượt/phút và 1.500 lượt/ngày</strong> (Mỗi lượt gom nhóm cả lớp 35 học sinh, tức là miễn phí đủ dùng cho hơn 1.000 lớp học mỗi ngày!).
+                    </p>
+                    <div>
+                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Nhập Gemini API Key cá nhân (Để trống nếu dùng Chế độ Miễn phí Nội bộ):</label>
+                        <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy... (Không bắt buộc)" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex items-center justify-between">
+                <button onclick="clearGeminiApiKey()" class="text-sm font-extrabold text-[#6e1e2a] hover:underline">Xóa Key (Dùng mặc định miễn phí)</button>
+                <div class="flex gap-3">
+                    <button onclick="closeModal('modalAIKey')" class="btn-3d-cream px-5 py-2.5 rounded-xl font-bold text-sm">Đóng</button>
+                    <button onclick="saveGeminiApiKey()" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm">Lưu Cấu Hình</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL 1: KHO PHÂN PHỐI CHƯƠNG TRÌNH (PPCT) ĐA ĐỊNH DẠNG                    -->
+    <!-- ========================================================================= -->
+    <div id="modalPPCT" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="card-3d max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="card-3d-header px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                        <i data-lucide="calendar-range" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Kho Phân Phối Chương Trình (PPCT) Đa Định Dạng</h3>
+                        <p class="text-xs sm:text-sm text-[#d8e8df]">Cung cấp kiến thức từng giai đoạn để App viết lời nhận xét sát thực tế bài học</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modalPPCT')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-5 text-base bg-[#fdfbf7]">
+                <!-- Khu vực tải file PPCT đa định dạng -->
+                <div class="p-4 rounded-2xl bg-[#f5ebd6] border-2 border-[#b07d2b] flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="font-extrabold text-[#3d250a] text-base flex items-center gap-2">
+                            <i data-lucide="file-up" class="w-5 h-5 text-[#6e1e2a]"></i>
+                            <span>Nhập File Phân Phối Chương Trình (Excel, Word, PDF, Text, CSV):</span>
+                        </div>
+                        <p class="text-sm text-[#5c3a21] font-medium">
+                            App tự động bóc tách tên chủ đề/bài học trong file PPCT của thầy/cô để đưa vào kho kiến thức của giai đoạn đang chọn.
+                        </p>
+                    </div>
+                    <label class="btn-3d-gold px-5 py-2.5 rounded-xl font-extrabold text-sm cursor-pointer shrink-0 flex items-center gap-2">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                        <span>Chọn File PPCT (.xlsx, .docx, .pdf, .txt)</span>
+                        <input type="file" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
+                    </label>
+                </div>
+
+                <!-- Bộ lọc chọn Khối - Kỳ - Môn học trong kho PPCT -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Khối lớp:</label>
+                        <select id="ppctModalGrade" onchange="loadPPCTModalContent()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
+                            <option value="1">Khối Lớp 1</option>
+                            <option value="2">Khối Lớp 2</option>
+                            <option value="3">Khối Lớp 3</option>
+                            <option value="4" selected>Khối Lớp 4</option>
+                            <option value="5">Khối Lớp 5</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Giai đoạn / Thời điểm:</label>
+                        <select id="ppctModalPeriod" onchange="loadPPCTModalContent()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
+                            <option value="GK1" selected>Giữa Học kỳ 1 (Tuần 1 - 9)</option>
+                            <option value="CK1">Cuối Học kỳ 1 (Tuần 10 - 18)</option>
+                            <option value="GK2">Giữa Học kỳ 2 (Tuần 19 - 27)</option>
+                            <option value="CK2">Cuối Năm Học (Tuần 28 - 35)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Môn học / Hoạt động GD:</label>
+                        <select id="ppctModalSubject" onchange="loadPPCTModalContent()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
+                            <option value="Tiếng việt">Môn: Tiếng Việt</option>
+                            <option value="Toán">Môn: Toán</option>
+                            <option value="Đạo đức">Môn: Đạo đức</option>
+                            <option value="Khoa học">Môn: Khoa học / TN&XH</option>
+                            <option value="Lịch sử và Địa lý">Môn: Lịch sử và Địa lý</option>
+                            <option value="TH-CN (Công nghệ)">Môn: Tin học và Công nghệ</option>
+                            <option value="Hoạt động trải nghiệm">Hoạt động trải nghiệm</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">
+                        Nội dung kiến thức / kỹ năng học sinh học trong giai đoạn này (Mỗi dòng 1 cụm kiến thức để App ghép vào câu):
+                    </label>
+                    <textarea id="ppctModalTextarea" rows="7" class="w-full input-vintage rounded-xl p-4 text-base leading-relaxed custom-scrollbar" placeholder="Ví dụ: nắm vững cách đọc, viết số có nhiều chữ số và giải toán có lời văn..."></textarea>
+                </div>
+            </div>
+
+            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex flex-wrap items-center justify-between gap-3">
+                <button type="button" onclick="resetPPCTData()" class="text-sm font-extrabold text-[#6e1e2a] hover:underline">
+                    Khôi phục PPCT chuẩn mặc định
+                </button>
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="closeModal('modalPPCT')" class="btn-3d-cream px-5 py-2.5 rounded-xl font-bold text-sm">Đóng</button>
+                    <button type="button" onclick="savePPCTModalContent()" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Lưu & Áp Dụng Vào Nhận Xét</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: HƯỚNG DẪN TRIỂN KHAI GITHUB & VERCEL -->
+    <div id="modalDeploy" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="card-3d max-w-2xl w-full overflow-hidden">
+            <div class="card-3d-header px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                        <i data-lucide="rocket" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Triển Khai ThayKhaiEdu Lên GitHub & Vercel</h3>
+                        <p class="text-xs sm:text-sm text-[#d8e8df]">Hoạt động độc lập 100% trên trình duyệt, bảo mật dữ liệu học sinh</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('modalDeploy')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-base text-[#2b1d0e] bg-[#fdfbf7]">
+                <div class="p-4 rounded-xl bg-[#f4ead5] border-2 border-[#b59469] space-y-2">
+                    <p class="font-extrabold text-[#163832] text-lg">Bước 1: Lưu mã nguồn lên GitHub</p>
+                    <ol class="list-decimal list-inside space-y-1.5 font-medium">
+                        <li>Tạo Repository mới trên GitHub (VD: <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">thaykhaiedu-tt27</code>).</li>
+                        <li>Tải file <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">index.html</code> này lên Repository đó và bấm Commit.</li>
+                    </ol>
+                </div>
+                <div class="p-4 rounded-xl bg-[#e6f2ed] border-2 border-[#163832] space-y-2">
+                    <p class="font-extrabold text-[#163832] text-lg">Bước 2: Kết nối Vercel (Miễn phí 100%)</p>
+                    <ol class="list-decimal list-inside space-y-1.5 font-medium">
+                        <li>Truy cập <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">vercel.com</code> bằng tài khoản GitHub của thầy.</li>
+                        <li>Chọn <strong>Add New Project</strong> &rarr; Chọn <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">thaykhaiedu-tt27</code> &rarr; Bấm <strong>Deploy</strong>.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex justify-end">
+                <button onclick="closeModal('modalDeploy')" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastBox" class="fixed bottom-6 right-6 z-50 hidden transform transition-all duration-300">
+        <div class="bg-[#163832] text-[#fefae0] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#f3c65f] flex items-center gap-3 text-base font-bold">
+            <i data-lucide="sparkles" class="w-5 h-5 text-[#f3c65f] shrink-0"></i>
+            <span id="toastMessage">Thông báo hệ thống</span>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT ENGINE: XỬ LÝ PPCT, TỪ KHÓA THÔNG MINH & XUẤT EXCEL CHUẨN NGÀNH  -->
+    <!-- ========================================================================= -->
+    <script>
+        // 1. DU LIEU GIA CHO PHAN TICH
+        const SAMPLE_STUDENTS_4_1 = [
+{ stt: 1, code: "TEST001", name: "Hoc sinh gia 01", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 2, code: "TEST002", name: "Hoc sinh gia 02", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 3, code: "TEST003", name: "Hoc sinh gia 03", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 4, code: "TEST004", name: "Hoc sinh gia 04", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 5, code: "TEST005", name: "Hoc sinh gia 05", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 6, code: "TEST006", name: "Hoc sinh gia 06", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 7, code: "TEST007", name: "Hoc sinh gia 07", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 8, code: "TEST008", name: "Hoc sinh gia 08", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 9, code: "TEST009", name: "Hoc sinh gia 09", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 10, code: "TEST010", name: "Hoc sinh gia 10", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 11, code: "TEST011", name: "Hoc sinh gia 11", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 12, code: "TEST012", name: "Hoc sinh gia 12", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 13, code: "TEST013", name: "Hoc sinh gia 13", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 14, code: "TEST014", name: "Hoc sinh gia 14", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 15, code: "TEST015", name: "Hoc sinh gia 15", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 16, code: "TEST016", name: "Hoc sinh gia 16", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 17, code: "TEST017", name: "Hoc sinh gia 17", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 18, code: "TEST018", name: "Hoc sinh gia 18", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 19, code: "TEST019", name: "Hoc sinh gia 19", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 20, code: "TEST020", name: "Hoc sinh gia 20", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 21, code: "TEST021", name: "Hoc sinh gia 21", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 22, code: "TEST022", name: "Hoc sinh gia 22", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 23, code: "TEST023", name: "Hoc sinh gia 23", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 24, code: "TEST024", name: "Hoc sinh gia 24", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 25, code: "TEST025", name: "Hoc sinh gia 25", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 26, code: "TEST026", name: "Hoc sinh gia 26", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 27, code: "TEST027", name: "Hoc sinh gia 27", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 28, code: "TEST028", name: "Hoc sinh gia 28", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 29, code: "TEST029", name: "Hoc sinh gia 29", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 30, code: "TEST030", name: "Hoc sinh gia 30", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 31, code: "TEST031", name: "Hoc sinh gia 31", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 32, code: "TEST032", name: "Hoc sinh gia 32", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 33, code: "TEST033", name: "Hoc sinh gia 33", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 34, code: "TEST034", name: "Hoc sinh gia 34", dob: "01/01/2015", kw: "du lieu gia" },
+{ stt: 35, code: "TEST035", name: "Hoc sinh gia 35", dob: "01/01/2015", kw: "du lieu gia" }
+        ];
+
+        // 2. KHO DỮ LIỆU PHÂN PHỐI CHƯƠNG TRÌNH (PPCT) CHUẨN GDPT 2018 THEO TỪNG GIAI ĐOẠN (GK1, CK1, GK2, CK2)
+        const DEFAULT_PPCT_DATABASE = {
+            "GK1": {
+                "Tiếng việt": [
+                    "nắm vững cách nhận diện danh từ, động từ và viết bài văn kể lại một câu chuyện đã đọc, đã nghe",
+                    "đọc hiểu tốt các văn bản truyện kể, thơ và biết lập dàn ý cho bài văn kể chuyện sáng tạo",
+                    "vận dụng tốt quy tắc viết hoa tên riêng, mở rộng vốn từ và rèn kỹ năng trao đổi ý kiến tự tin"
+                ],
+                "Toán": [
+                    "đọc, viết, so sánh thành thạo các số tự nhiên lớp triệu và giải bài toán có đến ba bước tính",
+                    "nhận biết tốt góc nhọn, góc tù, góc bẹt, thực hiện đổi đơn vị đo khối lượng và tính biểu thức chứa chữ",
+                    "vận dụng linh hoạt tính chất giao hoán, kết hợp của phép cộng và phép nhân để tính bằng cách thuận tiện"
+                ],
+                "Đạo đức": [
+                    "biết bày tỏ lòng biết ơn người có công với quê hương đất nước và cảm thông, giúp đỡ người gặp khó khăn",
+                    "hiểu và thực hiện tốt các việc làm thể hiện lòng biết ơn, sự sẻ chia với mọi người xung quanh"
+                ],
+                "Khoa học": [
+                    "hiểu rõ tính chất, vai trò của nước, không khí, ánh sáng và cách bảo vệ môi trường nước sạch",
+                    "biết vận dụng kiến thức về sự chuyển thể của nước, âm thanh và nhiệt độ vào thực tế cuộc sống"
+                ],
+                "Lịch sử và Địa lý": [
+                    "xác định tốt vị trí địa lý trên bản đồ và nắm vững đặc điểm thiên nhiên, dân cư vùng Trung du và miền núi Bắc Bộ",
+                    "biết sử dụng lược đồ, tranh ảnh để tìm hiểu thiên nhiên và nét văn hóa đặc sắc vùng Bắc Bộ"
+                ],
+                "TH-CN (Công nghệ)": [
+                    "nắm vững lợi ích của hoa, cây cảnh trong đời sống và biết nhận diện phần cứng, phần mềm máy tính",
+                    "biết lựa chọn vật liệu, dụng cụ trồng hoa, cây cảnh trong chậu và gõ bàn phím đúng cách"
+                ],
+                "Hoạt động trải nghiệm": [
+                    "tự giác thực hiện nền nếp học tập, biết giới thiệu nét riêng của bản thân và điều chỉnh cảm xúc tích cực",
+                    "chủ động kết nối với bạn bè và tham gia hào hứng các hoạt động xây dựng trường lớp xanh - sạch - đẹp"
+                ]
+            },
+            "CK1": {
+                "Tiếng việt": [
+                    "sử dụng tốt tính từ, câu chủ đề của đoạn văn và viết bài văn miêu tả con vật, thuật lại một sự việc",
+                    "đọc diễn cảm, hiểu ý nghĩa bài đọc và biết viết đoạn văn tưởng tượng, viết thư thăm hỏi giàu cảm xúc"
+                ],
+                "Toán": [
+                    "thực hiện thành thạo phép nhân, phép chia với số có hai chữ số và giải tốt bài toán tìm hai số khi biết tổng và hiệu",
+                    "nhận biết chính xác hai đường thẳng vuông góc, hai đường thẳng song song, hình bình hành và hình thoi"
+                ],
+                "Đạo đức": [
+                    "biết yêu lao động, tự giác tham gia công việc vừa sức và tôn trọng tài sản của người khác",
+                    "thực hành tốt thói quen quý trọng đồng tiền và bảo quản đồ dùng cá nhân, tập thể"
+                ],
+                "Khoa học": [
+                    "nắm vững nhu cầu sống của thực vật, động vật và vai trò của các nhóm chất dinh dưỡng đối với cơ thể",
+                    "biết lựa chọn thực phẩm an toàn, ăn uống cân bằng để phòng tránh bệnh liên quan đến dinh dưỡng"
+                ],
+                "Lịch sử và Địa lý": [
+                    "nắm vững đặc điểm vùng Đồng bằng Bắc Bộ, lịch sử Văn Lang - Âu Lạc, triều Lý - Trần - Hậu Lê",
+                    "trình bày lưu loát các di sản văn hóa lịch sử Thăng Long - Hà Nội và truyền thống hiếu học của dân tộc"
+                ],
+                "TH-CN (Công nghệ)": [
+                    "thực hành gieo hạt, trồng và chăm sóc hoa, cây cảnh trong chậu đúng kỹ thuật; tìm kiếm thông tin trên Internet an toàn",
+                    "sử dụng tốt phần mềm trình chiếu để tạo các trang chiếu sinh động phục vụ học tập"
+                ],
+                "Hoạt động trải nghiệm": [
+                    "rèn luyện tốt tư duy tự phục vụ, biết lập kế hoạch chi tiêu tiết kiệm và gắn kết yêu thương trong gia đình",
+                    "tích cực tham gia các hoạt động thiện nguyện, tri ân thầy cô và truyền thống nhà trường"
+                ]
+            },
+            "GK2": {
+                "Tiếng việt": [
+                    "nắm chắc cấu tạo câu (chủ ngữ, vị ngữ), trạng ngữ và viết bài văn miêu tả cây cối giàu hình ảnh",
+                    "đọc hiểu sâu sắc các bài đọc về quê hương đất nước và biết viết đoạn văn nêu tình cảm, cảm xúc"
+                ],
+                "Toán": [
+                    "nắm vững khái niệm phân số, tính chất cơ bản của phân số, rút gọn, quy đồng và so sánh phân số thành thạo",
+                    "vận dụng tốt bài toán tìm số trung bình cộng và đọc hiểu biểu đồ cột, dãy số liệu thống kê"
+                ],
+                "Đạo đức": [
+                    "biết bảo vệ cái đúng, cái tốt và có kỹ năng thiết lập, duy trì quan hệ bạn bè thân thiện, đoàn kết",
+                    "biết xử lý tình huống văn minh, hòa giải bất đồng và hợp tác tốt với bạn bè"
+                ],
+                "Khoa học": [
+                    "hiểu rõ vai trò của nấm, vi khuẩn và cách bảo quản thực phẩm an toàn, phòng tránh bệnh tật",
+                    "nắm vững chuỗi thức ăn trong tự nhiên và giữ gìn cân bằng sinh thái"
+                ],
+                "Lịch sử và Địa lý": [
+                    "nắm vững thiên nhiên, con người vùng Duyên hải miền Trung, Tây Nguyên và cố đô Huế, phố cổ Hội An",
+                    "trình bày tốt nét đặc sắc văn hóa cồng chiêng Tây Nguyên và lễ hội truyền thống miền Trung"
+                ],
+                "TH-CN (Công nghệ)": [
+                    "lắp ghép được các mô hình kỹ thuật cơ bản chắc chắn và bước đầu làm quen với phần mềm soạn thảo văn bản",
+                    "sử dụng đúng và an toàn các chi tiết, dụng cụ trong bộ lắp ghép mô hình kỹ thuật"
+                ],
+                "Hoạt động trải nghiệm": [
+                    "tích cực tham gia giữ gìn cảnh quan thiên nhiên, bảo vệ môi trường địa phương và rèn kỹ năng phòng tránh nguy hiểm",
+                    "hợp tác hiệu quả trong các dự án cộng đồng và hoạt động trải nghiệm văn hóa địa phương"
+                ]
+            },
+            "CK2": {
+                "Tiếng việt": [
+                    "sử dụng linh hoạt dấu câu, các thành phần câu và viết hoàn chỉnh bài văn miêu tả con vật, cây cối sáng tạo",
+                    "tổng hợp tốt kỹ năng đọc hiểu, nghe nói và viết văn mạch lạc, giàu cảm xúc theo yêu cầu cần đạt cuối năm"
+                ],
+                "Toán": [
+                    "thực hiện thành thạo bốn phép tính cộng, trừ, nhân, chia phân số và giải bài toán tìm phân số của một số",
+                    "ôn tập vững vàng các phép tính với số tự nhiên, phân số, hình học, đo lường và yếu tố thống kê - xác suất"
+                ],
+                "Đạo đức": [
+                    "tự giác tuân thủ quy tắc an toàn giao thông và thực hiện tốt quyền, bổn phận của trẻ em",
+                    "vận dụng tốt các chuẩn mực đạo đức đã học vào ứng xử văn minh trong gia đình, nhà trường và xã hội"
+                ],
+                "Khoa học": [
+                    "tổng hợp tốt kiến thức về chất, năng lượng, thực vật, động vật, nấm và chăm sóc sức khỏe an toàn",
+                    "chủ động thực hiện các biện pháp bảo vệ môi trường sống và phòng tránh đuối nước, tai nạn thương tích"
+                ],
+                "Lịch sử và Địa lý": [
+                    "nắm vững đặc điểm thiên nhiên, kinh tế - xã hội vùng Nam Bộ, Thành phố Hồ Chí Minh và địa phương",
+                    "hoàn thành tốt chương trình Lịch sử và Địa lý, biết trân trọng giá trị lịch sử và văn hóa các vùng miền"
+                ],
+                "TH-CN (Công nghệ)": [
+                    "lắp ghép sáng tạo các sản phẩm đồ chơi dân gian, mô hình kỹ thuật và tạo chương trình đơn giản trên Scratch",
+                    "hoàn thành xuất sắc các sản phẩm thực hành công nghệ và bài tập lập trình trực quan"
+                ],
+                "Hoạt động trải nghiệm": [
+                    "tự đánh giá tốt sự tiến bộ của bản thân sau năm học, biết lập kế hoạch rèn luyện mùa hè bổích, an toàn",
+                    "phát huy tốt năng lực tự chủ, giao tiếp hợp tác và tích cực trong mọi hoạt động tập thể"
+                ]
+            }
+        };
+
+        // 3. TỪ KHÓA GỢI Ý NHANH & PHÂN TÍCH THÔNG MINH
+        const QUICK_KEYWORDS = [
+            "viết chữ đẹp", "đọc tốt", "viết văn hay", "tính toán nhanh", "tư duy logic",
+            "tiếp thu nhanh", "chăm chỉ", "tự giác", "hay giúp bạn", "lễ phép",
+            "hợp tác nhóm tốt", "văn nghệ", "vẽ đẹp", "thể thao", "yêu khoa học",
+            "thạo công nghệ", "cẩn thận", "cần tập trung hơn", "cần rèn chữ thêm"
+        ];
+
+        const SMART_KEYWORD_RULES = [
+            {
+                triggers: ["chữ đẹp", "viết đẹp", "nắn nót", "sạch đẹp", "trình bày sạch"],
+                targets: ["Tiếng việt", "NL_DACTHU", "PHAM_CHAT"],
+                phrases: {
+                    "Tiếng việt": "chữ viết đều đẹp, nắn nót, trình bày vở sạch sẽ",
+                    "NL_DACTHU": "trình bày ngôn ngữ viết rõ ràng, nét chữ đều đẹp",
+                    "PHAM_CHAT": "có tính cẩn thận, kiên trì rèn chữ giữ vở"
+                }
+            },
+            {
+                triggers: ["đọc tốt", "đọc lưu loát", "đọc biểu cảm", "đọc to"],
+                targets: ["Tiếng việt", "NL_DACTHU"],
+                phrases: {
+                    "Tiếng việt": "kỹ năng đọc thành tiếng lưu loát, ngắt nghỉ đúng nhịp và giàu biểu cảm",
+                    "NL_DACTHU": "năng lực đọc hiểu và diễn đạt ngôn ngữ mạch lạc, tự tin"
+                }
+            },
+            {
+                triggers: ["viết văn", "giàu cảm xúc", "giàu hình ảnh", "vốn từ"],
+                targets: ["Tiếng việt", "NL_DACTHU"],
+                phrases: {
+                    "Tiếng việt": "vốn từ phong phú, viết câu văn giàu hình ảnh và cảm xúc",
+                    "NL_DACTHU": "sử dụng ngôn ngữ linh hoạt, sáng tạo trong diễn đạt bài viết"
+                }
+            },
+            {
+                triggers: ["tính toán nhanh", "giải toán", "tư duy toán", "tính toán tốt", "tính toán vững", "tính toán cẩn thận"],
+                targets: ["Toán", "NL_DACTHU", "NL_CHUNG"],
+                phrases: {
+                    "Toán": "thực hiện các phép tính nhanh, chính xác và trình bày bài giải rõ ràng",
+                    "NL_DACTHU": "năng lực tính toán và tư duy toán học nhạy bén, vận dụng tốt vào thực tiễn",
+                    "NL_CHUNG": "biết phân tích và tìm ra cách giải quyết vấn đề hiệu quả"
+                }
+            },
+            {
+                triggers: ["tư duy logic", "thông minh", "tiếp thu nhanh", "hiểu bài nhanh", "nhạy bén", "sáng tạo", "giải quyết vấn đề"],
+                targets: ["Toán", "Khoa học", "TH-CN (Công nghệ)", "NL_CHUNG"],
+                phrases: {
+                    "Toán": "có tư duy logic sắc bén, tiếp thu kiến thức mới nhanh",
+                    "Khoa học": "ham học hỏi, có tư duy khám phá khoa học tốt",
+                    "TH-CN (Công nghệ)": "tiếp cận nhanh các thao tác kỹ thuật và công nghệ",
+                    "NL_CHUNG": "chủ động suy nghĩ, có nhiều ý tưởng sáng tạo khi giải quyết nhiệm vụ học tập"
+                }
+            },
+            {
+                triggers: ["hay giúp bạn", "hòa đồng", "thân thiện", "chia sẻ", "đoàn kết", "nhân ái"],
+                targets: ["Đạo đức", "Hoạt động trải nghiệm", "NL_CHUNG", "PHAM_CHAT"],
+                phrases: {
+                    "Đạo đức": "biết quan tâm, chia sẻ và sẵn sàng giúp đỡ bạn bè",
+                    "Hoạt động trải nghiệm": "nhiệt tình, hòa đồng và luôn hỗ trợ bạn trong hoạt động tập thể",
+                    "NL_CHUNG": "giao tiếp thân thiện, biết lắng nghe và hợp tác ăn ý với các bạn trong nhóm",
+                    "PHAM_CHAT": "giàu lòng nhân ái, sống chan hòa, đoàn kết và yêu quý bạn bè"
+                }
+            },
+            {
+                triggers: ["lễ phép", "ngoan", "vâng lời", "kính trọng"],
+                targets: ["Đạo đức", "Hoạt động trải nghiệm", "PHAM_CHAT"],
+                phrases: {
+                    "Đạo đức": "ngoan ngoãn, lễ phép với thầy cô và người lớn",
+                    "Hoạt động trải nghiệm": "cư xử văn minh, lễ phép và chấp hành nghiêm túc nội quy",
+                    "PHAM_CHAT": "chăm ngoan, lễ phép, kính trọng thầy cô và người lớn tuổi"
+                }
+            },
+            {
+                triggers: ["chăm chỉ", "tự giác", "tự chủ", "chuẩn bị bài", "chuyên cần", "hoàn thành tốt"],
+                targets: ["NL_CHUNG", "PHAM_CHAT", "Tiếng việt", "Toán"],
+                phrases: {
+                    "NL_CHUNG": "có ý thức tự chủ và tự học cao, luôn tự giác hoàn thành nhiệm vụ",
+                    "PHAM_CHAT": "chăm chỉ, chuyên cần, luôn chuẩn bị bài chu đáo trước khi đến lớp",
+                    "Tiếng việt": "chăm chỉ rèn luyện và chuẩn bị bài chu đáo",
+                    "Toán": "tự giác làm bài tập và rèn kỹ năng giải toán đều đặn"
+                }
+            },
+            {
+                triggers: ["hợp tác", "nhóm", "phát biểu", "sôi nổi", "tự tin", "giao tiếp"],
+                targets: ["NL_CHUNG", "Hoạt động trải nghiệm", "Tiếng việt", "Lịch sử và Địa lý"],
+                phrases: {
+                    "NL_CHUNG": "mạnh dạn, tự tin trong giao tiếp, tích cực trao đổi khi làm việc nhóm",
+                    "Hoạt động trải nghiệm": "hăng hái tham gia phong trào, tự tin thể hiện bản thân trước tập thể",
+                    "Tiếng việt": "hăng hái phát biểu xây dựng bài, trình bày ý kiến rõ ràng",
+                    "Lịch sử và Địa lý": "tích cực thảo luận nhóm và trình bày bài tự tin"
+                }
+            },
+            {
+                triggers: ["văn nghệ", "vẽ đẹp", "thẩm mĩ", "hát hay"],
+                targets: ["NL_DACTHU", "Hoạt động trải nghiệm"],
+                phrases: {
+                    "NL_DACTHU": "có năng khiếu thẩm mĩ tốt, biết cảm thụ và thể hiện sáng tạo cái đẹp",
+                    "Hoạt động trải nghiệm": "tích cực, tỏa sáng trong các hoạt động văn nghệ, thẩm mĩ của lớp"
+                }
+            },
+            {
+                triggers: ["thể thao", "nhanh nhẹn", "thể chất", "năng động"],
+                targets: ["NL_DACTHU", "Hoạt động trải nghiệm"],
+                phrases: {
+                    "NL_DACTHU": "năng lực thể chất tốt, nhanh nhẹn, tích cực rèn luyện sức khỏe",
+                    "Hoạt động trải nghiệm": "năng động, nhiệt huyết trong các trò chơi vận động tập thể"
+                }
+            },
+            {
+                triggers: ["khoa học", "khám phá", "tự nhiên"],
+                targets: ["Khoa học", "Lịch sử và Địa lý", "NL_DACTHU"],
+                phrases: {
+                    "Khoa học": "say mê tìm tòi, quan sát các hiện tượng tự nhiên",
+                    "Lịch sử và Địa lý": "ham tìm hiểu về thiên nhiên và truyền thống lịch sử",
+                    "NL_DACTHU": "có năng lực tìm hiểu tự nhiên và xã hội tốt"
+                }
+            },
+            {
+                triggers: ["công nghệ", "tin học", "máy tính"],
+                targets: ["TH-CN (Công nghệ)", "NL_DACTHU"],
+                phrases: {
+                    "TH-CN (Công nghệ)": "thao tác máy tính nhanh nhạy và thực hành công nghệ khéo léo",
+                    "NL_DACTHU": "sử dụng tốt các công cụ công nghệ, tin học phục vụ học tập"
+                }
+            },
+            {
+                triggers: ["trung thực", "trách nhiệm", "gương mẫu"],
+                targets: ["PHAM_CHAT", "Đạo đức", "Hoạt động trải nghiệm"],
+                phrases: {
+                    "PHAM_CHAT": "sống trung thực, ngay thẳng, có tinh thần trách nhiệm cao với tập thể",
+                    "Đạo đức": "gương mẫu, trung thực trong học tập và sinh hoạt",
+                    "Hoạt động trải nghiệm": "có trách nhiệm cao khi nhận nhiệm vụ chung của lớp"
+                }
+            },
+            {
+                triggers: ["cần tập trung", "lơ đễnh", "chưa tập trung"],
+                targets: ["NL_CHUNG", "Toán", "Tiếng việt"],
+                phrases: {
+                    "NL_CHUNG": "cần tập trung chú ý nghe giảng hơn trong giờ học",
+                    "Toán": "cần tập trung hơn khi nghe giảng và kiểm tra kỹ kết quả bài làm",
+                    "Tiếng việt": "cần tập trung chú ý hơn để nắm bài sâu và viết bài cẩn thận hơn"
+                }
+            },
+            {
+                triggers: ["rèn chữ", "chậm đọc", "cẩn thận hơn"],
+                targets: ["Tiếng việt", "Toán", "PHAM_CHAT"],
+                phrases: {
+                    "Tiếng việt": "cần kiên trì rèn viết chữ cẩn thận hơn và luyện đọc thêm ở nhà",
+                    "Toán": "cần rèn tính cẩn thận khi đặt tính và giải toán",
+                    "PHAM_CHAT": "cần rèn luyện thêm tính kiên trì, cẩn thận khi làm bài"
+                }
+            }
+        ];
+
+        // 4. NGÂN HÀNG MẪU CÂU CHUẨN THÔNG TƯ 27
+        const DEFAULT_COMMENT_BANK = {
+            "Tiếng việt": {
+                XS: [
+                    "Đọc to, rõ ràng, lưu loát và hiểu nội dung bài đọc rất tốt. Chữ viết đều đẹp, diễn đạt câu văn giàu hình ảnh.",
+                    "Hoàn thành xuất sắc môn Tiếng Việt. Kỹ năng đọc hiểu và viết văn tốt, trình bày bài sạch đẹp, sáng tạo.",
+                    "Đọc diễn cảm, trả lời đúng trọng tâm câu hỏi đọc hiểu. Vốn từ phong phú, viết đoạn văn mạch lạc, giàu cảm xúc."
+                ],
+                HTT: [
+                    "Đọc rõ ràng, trôi chảy, nắm được nội dung bài học. Chữ viết sạch sẽ, biết cách viết đoạn văn đúng yêu cầu.",
+                    "Hoàn thành tốt môn Tiếng Việt. Đọc lưu loát, hiểu ý chính văn bản và trình bày bài viết cẩn thận.",
+                    "Có kỹ năng đọc và viết tốt, nắm vững kiến thức từ và câu, tích cực phát biểu xây dựng bài."
+                ],
+                HT: ["Đọc được bài và trả lời được câu hỏi cơ bản. Cần rèn viết chữ đều nét hơn và kiểm tra chính tả."],
+                CCG: ["Em đọc còn chậm, cần chăm chỉ luyện đọc và rèn viết thêm ở nhà mỗi ngày nhé."]
+            },
+            "Toán": {
+                XS: [
+                    "Tư duy toán học nhạy bén, thực hiện các phép tính nhanh, chính xác và giải toán có lời văn rất tốt.",
+                    "Hoàn thành xuất sắc môn Toán. Trình bày lời giải khoa học, rõ ràng và vận dụng tốt kiến thức vào bài tập thực tế.",
+                    "Tiếp thu nhanh kiến thức toán học mới, tính toán thành thạo và giải đúng, sáng tạo các bài toán."
+                ],
+                HTT: [
+                    "Nắm vững kiến thức cơ bản, thực hiện tốt các phép tính và trình bày bài giải toán có lời văn rõ ràng.",
+                    "Hoàn thành tốt môn Toán. Biết vận dụng quy tắc tính toán vào làm bài tập đầy đủ, cẩn thận.",
+                    "Kỹ năng tính toán vững vàng, nắm chắc nội dung bài học và tích cực tham gia chữa bài trên lớp."
+                ],
+                HT: ["Thực hiện được các phép tính cơ bản. Cần cẩn thận hơn khi tính toán để tránh sai sót."],
+                CCG: ["Kỹ năng tính toán còn chậm, em cần ôn lại bảng tính và rèn làm bài tập thêm nhé."]
+            },
+            "Đạo đức": {
+                XS: ["Chăm ngoan, lễ phép, nắm vững chuẩn mực hành vi đạo đức và luôn gương mẫu thực hiện tốt trong cuộc sống."],
+                HTT: ["Ngoan ngoãn, lễ phép với thầy cô, hòa đồng cùng bạn bè và thực hiện tốt quy định của trường, lớp."],
+                HT: ["Nắm được nội dung bài học đạo đức, ngoan ngoãn, biết vâng lời thầy cô."],
+                CCG: ["Cần chú ý thực hiện nghiêm túc hơn nội quy lớp học và hòa đồng cùng các bạn."]
+            },
+            "Khoa học": {
+                XS: ["Ham tìm tòi, khám phá, nắm vững kiến thức khoa học và vận dụng rất tốt vào bảo vệ sức khỏe, môi trường."],
+                HTT: ["Nắm vững kiến thức bài học, biết liên hệ thực tế để chăm sóc sức khỏe bản thân và giữ vệ sinh chung."],
+                HT: ["Nắm được kiến thức cơ bản của môn học. Cần mạnh dạn phát biểu xây dựng bài hơn."],
+                CCG: ["Cần chú ý quan sát và lắng nghe giảng bài kỹ hơn để nắm vững kiến thức cơ bản."]
+            },
+            "Lịch sử và Địa lý": {
+                XS: ["Nắm vững kiến thức Lịch sử và Địa lý, sử dụng bản đồ, lược đồ thành thạo và trình bày sự kiện lưu loát."],
+                HTT: ["Hiểu và ghi nhớ tốt các sự kiện lịch sử, đặc điểm địa lý theo yêu cầu bài học. Tích cực thảo luận nhóm."],
+                HT: ["Nắm được nội dung cơ bản của bài học. Cần mạnh dạn hơn khi trình bày trên lớp."],
+                CCG: ["Cần đọc kỹ bài trong sách giáo khoa để ghi nhớ tốt hơn các sự kiện lịch sử, địa lý."]
+            },
+            "TH-CN (Công nghệ)": {
+                XS: ["Tiếp thu nhanh kiến thức Tin học và Công nghệ, thao tác thực hành khéo léo, an toàn và sáng tạo."],
+                HTT: ["Nắm vững kiến thức bài học, thực hành đúng quy trình kỹ thuật và giữ an toàn, vệ sinh khi thực hành."],
+                HT: ["Hoàn thành các bài tập và sản phẩm thực hành cơ bản theo hướng dẫn của giáo viên."],
+                CCG: ["Cần rèn luyện thêm thao tác thực hành cẩn thận, tỉ mỉ hơn."]
+            },
+            "Hoạt động trải nghiệm": {
+                XS: ["Nhiệt tình, năng động và sáng tạo trong mọi hoạt động trải nghiệm. Luôn tự tin, gương mẫu trước tập thể."],
+                HTT: ["Tích cực, vui vẻ tham gia các hoạt động trải nghiệm của lớp và trường, hợp tác tốt với bạn bè."],
+                HT: ["Tham gia đầy đủ các hoạt động trải nghiệm của lớp. Cần mạnh dạn, tự tin hơn trước đám đông."],
+                CCG: ["Cần chủ động và mạnh dạn hơn khi tham gia các hoạt động tập thể cùng các bạn."]
+            },
+            "NL_CHUNG": {
+                XS: [
+                    "Đạt mức Tốt các năng lực chung: có ý thức tự chủ và tự học rất cao; giao tiếp tự tin, hợp tác nhóm hiệu quả và giải quyết vấn đề sáng tạo.",
+                    "Luôn tự giác hoàn thành tốt nhiệm vụ học tập, biết chủ động phối hợp với bạn bè và sáng tạo trong cách làm bài."
+                ],
+                HTT: [
+                    "Đạt yêu cầu về năng lực chung: tự giác trong học tập và sinh hoạt; biết lắng nghe, chia sẻ, hợp tác với bạn bè và hoàn thành nhiệm vụ.",
+                    "Có khả năng tự học và chuẩn bị bài đầy đủ; giao tiếp thân thiện, lịch sự và biết vận dụng kiến thức giải quyết bài tập."
+                ],
+                HT: ["Biết tự chuẩn bị đồ dùng học tập và tham gia làm việc nhóm cùng bạn. Cần mạnh dạn phát biểu hơn."],
+                CCG: ["Cần cố gắng rèn luyện thêm tính tự giác trong học tập và chủ động hỏi thầy cô, bạn bè khi chưa hiểu bài."]
+            },
+            "NL_DACTHU": {
+                XS: [
+                    "Đạt mức Tốt các năng lực đặc thù: diễn đạt ngôn ngữ mạch lạc, tính toán nhạy bén, vận dụng tốt khoa học - công nghệ và thẩm mĩ.",
+                    "Năng lực ngôn ngữ và tính toán vững vàng; giàu óc thẩm mĩ, nhanh nhẹn trong các hoạt động thể chất và tin học công nghệ."
+                ],
+                HTT: [
+                    "Đạt yêu cầu các năng lực đặc thù: diễn đạt rõ ràng, tính toán cẩn thận, nắm bắt được kiến thức khoa học, công nghệ và rèn luyện sức khỏe.",
+                    "Sử dụng được ngôn ngữ và phép tính trong học tập; biết vận dụng kiến thức các môn học vào thực hành cơ bản."
+                ],
+                HT: ["Đạt yêu cầu về năng lực ngôn ngữ, tính toán và các môn học. Cần rèn tính cẩn thận hơn."],
+                CCG: ["Cần cố gắng rèn luyện thêm kỹ năng đọc viết và tính toán cơ bản để theo kịp tiến độ chung của lớp."]
+            },
+            "PHAM_CHAT": {
+                XS: [
+                    "Đạt mức Tốt các phẩm chất chủ yếu: chăm ngoan, lễ phép, giàu lòng nhân ái, luôn trung thực, tự giác và có trách nhiệm cao với tập thể.",
+                    "Em là học sinh gương mẫu, chăm chỉ học tập, đoàn kết yêu thương bạn bè và luôn giữ chữ tín, trách nhiệm trong mọi việc."
+                ],
+                HTT: [
+                    "Đạt yêu cầu về phẩm chất: chăm chỉ học tập, đi học chuyên cần; ngoan ngoãn, lễ phép với thầy cô, đoàn kết và thân thiện với bạn bè.",
+                    "Có phẩm chất đạo đức đạt yêu cầu, trung thực trong học tập, biết quan tâm giúp đỡ bạn và hoàn thành việc được giao."
+                ],
+                HT: ["Ngoan ngoãn, lễ phép, đi học đều đặn và hòa đồng với bạn bè trong lớp."],
+                CCG: ["Em ngoan nhưng cần cố gắng rèn luyện thêm tính kiên trì, chăm chỉ làm bài và tập trung hơn trong giờ học."]
+            }
+        };
+
+        const STYLE_CLOSINGS = {
+            khichle: {
+                XS: ["Thầy/cô rất tự hào về em, hãy tiếp tục tỏa sáng nhé!", "Cần phát huy tinh thần học tập tuyệt vời này nhé!", "Chúc mừng em đã đạt kết quả thật đáng khen ngợi!"],
+                HTT: ["Phát huy đà tiến bộ này để gặt hái kết quả cao hơn nữa nhé!", "Thầy/cô rất vui trước sự nỗ lực đều đặn của em!", "Hãy tiếp tục giữ vững sự chăm chỉ này nhé!"],
+                HT: ["Cố gắng thêm một chút nữa em sẽ tiến bộ vượt bậc đấy!"],
+                CCG: ["Thầy/cô và các bạn luôn đồng hành cùng em cố gắng mỗi ngày nhé!"]
+            },
+            ancan: {
+                XS: ["Mong em luôn giữ vững nét chăm ngoan và học giỏi như hiện tại.", "Gia đình cùng nhà trường tiếp tục khích lệ để em phát triển toàn diện nhé."],
+                HTT: ["Em cứ duy trì thói quen học tập tốt và rèn luyện đều đặn mỗi ngày nhé.", "Rất khen ngợi tinh thần tự giác và sự cố gắng của em trên lớp."],
+                HT: ["Em chú ý ôn bài kỹ hơn ở nhà để nắm chắc kiến thức hơn nhé."],
+                CCG: ["Gia đình phối hợp động viên và nhắc nhở em rèn bài thêm ở nhà mỗi tối nhé."]
+            },
+            ngangon: {
+                XS: ["Cần phát huy tốt.", "Đáng khen ngợi."],
+                HTT: ["Tiếp tục phát huy.", "Hoàn thành tốt nhiệm vụ."],
+                HT: ["Cần cố gắng thêm."],
+                CCG: ["Cần nỗ lực rèn luyện thêm."]
+            },
+            nghiemtuc: {
+                XS: ["Đạt kết quả xuất sắc các mục tiêu đề ra."],
+                HTT: ["Đáp ứng tốt yêu cầu cần đạt của chương trình."],
+                HT: ["Đạt yêu cầu cơ bản, cần nâng cao tính cẩn thận."],
+                CCG: ["Cần tăng cường thời gian ôn tập để củng cố kiến thức cơ bản."]
+            }
+        };
+
+        // 5. BIẾN TRẠNG THÁI TOÀN CỤC
+        let currentWorkbookBuffer = null;
+        let currentOriginalFileName = "danhgia_dinhky_tt27_2020GK1_4_1.xlsx";
+        let currentFileMode = "MON_HOC";
+        let availableSheetsOrTargets = [];
+        let selectedTargets = new Set();
+        let activeStudentIdForChip = 0;
+        let studentsData = [];
+
+        let customCommentBank = JSON.parse(localStorage.getItem("THAYKHAIEDU_CUSTOM_BANK") || "{}");
+        let customPPCTStore = JSON.parse(localStorage.getItem("THAYKHAIEDU_PPCT_STORE") || "{}");
+        let userGeminiApiKey = localStorage.getItem("THAYKHAIEDU_GEMINI_KEY") || "";
+        let customSchoolDirective = localStorage.getItem("THAYKHAIEDU_DIRECTIVE") || "";
+
+        // 6. KHỞI TẠO KHI TẢI TRANG
+        window.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            renderQuickKeywordChips();
+            updateCustomBankBadge();
+            updateAIModeUI();
+            if (document.getElementById("customDirectiveTextarea")) {
+                document.getElementById("customDirectiveTextarea").value = customSchoolDirective;
+            }
+            loadDemoData("MON_HOC", true);
+            updatePPCTSummaryBox();
+        });
+
+        function renderQuickKeywordChips() {
+            const container = document.getElementById("quickKeywordChips");
+            container.innerHTML = QUICK_KEYWORDS.map(kw => `
+                <button type="button" onclick="insertQuickKeyword('${kw}')"
+                    class="px-3 py-1 rounded-xl bg-[#fffdf9] hover:bg-[#163832] hover:text-[#fce89c] text-[#2b1d0e] border-2 border-[#9c7444] text-sm font-bold transition shadow-sm">
+                    + ${kw}
+                </button>
+            `).join("");
+        }
+
+        function insertQuickKeyword(kw) {
+            if (!studentsData.length) return;
+            const targetIdx = activeStudentIdForChip < studentsData.length ? activeStudentIdForChip : 0;
+            const st = studentsData[targetIdx];
+            const currentKws = st.keywords ? st.keywords.split(",").map(s => s.trim()).filter(Boolean) : [];
+            if (!currentKws.includes(kw)) {
+                currentKws.push(kw);
+                st.keywords = currentKws.join(", ");
+                generateCommentsForSingleStudent(targetIdx);
+                renderStudentTable();
+                showToast(`Đã thêm "${kw}" cho HS: ${st.name}`);
+            }
+        }
+
+        // 7. LẤY KIẾN THỨC PHÂN PHỐI CHƯƠNG TRÌNH THEO GIAI ĐOẠN & MÔN HỌC
+        function getPPCTTopicsForSubject(period, categoryKey) {
+            const grade = document.getElementById("gradeSelect").value;
+            const customKey = `${grade}_${period}_${categoryKey}`;
+            if (customPPCTStore[customKey] && customPPCTStore[customKey].length > 0) {
+                return customPPCTStore[customKey];
+            }
+            const stageObj = DEFAULT_PPCT_DATABASE[period] || DEFAULT_PPCT_DATABASE["GK1"];
+            return stageObj[categoryKey] || [];
+        }
+
+        function onGradeOrPeriodChange() {
+            updatePPCTSummaryBox();
+            regenerateAllComments();
+        }
+
+        function onTogglePPCT() {
+            const enabled = document.getElementById("usePPCTToggle").checked;
+            const badge = document.getElementById("ppctActiveBadge");
+            badge.innerText = enabled ? "Đang bật" : "Đang tắt";
+            badge.className = enabled
+                ? "px-2 py-0.5 text-xs bg-[#16382c] text-[#fce89c] rounded-full font-extrabold"
+                : "px-2 py-0.5 text-xs bg-slate-600 text-white rounded-full font-extrabold";
+            updatePPCTSummaryBox();
+            regenerateAllComments();
+            showToast(enabled ? "Đã bật lồng ghép kiến thức Phân phối chương trình!" : "Đã tắt lồng ghép kiến thức PPCT.");
+        }
+
+        function updatePPCTSummaryBox() {
+            const grade = document.getElementById("gradeSelect").value;
+            const period = document.getElementById("periodSelect").value;
+            const periodNames = { GK1: "Giữa HK1", CK1: "Cuối HK1", GK2: "Giữa HK2", CK2: "Cuối năm" };
+            document.getElementById("ppctCurrentStageLabel").innerText = `Lớp ${grade} • ${periodNames[period] || period}`;
+
+            const activeTargetKey = document.getElementById("activePreviewTarget")?.value || "Tiếng việt";
+            const catKey = normalizeSubjectCategory(activeTargetKey);
+            const topics = getPPCTTopicsForSubject(period, catKey);
+            const usePPCT = document.getElementById("usePPCTToggle").checked;
+
+            const summaryText = topics.length > 0
+                ? `Trọng tâm ${catKey} (${periodNames[period]}): Em ${topics[0]}.`
+                : `Đang áp dụng chuẩn kiến thức Khối ${grade} giai đoạn ${periodNames[period]}.`;
+
+            document.getElementById("ppctPreviewSummaryText").innerText = summaryText;
+
+            const bannerEl = document.getElementById("activeSubjectPPCTBanner");
+            const bannerTextEl = document.getElementById("activeSubjectPPCTText");
+            if (usePPCT && topics.length > 0) {
+                bannerEl.classList.remove("hidden");
+                bannerTextEl.innerText = `Môn ${catKey} (${periodNames[period]}): Lồng ghép nội dung "${topics[0]}"`;
+            } else if (!usePPCT) {
+                bannerTextEl.innerText = "Đang tắt chế độ lồng ghép kiến thức chi tiết từ PPCT.";
+            } else {
+                bannerTextEl.innerText = `Đang áp dụng tiêu chí đánh giá ${catKey} chuẩn Thông tư 27.`;
+            }
+            updateFooterStats();
+        }
+
+        // 8. BỘ SINH LỜI NHẬN XÉT THÔNG MINH KẾT HỢP TỪ KHÓA + PPCT + PHONG CÁCH
+        function normalizeSubjectCategory(sheetName) {
+            const s = String(sheetName || "").toLowerCase();
+            if (s.includes("tiếng việt") || s.includes("tieng viet")) return "Tiếng việt";
+            if (s.includes("toán") || s.includes("toan")) return "Toán";
+            if (s.includes("đạo đức") || s.includes("dao duc")) return "Đạo đức";
+            if (s.includes("khoa học") || s.includes("tự nhiên") || s.includes("tnxh")) return "Khoa học";
+            if (s.includes("lịch sử") || s.includes("địa lý")) return "Lịch sử và Địa lý";
+            if (s.includes("công nghệ") || s.includes("tin học") || s.includes("th-cn")) return "TH-CN (Công nghệ)";
+            if (s.includes("trải nghiệm") || s.includes("hđtn")) return "Hoạt động trải nghiệm";
+            if (s === "nl_chung") return "NL_CHUNG";
+            if (s === "nl_dacthu") return "NL_DACTHU";
+            if (s === "pham_chat") return "PHAM_CHAT";
+            return "Hoạt động trải nghiệm";
+        }
+
+        function extractMatchedPhrasesFromKeywords(keywordsStr, categoryKey) {
+            if (!keywordsStr || !keywordsStr.trim()) return [];
+            const lowerKw = keywordsStr.toLowerCase();
+            const matchedPhrases = [];
+            for (const rule of SMART_KEYWORD_RULES) {
+                const hit = rule.triggers.some(t => lowerKw.includes(t));
+                if (hit && rule.targets.includes(categoryKey) && rule.phrases[categoryKey]) {
+                    matchedPhrases.push(rule.phrases[categoryKey]);
+                }
+            }
+            return matchedPhrases;
+        }
+
+        function buildSmartCommentForTarget(student, targetKey, seedOffset = 0) {
+            const categoryKey = normalizeSubjectCategory(targetKey);
+            const style = document.getElementById("styleSelect").value;
+            const period = document.getElementById("periodSelect").value;
+            const usePPCT = document.getElementById("usePPCTToggle").checked;
+            const isNLPCTarget = ["NL_CHUNG", "NL_DACTHU", "PHAM_CHAT"].includes(categoryKey);
+            // Chuẩn hóa mã mức đạt: T (Tốt/Hoàn thành tốt), H hoặc Đ (Hoàn thành/Đạt), C (Chưa hoàn thành/Cần cố gắng)
+            const rawLevel = student.level;
+            if (!["T", "H", "Đ", "C"].includes(rawLevel)) return "";
+            const numericStt = Number(student.stt);
+            const safeStt = Number.isSafeInteger(numericStt) && numericStt > 0 ? numericStt : 1;
+            const safeOffset = Number.isSafeInteger(seedOffset) && seedOffset >= 0 ? seedOffset : 0;
+            const bankKey = rawLevel === "T" ? "XS" : (rawLevel === "C" ? "CCG" : "HTT");
+
+            // 1. Lấy cụm từ khóa thực tế của học sinh
+            const matchedKeywordPhrases = extractMatchedPhrasesFromKeywords(student.keywords, categoryKey);
+
+            // 2. Lấy kiến thức PPCT của môn & giai đoạn hiện tại (Chỉ áp dụng cho môn học)
+            const ppctTopics = (usePPCT && !isNLPCTarget) ? getPPCTTopicsForSubject(period, categoryKey) : [];
+            const chosenPPCTTopic = ppctTopics.length > 0
+                ? ppctTopics[(safeStt + safeOffset) % ppctTopics.length]
+                : "";
+
+            // 3. Lấy câu nhận xét nền từ ngân hàng mẫu
+            let basePool = [];
+            if (customCommentBank[categoryKey] && customCommentBank[categoryKey].length > 0) {
+                basePool = customCommentBank[categoryKey];
+            } else {
+                const catObj = DEFAULT_COMMENT_BANK[categoryKey] || DEFAULT_COMMENT_BANK["Hoạt động trải nghiệm"];
+                basePool = catObj[bankKey] || catObj["HTT"];
+            }
+            const chosenBase = basePool[(safeStt + safeOffset) % basePool.length];
+
+            // 4. Lấy câu kết theo phong cách
+            const styleObj = STYLE_CLOSINGS[style] || STYLE_CLOSINGS.khichle;
+            const closingPool = styleObj[bankKey] || styleObj.HTT;
+            const chosenClosing = closingPool[(safeStt + safeOffset) % closingPool.length];
+
+            let finalComment = "";
+
+            if (matchedKeywordPhrases.length > 0 && chosenPPCTTopic && rawLevel !== "C") {
+                const kwPhrase = matchedKeywordPhrases[0];
+                if (style === "ngangon") {
+                    finalComment = `Em ${kwPhrase}; ${chosenPPCTTopic}.`;
+                } else {
+                    finalComment = `Em ${kwPhrase}, đồng thời ${chosenPPCTTopic}. ${chosenClosing}`;
+                }
+            } else if (matchedKeywordPhrases.length > 0) {
+                const joinedPhrases = matchedKeywordPhrases.slice(0, 2).join("; ");
+                if (style === "ngangon") {
+                    finalComment = `Em ${joinedPhrases}. ${chosenClosing}`;
+                } else {
+                    finalComment = `Em ${joinedPhrases}. ${chosenBase.split(".")[0]}. ${chosenClosing}`;
+                }
+            } else if (chosenPPCTTopic && rawLevel !== "C") {
+                const prefix = rawLevel === "T"
+                    ? "Hoàn thành tốt nội dung học tập: em"
+                    : "Hoàn thành yêu cầu bài học: em";
+                finalComment = `${prefix} ${chosenPPCTTopic}. ${chosenClosing}`;
+            } else {
+                finalComment = style === "ngangon" ? chosenBase : `${chosenBase} ${chosenClosing}`;
+            }
+
+            if (finalComment.length > 485) {
+                finalComment = finalComment.substring(0, 480) + "...";
+            }
+            return finalComment;
+        }
+
+        function generateCommentsForSingleStudent(studentIdx, seedOffset = 0) {
+            const st = studentsData[studentIdx];
+            if (!st) return;
+            if (!st.comments) st.comments = {};
+            availableSheetsOrTargets.forEach(target => {
+                st.comments[target.key] = buildSmartCommentForTarget(st, target.key, seedOffset);
+            });
+        }
+
+        function regenerateAllComments(withRandomSeed = false) {
+            const seed = withRandomSeed ? Math.floor(Math.random() * 100) + 1 : 0;
+            studentsData.forEach((_, idx) => generateCommentsForSingleStudent(idx, seed));
+            renderStudentTable();
+            updateFooterStats();
+            if (withRandomSeed) {
+                showToast("Đã đổi mới toàn bộ câu nhận xét kết hợp PPCT cho cả lớp!");
+            }
+        }
+
+        function applyDefaultLevelsToStudents() {
+            const mode = document.getElementById("defaultLevelMode").value;
+            const midCode = currentFileMode === "NLPC" ? "Đ" : "H";
+            studentsData.forEach((st, idx) => {
+                if (mode === "ALL_T" || mode === "ALL_XS") st.level = "T";
+                else if (mode === "ALL_MID" || mode === "ALL_HTT") st.level = midCode;
+                else if (mode === "3LEVELS") st.level = idx % 8 === 7 ? "C" : (idx % 2 === 0 ? "T" : midCode);
+                else st.level = idx % 2 === 0 ? "T" : midCode;
+            });
+            regenerateAllComments();
+            showToast(`Đã áp dụng mức đánh giá chuẩn Thông tư 27 (${currentFileMode === "NLPC" ? "T / Đ / C" : "T / H / C"})!`);
+        }
+
+        function syncTT27LevelLabelsByMode() {
+            const isNLPC = currentFileMode === "NLPC";
+            const hintBadge = document.getElementById("tt27ScaleHintBadge");
+            const opt2 = document.getElementById("opt2Levels");
+            const optT = document.getElementById("optAllT");
+            const optMid = document.getElementById("optAllMid");
+            const opt3 = document.getElementById("opt3Levels");
+            const colSub = document.getElementById("tableLevelColumnSub");
+
+            if (isNLPC) {
+                if (hintBadge) hintBadge.innerText = "NL & PC: T / Đ / C";
+                if (opt2) opt2.innerText = "Mặc định 2 mức: Tốt (T) & Đạt (Đ)";
+                if (optT) optT.innerText = "Đồng loạt mức Tốt (T)";
+                if (optMid) optMid.innerText = "Đồng loạt mức Đạt (Đ)";
+                if (opt3) opt3.innerText = "Phân hóa 3 mức: Tốt (T) / Đạt (Đ) / Cần cố gắng (C)";
+                if (colSub) colSub.innerText = "Năng lực & Phẩm chất: T / Đ / C";
+            } else {
+                if (hintBadge) hintBadge.innerText = "Môn học: T / H / C";
+                if (opt2) opt2.innerText = "Mặc định 2 mức: Hoàn thành tốt (T) & Hoàn thành (H)";
+                if (optT) optT.innerText = "Đồng loạt mức: Hoàn thành tốt (T)";
+                if (optMid) optMid.innerText = "Đồng loạt mức: Hoàn thành (H)";
+                if (opt3) opt3.innerText = "Phân hóa 3 mức: Hoàn thành tốt (T) / Hoàn thành (H) / Chưa HT (C)";
+                if (colSub) colSub.innerText = "Môn học & HĐGD: T / H / C";
+            }
+        }
+
+        // 9. NẠP DỮ LIỆU DEMO LỚP 4/1 & XỬ LÝ FILE EXCEL TẢI LÊN
+        function loadDemoData(mode, silent = false) {
+            currentFileMode = mode;
+            currentWorkbookBuffer = null;
+            const midCode = mode === "NLPC" ? "Đ" : "H";
+
+            if (mode === "MON_HOC") {
+                currentOriginalFileName = "danhgia_dinhky_tt27_2020GK1_4_1.xlsx";
+                availableSheetsOrTargets = [
+                    { key: "Tiếng việt", label: "Môn: Tiếng Việt" },
+                    { key: "Toán", label: "Môn: Toán" },
+                    { key: "Đạo đức", label: "Môn: Đạo đức" },
+                    { key: "Khoa học", label: "Môn: Khoa học" },
+                    { key: "Lịch sử và Địa lý", label: "Môn: Lịch sử và Địa lý" },
+                    { key: "TH-CN (Công nghệ)", label: "Môn: TH-CN (Công nghệ)" },
+                    { key: "Hoạt động trải nghiệm", label: "Môn: Hoạt động trải nghiệm" }
+                ];
+                document.getElementById("fileTypeBadge").innerText = "Mẫu Môn Học (T/H/C)";
+            } else {
+                currentOriginalFileName = "danhgia_nlpc_data_4_1_GK1.xlsx";
+                availableSheetsOrTargets = [
+                    { key: "NL_CHUNG", label: "Nhận xét Năng lực chung" },
+                    { key: "NL_DACTHU", label: "Nhận xét Năng lực đặc thù" },
+                    { key: "PHAM_CHAT", label: "Nhận xét Phẩm chất chủ yếu" }
+                ];
+                document.getElementById("fileTypeBadge").innerText = "Mẫu NL-PC (T/Đ/C)";
+            }
+
+            selectedTargets = new Set(availableSheetsOrTargets.map(t => t.key));
+            studentsData = SAMPLE_STUDENTS_4_1.map((item, idx) => ({
+                stt: item.stt,
+                code: item.code,
+                name: item.name,
+                dob: item.dob,
+                level: idx % 2 === 0 ? "T" : midCode,
+                keywords: item.kw,
+                comments: {}
+            }));
+
+            document.getElementById("loadedFileName").innerText = currentOriginalFileName;
+            document.getElementById("footerFileNamePreview").innerText = currentOriginalFileName;
+
+            syncTT27LevelLabelsByMode();
+            renderSubjectCheckboxes();
+            populatePreviewTargetSelect();
+            regenerateAllComments();
+            updatePPCTSummaryBox();
+
+            if (!silent) {
+                showToast(`Đã chuyển sang chế độ: ${mode === "MON_HOC" ? "7 Môn học (T / H / C)" : "Năng lực & Phẩm chất (T / Đ / C)"}`);
+            }
+        }
+
+        async function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                currentWorkbookBuffer = arrayBuffer;
+                currentOriginalFileName = file.name;
+
+                const workbook = new ExcelJS.Workbook();
+                await workbook.xlsx.load(arrayBuffer);
+
+                const sheetNames = workbook.worksheets.map(ws => ws.name);
+                const isNLPCFile = sheetNames.length <= 2 && workbook.worksheets[0] &&
+                    String(getCellValueSafe(workbook.worksheets[0].getRow(1).getCell(5))).toLowerCase().includes("năng lực");
+
+                if (isNLPCFile) {
+                    currentFileMode = "NLPC";
+                    availableSheetsOrTargets = [
+                        { key: "NL_CHUNG", label: "Nhận xét Năng lực chung" },
+                        { key: "NL_DACTHU", label: "Nhận xét Năng lực đặc thù" },
+                        { key: "PHAM_CHAT", label: "Nhận xét Phẩm chất chủ yếu" }
+                    ];
+                    document.getElementById("fileTypeBadge").innerText = "File NL & Phẩm Chất";
+                    parseStudentsFromSheet(workbook.worksheets[0], 3);
+                } else {
+                    currentFileMode = "MON_HOC";
+                    studentsData = [];
+                    const validSubjectSheets = workbook.worksheets.filter(ws => ws.name.toLowerCase() !== "huongdan");
+                    availableSheetsOrTargets = validSubjectSheets.map(ws => ({
+                        key: ws.name,
+                        label: `Môn: ${ws.name}`
+                    }));
+                    document.getElementById("fileTypeBadge").innerText = `File ${availableSheetsOrTargets.length} Môn Học`;
+                    if (validSubjectSheets.length > 0) {
+                        parseStudentsFromSheet(validSubjectSheets[0], 2);
+                    }
+                }
+
+                selectedTargets = new Set(availableSheetsOrTargets.map(t => t.key));
+                document.getElementById("loadedFileName").innerText = currentOriginalFileName;
+                document.getElementById("footerFileNamePreview").innerText = currentOriginalFileName;
+
+                syncTT27LevelLabelsByMode();
+                renderSubjectCheckboxes();
+                populatePreviewTargetSelect();
+                regenerateAllComments();
+                updatePPCTSummaryBox();
+                showToast(studentsData.length
+                    ? `Đã tải thành công file "${file.name}" (${studentsData.length} học sinh)!`
+                    : "File không có học sinh hợp lệ. Danh sách hiện tại đã được xóa.");
+            } catch (err) {
+                console.error(err);
+                showToast("Không thể đọc file Excel. Vui lòng chọn đúng file .xlsx hoặc .xls!");
+            }
+        }
+
+        function getCellValueSafe(cell) {
+            if (!cell || cell.value === null || cell.value === undefined) return "";
+            if (typeof cell.value === "object") {
+                if (cell.value.richText) return cell.value.richText.map(t => t.text).join("");
+                if (cell.value.result !== undefined) return String(cell.value.result);
+                if (cell.value instanceof Date) {
+                    const d = cell.value;
+                    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                }
+            }
+            return String(cell.value).trim();
+        }
+
+        function parseStudentsFromSheet(worksheet, startRow) {
+            const parsed = [];
+            worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+                if (rowNumber < startRow) return;
+                const sttVal = getCellValueSafe(row.getCell(1));
+                const codeVal = getCellValueSafe(row.getCell(2));
+                const nameVal = getCellValueSafe(row.getCell(3));
+                const dobVal = getCellValueSafe(row.getCell(4));
+                const existingLv = getCellValueSafe(row.getCell(5)).toUpperCase();
+
+                if (nameVal && nameVal.toLowerCase() !== "họ và tên") {
+                    const idx = parsed.length;
+                    let lv = "";
+                    if (["T", "H", "Đ", "C"].includes(existingLv)) {
+                        lv = existingLv === "H" && currentFileMode === "NLPC" ? "Đ" : (existingLv === "Đ" && currentFileMode === "MON_HOC" ? "H" : existingLv);
+                    }
+                    parsed.push({
+                        rowNumber: rowNumber,
+                        stt: sttVal || (idx + 1),
+                        code: codeVal,
+                        name: nameVal,
+                        dob: dobVal,
+                        level: lv,
+                        keywords: "",
+                        comments: {}
+                    });
+                }
+            });
+            studentsData = parsed;
+        }
+
+        // 10. ĐỌC FILE PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG (.XLSX, .DOCX, .PDF, .TXT, .CSV)
+        async function handlePPCTFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const ext = file.name.split(".").pop().toLowerCase();
+            showToast(`Đang phân tích file Phân phối chương trình "${file.name}"...`);
+
+            try {
+                let extractedLines = [];
+
+                if (ext === "txt" || ext === "csv") {
+                    const text = await file.text();
+                    extractedLines = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 12);
+                } else if (ext === "xlsx" || ext === "xls") {
+                    const buf = await file.arrayBuffer();
+                    const wb = new ExcelJS.Workbook();
+                    await wb.xlsx.load(buf);
+                    wb.worksheets.forEach(ws => {
+                        ws.eachRow(row => {
+                            const rowTexts = [];
+                            row.eachCell(cell => {
+                                const v = getCellValueSafe(cell);
+                                if (v && v.length > 4 && isNaN(v)) rowTexts.push(v);
+                            });
+                            const joined = rowTexts.join(" - ");
+                            if (joined.length > 15 && !joined.toLowerCase().includes("tuần") && !joined.toLowerCase().includes("tiết")) {
+                                extractedLines.push(joined);
+                            } else if (rowTexts.length >= 2) {
+                                const longest = rowTexts.sort((a, b) => b.length - a.length)[0];
+                                if (longest && longest.length > 12) extractedLines.push(longest);
+                            }
+                        });
+                    });
+                } else if (ext === "docx" && window.mammoth) {
+                    const buf = await file.arrayBuffer();
+                    const result = await window.mammoth.extractRawText({ arrayBuffer: buf });
+                    extractedLines = result.value.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 15);
+                } else if (ext === "pdf" && window.pdfjsLib) {
+                    const buf = await file.arrayBuffer();
+                    const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
+                    for (let p = 1; p <= Math.min(pdf.numPages, 15); p++) {
+                        const page = await pdf.getPage(p);
+                        const content = await page.getTextContent();
+                        const pageText = content.items.map(i => i.str).join(" ");
+                        pageText.split(/[.;\n]/).forEach(seg => {
+                            if (seg.trim().length > 18) extractedLines.push(seg.trim());
+                        });
+                    }
+                }
+
+                // Làm sạch và tạo câu kiến thức PPCT tự nhiên
+                const cleanTopics = Array.from(new Set(extractedLines))
+                    .slice(0, 12)
+                    .map(line => {
+                        const clean = line.replace(/^[-•*0-9.)\s]+/, "").trim();
+                        return clean.startsWith("nắm") || clean.startsWith("hiểu") || clean.startsWith("biết") || clean.startsWith("thực hiện")
+                            ? clean
+                            : `nắm vững nội dung bài học về "${clean}"`;
+                    });
+
+                if (cleanTopics.length > 0) {
+                    const grade = document.getElementById("gradeSelect").value;
+                    const period = document.getElementById("periodSelect").value;
+                    const activeTarget = document.getElementById("activePreviewTarget")?.value || "Tiếng việt";
+                    const catKey = normalizeSubjectCategory(activeTarget);
+
+                    const storeKey = `${grade}_${period}_${catKey}`;
+                    customPPCTStore[storeKey] = cleanTopics;
+                    localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
+
+                    // Mở modal PPCT để giáo viên kiểm tra ngay kết quả trích xuất
+                    document.getElementById("ppctModalGrade").value = grade;
+                    document.getElementById("ppctModalPeriod").value = period;
+                    document.getElementById("ppctModalSubject").value = catKey;
+                    document.getElementById("ppctModalTextarea").value = cleanTopics.join("\n");
+
+                    openModal("modalPPCT");
+                    updatePPCTSummaryBox();
+                    regenerateAllComments();
+                    showToast(`Đã trích xuất ${cleanTopics.length} chủ đề bài học từ file "${file.name}"!`);
+                } else {
+                    showToast("File không có đủ văn bản bài học. Thầy/cô có thể dán trực tiếp vào ô PPCT!");
+                    openModal("modalPPCT");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Đã mở khung PPCT để thầy/cô kiểm tra hoặc dán nội dung bài học.");
+                openModal("modalPPCT");
+            }
+        }
+
+        function loadPPCTModalContent() {
+            const grade = document.getElementById("ppctModalGrade").value;
+            const period = document.getElementById("ppctModalPeriod").value;
+            const subj = document.getElementById("ppctModalSubject").value;
+            const key = `${grade}_${period}_${subj}`;
+
+            const list = customPPCTStore[key] || ((DEFAULT_PPCT_DATABASE[period] && DEFAULT_PPCT_DATABASE[period][subj]) || []);
+            document.getElementById("ppctModalTextarea").value = list.join("\n");
+        }
+
+        function savePPCTModalContent() {
+            const grade = document.getElementById("ppctModalGrade").value;
+            const period = document.getElementById("ppctModalPeriod").value;
+            const subj = document.getElementById("ppctModalSubject").value;
+            const key = `${grade}_${period}_${subj}`;
+
+            const lines = document.getElementById("ppctModalTextarea").value
+                .split(/\r?\n/)
+                .map(s => s.trim())
+                .filter(s => s.length > 5);
+
+            customPPCTStore[key] = lines;
+            localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
+
+            // Đồng bộ ra ngoài nếu cùng khối/kỳ
+            document.getElementById("gradeSelect").value = grade;
+            document.getElementById("periodSelect").value = period;
+
+            updatePPCTSummaryBox();
+            regenerateAllComments();
+            closeModal("modalPPCT");
+            showToast(`Đã lưu Phân phối chương trình môn ${subj} (${period}) và cập nhật lời nhận xét!`);
+        }
+
+        function resetPPCTData() {
+            customPPCTStore = {};
+            localStorage.removeItem("THAYKHAIEDU_PPCT_STORE");
+            loadPPCTModalContent();
+            updatePPCTSummaryBox();
+            regenerateAllComments();
+            showToast("Đã khôi phục kho Phân phối chương trình chuẩn mặc định!");
+        }
+
+        // 11. PHẠM VI MÔN HỌC & BẢNG HỌC SINH TRUNG TÂM
+        function toggleSubjectSelectionScope() {
+            const scope = document.querySelector('input[name="subjectScope"]:checked').value;
+            const panel = document.getElementById("customSubjectsPanel");
+            if (scope === "CUSTOM") {
+                panel.classList.remove("hidden");
+            } else {
+                panel.classList.add("hidden");
+                selectedTargets = new Set(availableSheetsOrTargets.map(t => t.key));
+                populatePreviewTargetSelect();
+                renderStudentTable();
+                updateFooterStats();
+            }
+        }
+
+        function renderSubjectCheckboxes() {
+            const container = document.getElementById("subjectCheckboxesContainer");
+            container.innerHTML = availableSheetsOrTargets.map(t => `
+                <label class="flex items-center gap-2 p-2 rounded-lg border border-[#b59469] bg-[#fffdf9] cursor-pointer text-sm font-bold text-[#2b1d0e]">
+                    <input type="checkbox" value="${t.key}" ${selectedTargets.has(t.key) ? "checked" : ""}
+                        class="subject-checkbox w-4 h-4 accent-[#163832] rounded">
+                    <span class="truncate">${t.label.replace("Môn: ", "")}</span>
+                </label>
+            `).join("");
+        }
+
+        function selectAllSubjects(check) {
+            document.querySelectorAll(".subject-checkbox").forEach(cb => cb.checked = check);
+        }
+
+        function applySubjectFilter() {
+            const checked = Array.from(document.querySelectorAll(".subject-checkbox:checked")).map(cb => cb.value);
+            if (checked.length === 0) {
+                showToast("Vui lòng tích chọn ít nhất 1 môn học cần nhận xét!");
+                return;
+            }
+            selectedTargets = new Set(checked);
+            populatePreviewTargetSelect();
+            renderStudentTable();
+            updateFooterStats();
+            showToast(`Đã áp dụng nhận xét cho ${selectedTargets.size} môn học đã chọn!`);
+        }
+
+        function populatePreviewTargetSelect() {
+            const select = document.getElementById("activePreviewTarget");
+            const activeList = availableSheetsOrTargets.filter(t => selectedTargets.has(t.key));
+            select.innerHTML = activeList.map(t => `<option value="${t.key}">${t.label}</option>`).join("");
+            updatePreviewHeaderTitle();
+        }
+
+        function updatePreviewHeaderTitle() {
+            const select = document.getElementById("activePreviewTarget");
+            const selectedOption = select.options[select.selectedIndex];
+            const label = selectedOption ? selectedOption.text : "Nội dung nhận xét";
+            document.getElementById("previewColumnHeaderTitle").innerText = `${label} (Times New Roman, 11pt)`;
+            updatePPCTSummaryBox();
+        }
+
+        function renderStudentTable() {
+            updatePreviewHeaderTitle();
+            const tbody = document.getElementById("studentTableBody");
+            const searchKw = (document.getElementById("searchStudentInput").value || "").toLowerCase().trim();
+            const activeTargetKey = document.getElementById("activePreviewTarget").value || (availableSheetsOrTargets[0] && availableSheetsOrTargets[0].key);
+
+            document.getElementById("studentCountBadge").innerText = `${studentsData.length} học sinh`;
+
+            const filtered = studentsData.map((st, idx) => ({ st, idx })).filter(({ st }) =>
+                !searchKw || st.name.toLowerCase().includes(searchKw) || String(st.code).includes(searchKw)
+            );
+
+            const isNLPC = currentFileMode === "NLPC" || ["NL_CHUNG", "NL_DACTHU", "PHAM_CHAT"].includes(activeTargetKey);
+            const levelOptionsHTML = (currentLv) => {
+                if (isNLPC) {
+                    const normLv = (currentLv === "H" || currentLv === "HTT" || currentLv === "HT") ? "Đ" : (currentLv === "XS" ? "T" : (currentLv === "CCG" ? "C" : currentLv));
+                    return `
+                        <option value="" ${!normLv ? 'selected' : ''}>Chưa đánh giá</option>
+                        <option value="T" ${normLv === 'T' ? 'selected' : ''}>🌟 Tốt (Ký hiệu: T)</option>
+                        <option value="Đ" ${normLv === 'Đ' ? 'selected' : ''}>✅ Đạt (Ký hiệu: Đ)</option>
+                        <option value="C" ${normLv === 'C' ? 'selected' : ''}>🌱 Cần cố gắng (Ký hiệu: C)</option>
+                    `;
+                } else {
+                    const normLv = (currentLv === "Đ" || currentLv === "HTT" || currentLv === "HT") ? "H" : (currentLv === "XS" ? "T" : (currentLv === "CCG" ? "C" : currentLv));
+                    return `
+                        <option value="" ${!normLv ? 'selected' : ''}>Chưa đánh giá</option>
+                        <option value="T" ${normLv === 'T' ? 'selected' : ''}>🌟 Hoàn thành tốt (T)</option>
+                        <option value="H" ${normLv === 'H' ? 'selected' : ''}>✅ Hoàn thành (H)</option>
+                        <option value="C" ${normLv === 'C' ? 'selected' : ''}>🌱 Chưa hoàn thành (C)</option>
+                    `;
+                }
+            };
+
+            tbody.innerHTML = filtered.map(({ st, idx }) => {
+                const currentComment = (st.comments && st.comments[activeTargetKey]) || "";
+                const detectedTags = getDetectedCategoryBadges(st.keywords);
+
+                return `
+                <tr class="hover:bg-[#f6ebd4] transition ${idx === activeStudentIdForChip ? 'bg-[#f5e6c8]' : ''}" onclick="setActiveStudentRow(${idx})">
+                    <td class="py-3.5 px-3 text-center font-black text-[#5c3a21] text-base">${st.stt}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="font-extrabold text-[#1e1b18] text-base sm:text-lg">${st.name}</div>
+                        <div class="text-xs sm:text-sm text-[#6e522d] font-bold">Mã: ${st.code || '---'} • NS: ${st.dob || '---'}</div>
+                    </td>
+                    <td class="py-3.5 px-3">
+                        <select onchange="updateStudentLevel(${idx}, this.value)"
+                            class="w-full rounded-xl border-2 px-3 py-2 text-sm sm:text-base font-extrabold outline-none cursor-pointer shadow-sm ${getLevelSelectColorClass(st.level)}">
+                            ${levelOptionsHTML(st.level)}
+                        </select>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <input type="text" value="${escapeHtml(st.keywords)}"
+                            onfocus="setActiveStudentRow(${idx})"
+                            oninput="updateStudentKeywords(${idx}, this.value)"
+                            placeholder="VD: chữ đẹp, tính nhanh, hay giúp bạn..."
+                            class="w-full input-vintage rounded-xl px-3.5 py-2 text-sm sm:text-base">
+                        <div class="flex flex-wrap gap-1.5 mt-1.5">
+                            ${detectedTags}
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <textarea rows="2"
+                            oninput="updateManualComment(${idx}, '${activeTargetKey}', this.value)"
+                            style="font-family: 'Times New Roman', Times, serif; font-size: 16.5px;"
+                            class="w-full rounded-xl border-2 border-[#b59469] focus:border-[#163832] p-2.5 text-[#1a1612] font-medium bg-[#fffefb] outline-none leading-snug resize-none shadow-inner">${escapeHtml(currentComment)}</textarea>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                        <button type="button" onclick="shuffleSingleStudentComment(${idx}, '${activeTargetKey}')"
+                            title="Đổi câu nhận xét khác cho học sinh này"
+                            class="btn-3d-cream p-2.5 rounded-xl inline-flex items-center justify-center">
+                            <i data-lucide="dices" class="w-5 h-5 text-[#163832]"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join("");
+
+            lucide.createIcons();
+        }
+
+        function setActiveStudentRow(idx) {
+            activeStudentIdForChip = idx;
+        }
+
+        function getLevelSelectColorClass(level) {
+            if (!level) return "bg-slate-100 text-slate-950 border-slate-400";
+            if (level === "T" || level === "XS") return "bg-emerald-100 text-emerald-950 border-emerald-700";
+            if (level === "H" || level === "Đ" || level === "HTT") return "bg-amber-100 text-amber-950 border-amber-700";
+            return "bg-rose-100 text-rose-950 border-rose-700";
+        }
+
+        function getDetectedCategoryBadges(keywordsStr) {
+            if (!keywordsStr || !keywordsStr.trim()) {
+                return `<span class="text-xs text-[#6e522d] font-semibold italic">Tự động viết theo PPCT & Mức độ</span>`;
+            }
+            const lower = keywordsStr.toLowerCase();
+            const badges = new Set();
+            SMART_KEYWORD_RULES.forEach(r => {
+                if (r.triggers.some(t => lower.includes(t))) {
+                    r.targets.forEach(target => {
+                        if (target === "NL_CHUNG") badges.add("NL Chung");
+                        else if (target === "NL_DACTHU") badges.add("NL Đặc thù");
+                        else if (target === "PHAM_CHAT") badges.add("Phẩm chất");
+                        else if (target === "TH-CN (Công nghệ)") badges.add("Công nghệ");
+                        else if (target === "Hoạt động trải nghiệm") badges.add("HĐTN");
+                        else if (target === "Lịch sử và Địa lý") badges.add("LS&ĐL");
+                        else badges.add(target);
+                    });
+                }
+            });
+            if (badges.size === 0) {
+                return `<span class="text-xs text-[#163832] font-bold">Đã ghi nhận từ khóa</span>`;
+            }
+            return Array.from(badges).slice(0, 4).map(b =>
+                `<span class="px-2 py-0.5 rounded-md bg-[#163832] text-[#fce89c] text-xs font-bold">→ ${b}</span>`
+            ).join("");
+        }
+
+        function updateStudentLevel(idx, newLevel) {
+            studentsData[idx].level = newLevel;
+            generateCommentsForSingleStudent(idx);
+            renderStudentTable();
+        }
+
+        function updateStudentKeywords(idx, newKw) {
+            studentsData[idx].keywords = newKw;
+            generateCommentsForSingleStudent(idx);
+            renderStudentTable();
+            const inputs = document.querySelectorAll('#studentTableBody input[type="text"]');
+            if (inputs[idx]) {
+                inputs[idx].focus();
+                const len = inputs[idx].value.length;
+                inputs[idx].setSelectionRange(len, len);
+            }
+        }
+
+        function updateManualComment(idx, targetKey, newText) {
+            if (!studentsData[idx].comments) studentsData[idx].comments = {};
+            studentsData[idx].comments[targetKey] = newText;
+        }
+
+        function shuffleSingleStudentComment(idx, targetKey) {
+            const randomSeed = Math.floor(Math.random() * 50) + 1;
+            studentsData[idx].comments[targetKey] = buildSmartCommentForTarget(studentsData[idx], targetKey, randomSeed);
+            renderStudentTable();
+        }
+
+        function updateFooterStats() {
+            const usePPCT = document.getElementById("usePPCTToggle").checked;
+            document.getElementById("statTotalStudents").innerText = `• Tổng số: ${studentsData.length} học sinh`;
+            document.getElementById("statTotalSubjects").innerText = `• Số môn/mục nhận xét: ${selectedTargets.size}`;
+            document.getElementById("statPPCTStatus").innerText = `• Kiến thức PPCT: ${usePPCT ? "Đang lồng ghép" : "Đang tắt"}`;
+        }
+
+        function escapeHtml(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        // 12. XUẤT FILE EXCEL GIỮ NGUYÊN 100% ĐỊNH DẠNG GỐC, TÊN FILE & FONT TIMES NEW ROMAN 11
+        async function exportExcelFile() {
+            const periodCode = document.getElementById("periodSelect").value;
+            const autoFillCode = document.getElementById("autoFillLevelCode").checked;
+
+            showToast("Đang đóng gói File Excel chuẩn Times New Roman (Size 11)...");
+
+            try {
+                let workbook = new ExcelJS.Workbook();
+                if (currentWorkbookBuffer) {
+                    await workbook.xlsx.load(currentWorkbookBuffer);
+                } else {
+                    workbook = await buildStandardIndustryWorkbook(currentFileMode);
+                }
+
+                const standardFont = { name: "Times New Roman", size: 11 };
+
+                if (currentFileMode === "MON_HOC") {
+                    workbook.worksheets.forEach(ws => {
+                        if (ws.name.toLowerCase() === "huongdan") return;
+                        if (!selectedTargets.has(ws.name)) return;
+
+                        studentsData.forEach((st, idx) => {
+                            const rowNum = st.rowNumber || (idx + 2);
+                            const row = ws.getRow(rowNum);
+
+                            if (autoFillCode && ["T", "H", "Đ", "C"].includes(st.level)) {
+                                const levelCell = row.getCell(5);
+                                if (!getCellValueSafe(levelCell)) {
+                                    // Môn học chuẩn TT27: T (Hoàn thành tốt), H (Hoàn thành), C (Chưa hoàn thành)
+                                    levelCell.value = st.level === "T" ? "T" : (st.level === "C" ? "C" : "H");
+                                }
+                            }
+
+                            const commentCell = row.getCell(8);
+                            commentCell.value = (st.comments && st.comments[ws.name]) || buildSmartCommentForTarget(st, ws.name);
+                            row.getCell(9).value = periodCode;
+
+                            for (let c = 1; c <= 9; c++) {
+                                const cell = row.getCell(c);
+                                cell.font = Object.assign({}, cell.font || {}, standardFont);
+                                if (c === 8) {
+                                    cell.alignment = Object.assign({}, cell.alignment || {}, { vertical: "middle", wrapText: true });
+                                }
+                            }
+                            row.commit();
+                        });
+                    });
+                } else {
+                    const ws = workbook.worksheets[0];
+                    if (ws) {
+                        studentsData.forEach((st, idx) => {
+                            const rowNum = st.rowNumber || (idx + 3);
+                            const row = ws.getRow(rowNum);
+
+                            if (autoFillCode && ["T", "H", "Đ", "C"].includes(st.level)) {
+                                // Năng lực & Phẩm chất chuẩn TT27: T (Tốt), Đ (Đạt), C (Cần cố gắng)
+                                const codeVal = st.level === "T" ? "T" : (st.level === "C" ? "C" : "Đ");
+                                for (let c = 5; c <= 19; c++) {
+                                    const cell = row.getCell(c);
+                                    if (!getCellValueSafe(cell)) cell.value = codeVal;
+                                }
+                            }
+
+                            if (selectedTargets.has("NL_CHUNG")) {
+                                row.getCell(21).value = (st.comments && st.comments["NL_CHUNG"]) || buildSmartCommentForTarget(st, "NL_CHUNG");
+                            }
+                            if (selectedTargets.has("NL_DACTHU")) {
+                                row.getCell(23).value = (st.comments && st.comments["NL_DACTHU"]) || buildSmartCommentForTarget(st, "NL_DACTHU");
+                            }
+                            if (selectedTargets.has("PHAM_CHAT")) {
+                                row.getCell(25).value = (st.comments && st.comments["PHAM_CHAT"]) || buildSmartCommentForTarget(st, "PHAM_CHAT");
+                            }
+                            row.getCell(26).value = periodCode;
+
+                            for (let c = 1; c <= 26; c++) {
+                                const cell = row.getCell(c);
+                                cell.font = Object.assign({}, cell.font || {}, standardFont);
+                                if (c === 21 || c === 23 || c === 25) {
+                                    cell.alignment = Object.assign({}, cell.alignment || {}, { vertical: "middle", wrapText: true });
+                                }
+                            }
+                            row.commit();
+                        });
+                    }
+                }
+
+                const buffer = await workbook.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                saveAs(blob, currentOriginalFileName);
+
+                showToast(`Đã xuất file "${currentOriginalFileName}" thành công!`);
+            } catch (err) {
+                console.error(err);
+                showToast("Có lỗi khi xuất file Excel. Vui lòng thử lại!");
+            }
+        }
+
+        async function buildStandardIndustryWorkbook(mode) {
+            const wb = new ExcelJS.Workbook();
+            const headerFont = { name: "Times New Roman", size: 11, bold: true };
+            const bodyFont = { name: "Times New Roman", size: 11 };
+            const thinBorder = {
+                top: { style: "thin" }, left: { style: "thin" },
+                bottom: { style: "thin" }, right: { style: "thin" }
+            };
+            const headerFill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFD9E1F2" } };
+
+            if (mode === "MON_HOC") {
+                const subjects = ["Tiếng việt", "Toán", "Đạo đức", "Khoa học", "Lịch sử và Địa lý", "TH-CN (Công nghệ)", "Hoạt động trải nghiệm"];
+                subjects.forEach(subName => {
+                    const ws = wb.addWorksheet(subName);
+                    ws.columns = [
+                        { width: 6 }, { width: 15 }, { width: 26 }, { width: 14 },
+                        { width: 14 }, { width: 12 }, { width: 14 }, { width: 58 }, { width: 18 }
+                    ];
+                    const hRow = ws.getRow(1);
+                    hRow.values = ["STT", "Mã học sinh", "Họ và tên", "Ngày sinh", "Mức đạt được", "Điểm KTĐK", "Mã nhận xét", "Nội dung nhận xét", "Thời điểm đánh giá"];
+                    hRow.height = 26;
+                    for (let c = 1; c <= 9; c++) {
+                        const cell = hRow.getCell(c);
+                        cell.font = headerFont;
+                        cell.fill = headerFill;
+                        cell.border = thinBorder;
+                        cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
+                    }
+                    studentsData.forEach((st, i) => {
+                        const r = ws.getRow(i + 2);
+                        r.values = [st.stt, st.code, st.name, st.dob, "", "", "", "", document.getElementById("periodSelect").value];
+                        r.height = 30;
+                        for (let c = 1; c <= 9; c++) {
+                            const cell = r.getCell(c);
+                            cell.font = bodyFont;
+                            cell.border = thinBorder;
+                            cell.alignment = { vertical: "middle", horizontal: (c === 3 || c === 8) ? "left" : "center", wrapText: true };
+                        }
+                    });
+                });
+            } else {
+                const ws = wb.addWorksheet("Sheet1");
+                const r1 = ws.getRow(1);
+                const r2 = ws.getRow(2);
+                r1.values = [
+                    "STT", "Mã học sinh", "Họ và tên", "Ngày sinh",
+                    "Năng lực chung", "", "",
+                    "Năng lực đặc thù", "", "", "", "", "", "",
+                    "Phẩm chất chủ yếu", "", "", "", "",
+                    "Nhận xét năng lực chung", "",
+                    "Nhận xét năng lực đặc thù", "",
+                    "Nhận xét phẩm chất chủ yếu", "",
+                    "Thời điểm đánh giá"
+                ];
+                r2.values = [
+                    "", "", "", "",
+                    "Tự chủ và tự học", "Giao tiếp và hợp tác", "Giải quyết vấn đề và sáng tạo",
+                    "Ngôn ngữ", "Tính toán", "Khoa học", "Công nghệ", "Tin học", "Thẩm mĩ", "Thể chất",
+                    "Yêu nước", "Nhân ái", "Chăm chỉ", "Trung thực", "Trách nhiệm",
+                    "Mã nhận xét", "Nội dung",
+                    "Mã nhận xét", "Nội dung",
+                    "Mã nhận xét", "Nội dung",
+                    ""
+                ];
+                ws.mergeCells("A1:A2"); ws.mergeCells("B1:B2"); ws.mergeCells("C1:C2"); ws.mergeCells("D1:D2");
+                ws.mergeCells("E1:G1"); ws.mergeCells("H1:N1"); ws.mergeCells("O1:S1");
+                ws.mergeCells("T1:U1"); ws.mergeCells("V1:W1"); ws.mergeCells("X1:Y1"); ws.mergeCells("Z1:Z2");
+
+                for (let c = 1; c <= 26; c++) {
+                    ws.getColumn(c).width = (c === 3) ? 25 : ([21, 23, 25].includes(c) ? 48 : 13);
+                    [r1.getCell(c), r2.getCell(c)].forEach(cell => {
+                        cell.font = headerFont;
+                        cell.fill = headerFill;
+                        cell.border = thinBorder;
+                        cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
+                    });
+                }
+                studentsData.forEach((st, i) => {
+                    const r = ws.getRow(i + 3);
+                    r.values = [st.stt, st.code, st.name, st.dob];
+                    r.height = 32;
+                    for (let c = 1; c <= 26; c++) {
+                        const cell = r.getCell(c);
+                        cell.font = bodyFont;
+                        cell.border = thinBorder;
+                        cell.alignment = { vertical: "middle", horizontal: ([3, 21, 23, 25].includes(c)) ? "left" : "center", wrapText: true };
+                    }
+                });
+            }
+            return wb;
+        }
+
+        async function downloadSampleTemplate(mode) {
+            const wb = await buildStandardIndustryWorkbook(mode);
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            const fileName = mode === "MON_HOC" ? "danhgia_dinhky_tt27_2020GK1_4_1.xlsx" : "danhgia_nlpc_data_4_1_GK1.xlsx";
+            saveAs(blob, fileName);
+            showToast(`Đã tải file mẫu chuẩn: ${fileName}`);
+        }
+
+        // 13. QUẢN LÝ MODAL & NGÂN HÀNG MẪU CÂU
+        function openModal(id) {
+            const modalEl = document.getElementById(id);
+            if (!modalEl) return;
+            modalEl.classList.remove("hidden");
+            if (id === "modalBank") loadCustomBankCategoryPreview();
+            if (id === "modalPPCT") {
+                const gEl = document.getElementById("ppctModalGrade");
+                const pEl = document.getElementById("ppctModalPeriod");
+                if (gEl) gEl.value = document.getElementById("gradeSelect").value;
+                if (pEl) pEl.value = document.getElementById("periodSelect").value;
+                loadPPCTModalContent();
+            }
+            lucide.createIcons();
+        }
+
+        function closeModal(id) {
+            const modalEl = document.getElementById(id);
+            if (modalEl) modalEl.classList.add("hidden");
+        }
+
+        function loadCustomBankCategoryPreview() {
+            const cat = document.getElementById("bankCategorySelect").value;
+            const list = customCommentBank[cat] || (DEFAULT_COMMENT_BANK[cat] ? [...DEFAULT_COMMENT_BANK[cat].XS, ...DEFAULT_COMMENT_BANK[cat].HTT] : []);
+            document.getElementById("customBankTextarea").value = list.join("\n");
+        }
+
+        // KHẮC PHỤC TRIỆT ĐỂ ĐỌC MỌI FILE EXCEL (.XLSX, .XLS) TẠI MỤC NGÂN HÀNG MẪU NHẬN XÉT
+        async function handleBankFileUpload(event, fromSidebar = false) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const ext = file.name.split(".").pop().toLowerCase();
+            const selectedCat = document.getElementById("bankCategorySelect").value || "Tiếng việt";
+
+            showToast(`Đang đọc file mẫu nhận xét "${file.name}"...`);
+
+            try {
+                let totalImported = 0;
+                let importedCategories = new Set();
+
+                if (ext === "xlsx" || ext === "xls" || ext === "csv") {
+                    const buf = await file.arrayBuffer();
+                    // Dùng SheetJS (XLSX) để đọc được cả .xls (Excel 2003) lẫn .xlsx mọi cấu trúc
+                    const wb = XLSX.read(buf, { type: "array" });
+
+                    const allFallbackLines = [];
+
+                    wb.SheetNames.forEach(sheetName => {
+                        if (sheetName.toLowerCase() === "huongdan") return;
+                        const ws = wb.Sheets[sheetName];
+                        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+
+                        // Xem tên Sheet có trùng với môn học hoặc NLPC không
+                        const matchedSheetCat = detectBankCategoryByName(sheetName);
+                        const sheetLines = [];
+
+                        rows.forEach(row => {
+                            if (!Array.isArray(row)) return;
+                            row.forEach(cellVal => {
+                                const text = String(cellVal || "").trim();
+                                // Lọc các câu nhận xét hợp lệ (độ dài >= 12 ký tự, không phải tiêu đề bảng)
+                                if (
+                                    text.length >= 12 &&
+                                    isNaN(text) &&
+                                    !text.toLowerCase().includes("nội dung nhận xét") &&
+                                    !text.toLowerCase().includes("họ và tên") &&
+                                    !text.toLowerCase().includes("mã học sinh")
+                                ) {
+                                    sheetLines.push(text);
+                                    allFallbackLines.push(text);
+                                }
+                            });
+                        });
+
+                        const uniqueSheetLines = Array.from(new Set(sheetLines));
+                        if (matchedSheetCat && uniqueSheetLines.length > 0) {
+                            customCommentBank[matchedSheetCat] = uniqueSheetLines;
+                            importedCategories.add(matchedSheetCat);
+                            totalImported += uniqueSheetLines.length;
+                        }
+                    });
+
+                    // Nếu file Excel chỉ có Sheet1 chung chung, nạp vào mục đang chọn
+                    if (importedCategories.size === 0 && allFallbackLines.length > 0) {
+                        const uniqueAll = Array.from(new Set(allFallbackLines));
+                        customCommentBank[selectedCat] = uniqueAll;
+                        importedCategories.add(selectedCat);
+                        totalImported = uniqueAll.length;
+                    }
+                } else if (ext === "docx" && window.mammoth) {
+                    const buf = await file.arrayBuffer();
+                    const res = await window.mammoth.extractRawText({ arrayBuffer: buf });
+                    const lines = Array.from(new Set(res.value.split(/\r?\n/).map(s => s.trim()).filter(s => s.length >= 12)));
+                    if (lines.length > 0) {
+                        customCommentBank[selectedCat] = lines;
+                        importedCategories.add(selectedCat);
+                        totalImported = lines.length;
+                    }
+                } else {
+                    const text = await file.text();
+                    const lines = Array.from(new Set(text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length >= 12)));
+                    if (lines.length > 0) {
+                        customCommentBank[selectedCat] = lines;
+                        importedCategories.add(selectedCat);
+                        totalImported = lines.length;
+                    }
+                }
+
+                if (totalImported > 0) {
+                    localStorage.setItem("THAYKHAIEDU_CUSTOM_BANK", JSON.stringify(customCommentBank));
+                    updateCustomBankBadge();
+                    const firstImportedCat = Array.from(importedCategories)[0];
+                    if (firstImportedCat) {
+                        document.getElementById("bankCategorySelect").value = firstImportedCat;
+                    }
+                    loadCustomBankCategoryPreview();
+                    regenerateAllComments();
+
+                    const resultBanner = document.getElementById("bankUploadResultBanner");
+                    const resultText = document.getElementById("bankUploadResultText");
+                    if (resultBanner && resultText) {
+                        resultBanner.classList.remove("hidden");
+                        resultText.innerText = `Đã nạp thành công ${totalImported} mẫu câu nhận xét từ file "${file.name}" (${importedCategories.size} danh mục)!`;
+                    }
+
+                    if (fromSidebar) {
+                        openModal("modalBank");
+                    }
+                    showToast(`Đã nạp thành công ${totalImported} mẫu câu từ "${file.name}" và áp dụng cho lớp!`);
+                } else {
+                    showToast("Không tìm thấy câu nhận xét (độ dài >= 12 ký tự) trong file. Vui lòng kiểm tra lại file!");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Lỗi khi đọc file mẫu câu. Thầy/cô vui lòng thử lại hoặc tải file mẫu chuẩn về xem!");
+            }
+        }
+
+        function detectBankCategoryByName(name) {
+            const s = String(name || "").toLowerCase();
+            if (s.includes("tiếng việt") || s.includes("tieng viet")) return "Tiếng việt";
+            if (s.includes("toán") || s.includes("toan")) return "Toán";
+            if (s.includes("đạo đức") || s.includes("dao duc")) return "Đạo đức";
+            if (s.includes("khoa học") || s.includes("tự nhiên") || s.includes("tnxh")) return "Khoa học";
+            if (s.includes("lịch sử") || s.includes("địa lý")) return "Lịch sử và Địa lý";
+            if (s.includes("công nghệ") || s.includes("tin học") || s.includes("th-cn")) return "TH-CN (Công nghệ)";
+            if (s.includes("trải nghiệm") || s.includes("hđtn")) return "Hoạt động trải nghiệm";
+            if (s.includes("năng lực chung") || s.includes("nl chung") || s === "nl_chung") return "NL_CHUNG";
+            if (s.includes("năng lực đặc thù") || s.includes("nl đặc thù") || s === "nl_dacthu") return "NL_DACTHU";
+            if (s.includes("phẩm chất") || s.includes("pham chat") || s === "pham_chat") return "PHAM_CHAT";
+            return null;
+        }
+
+        // Tải file Excel mẫu Ngân hàng câu nhận xét (.xlsx) chuẩn cho giáo viên
+        async function downloadSampleCommentBankExcel() {
+            const wb = new ExcelJS.Workbook();
+            const categories = ["Tiếng việt", "Toán", "Đạo đức", "Khoa học", "Lịch sử và Địa lý", "TH-CN (Công nghệ)", "Hoạt động trải nghiệm", "NL_CHUNG", "NL_DACTHU", "PHAM_CHAT"];
+
+            categories.forEach(cat => {
+                const ws = wb.addWorksheet(cat);
+                ws.columns = [{ width: 10 }, { width: 22 }, { width: 85 }];
+                const hRow = ws.getRow(1);
+                hRow.values = ["STT", "Mức đạt TT27", "Mẫu câu nhận xét tham khảo (Sửa hoặc thêm dòng tùy ý)"];
+                hRow.font = { name: "Times New Roman", size: 11, bold: true };
+
+                const catData = DEFAULT_COMMENT_BANK[cat] || DEFAULT_COMMENT_BANK["Tiếng việt"];
+                const isNLPC = ["NL_CHUNG", "NL_DACTHU", "PHAM_CHAT"].includes(cat);
+                let rowIdx = 2;
+                let stt = 1;
+
+                (catData.XS || []).forEach(sentence => {
+                    const r = ws.getRow(rowIdx++);
+                    r.values = [stt++, isNLPC ? "Tốt (T)" : "Hoàn thành tốt (T)", sentence];
+                    r.font = { name: "Times New Roman", size: 11 };
+                });
+                (catData.HTT || []).forEach(sentence => {
+                    const r = ws.getRow(rowIdx++);
+                    r.values = [stt++, isNLPC ? "Đạt (Đ)" : "Hoàn thành (H)", sentence];
+                    r.font = { name: "Times New Roman", size: 11 };
+                });
+                (catData.CCG || []).forEach(sentence => {
+                    const r = ws.getRow(rowIdx++);
+                    r.values = [stt++, isNLPC ? "Cần cố gắng (C)" : "Chưa hoàn thành (C)", sentence];
+                    r.font = { name: "Times New Roman", size: 11 };
+                });
+            });
+
+            const buffer = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            saveAs(blob, "NganHang_MauNhanXet_ThayKhaiEdu_TT27.xlsx");
+            showToast("Đã tải file mẫu: NganHang_MauNhanXet_ThayKhaiEdu_TT27.xlsx");
+        }
+
+        function saveCustomBank() {
+            const cat = document.getElementById("bankCategorySelect").value;
+            const lines = document.getElementById("customBankTextarea").value
+                .split(/\r?\n/)
+                .map(s => s.trim())
+                .filter(s => s.length > 5);
+
+            customCommentBank[cat] = lines;
+            localStorage.setItem("THAYKHAIEDU_CUSTOM_BANK", JSON.stringify(customCommentBank));
+            updateCustomBankBadge();
+            regenerateAllComments();
+            closeModal("modalBank");
+            showToast(`Đã lưu ${lines.length} câu mẫu cho mục "${cat}"!`);
+        }
+
+        function resetCustomBank() {
+            customCommentBank = {};
+            localStorage.removeItem("THAYKHAIEDU_CUSTOM_BANK");
+            loadCustomBankCategoryPreview();
+            updateCustomBankBadge();
+            regenerateAllComments();
+            showToast("Đã khôi phục ngân hàng câu mặc định!");
+        }
+
+        function updateCustomBankBadge() {
+            const badge = document.getElementById("customBankBadge");
+            const sidebarStatus = document.getElementById("sidebarBankStatusText");
+            const countCats = Object.keys(customCommentBank).length;
+            if (countCats > 0) {
+                badge.classList.remove("hidden");
+                badge.innerText = `Đã nạp (${countCats} mục)`;
+                if (sidebarStatus) {
+                    sidebarStatus.innerText = `Đã nạp mẫu câu riêng (${countCats} môn/mục)`;
+                }
+            } else {
+                badge.classList.add("hidden");
+                if (sidebarStatus) {
+                    sidebarStatus.innerText = "Đang dùng: Kho câu chuẩn TT27 tích hợp sẵn";
+                }
+            }
+        }
+
+        // 14. QUẢN LÝ QUY TẮC THÔNG TƯ 27 BỔ SUNG & GEMINI API KEY (CHẾ ĐỘ KÉP)
+        async function handleCustomDirectiveUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const ext = file.name.split(".").pop().toLowerCase();
+            try {
+                let text = "";
+                if (ext === "docx" && window.mammoth) {
+                    const buf = await file.arrayBuffer();
+                    const res = await window.mammoth.extractRawText({ arrayBuffer: buf });
+                    text = res.value;
+                } else if (ext === "xlsx" || ext === "xls") {
+                    const buf = await file.arrayBuffer();
+                    const wb = XLSX.read(buf, { type: "array" });
+                    const firstSheet = wb.Sheets[wb.SheetNames[0]];
+                    text = XLSX.utils.sheet_to_txt(firstSheet);
+                } else {
+                    text = await file.text();
+                }
+                const clean = text.trim().substring(0, 1500);
+                document.getElementById("customDirectiveTextarea").value = clean;
+                showToast(`Đã nạp nội dung văn bản "${file.name}"!`);
+            } catch (e) {
+                showToast("Không thể đọc file văn bản, thầy/cô có thể dán trực tiếp nội dung vào ô.");
+            }
+        }
+
+        function saveCustomDirective() {
+            customSchoolDirective = document.getElementById("customDirectiveTextarea").value.trim();
+            localStorage.setItem("THAYKHAIEDU_DIRECTIVE", customSchoolDirective);
+            closeModal("modalTT27Rules");
+            showToast("Đã lưu quy tắc chỉ đạo bổ sung!");
+        }
+
+        function updateAIModeUI() {
+            const headerBadge = document.getElementById("aiModeBadgeHeader");
+            const btnGemini = document.getElementById("btnGenerateWithGeminiAI");
+            const keyInput = document.getElementById("geminiApiKeyInput");
+            if (keyInput) keyInput.value = userGeminiApiKey;
+
+            if (userGeminiApiKey && userGeminiApiKey.trim().length > 10) {
+                if (headerBadge) headerBadge.innerText = "Chế độ: Gemini AI + TT27";
+                if (btnGemini) btnGemini.classList.remove("hidden");
+            } else {
+                if (headerBadge) headerBadge.innerText = "Chế độ: Miễn phí 100%";
+                if (btnGemini) btnGemini.classList.add("hidden");
+            }
+        }
+
+        function saveGeminiApiKey() {
+            userGeminiApiKey = (document.getElementById("geminiApiKeyInput").value || "").trim();
+            localStorage.setItem("THAYKHAIEDU_GEMINI_KEY", userGeminiApiKey);
+            updateAIModeUI();
+            closeModal("modalAIKey");
+            if (userGeminiApiKey) {
+                showToast("Đã lưu Gemini API Key! Nút 'Viết bằng Gemini AI' đã hiển thị trên màn hình chính.");
+            } else {
+                showToast("Đang sử dụng Chế độ Miễn phí 100% nội bộ (Không cần API Key).");
+            }
+        }
+
+        function clearGeminiApiKey() {
+            userGeminiApiKey = "";
+            localStorage.removeItem("THAYKHAIEDU_GEMINI_KEY");
+            document.getElementById("geminiApiKeyInput").value = "";
+            updateAIModeUI();
+            showToast("Đã xóa Key và chuyển về Chế độ Miễn phí 100% nội bộ!");
+        }
+
+        async function generateAllWithGeminiAI() {
+            if (!userGeminiApiKey) {
+                openModal("modalAIKey");
+                return;
+            }
+            const activeTargetKey = document.getElementById("activePreviewTarget").value || "Tiếng việt";
+            const grade = document.getElementById("gradeSelect").value;
+            const period = document.getElementById("periodSelect").value;
+            const catKey = normalizeSubjectCategory(activeTargetKey);
+            const ppctList = getPPCTTopicsForSubject(period, catKey);
+
+            showToast(`Đang gọi Gemini AI viết nhận xét "${activeTargetKey}" cho ${studentsData.length} học sinh...`);
+
+            try {
+                const studentPayload = studentsData.map(st => ({
+                    stt: st.stt,
+                    name: st.name,
+                    level: st.level,
+                    keywords: st.keywords || ""
+                }));
+
+                const promptText = `Bạn là giáo viên tiểu học giàu kinh nghiệm. Hãy viết lời nhận xét chuẩn Thông tư 27/2020/TT-BGDĐT cho danh sách học sinh Lớp ${grade}, kỳ ${period}, danh mục "${activeTargetKey}".
+Kiến thức Phân phối chương trình giai đoạn này: ${ppctList.join("; ")}.
+Quy định bổ sung: ${customSchoolDirective || "Ngắn gọn, khích lệ vì sự tiến bộ của học sinh, dưới 400 ký tự mỗi em"}.
+Mức đánh giá: T là Hoàn thành tốt/Tốt, H hoặc Đ là Hoàn thành/Đạt, C là Chưa hoàn thành/Cần cố gắng.
+Trả về JSON array gồm các object: [{"stt": number, "comment": string}].
+Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
+
+                const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(userGeminiApiKey)}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                const data = await resp.json();
+                const rawJson = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (rawJson) {
+                    const parsedArr = JSON.parse(rawJson);
+                    parsedArr.forEach(item => {
+                        const found = studentsData.find(s => Number(s.stt) === Number(item.stt));
+                        if (found && item.comment) {
+                            found.comments[activeTargetKey] = item.comment.trim();
+                        }
+                    });
+                    renderStudentTable();
+                    showToast(`Gemini AI đã viết xong nhận xét mục "${activeTargetKey}" cho cả lớp!`);
+                } else {
+                    throw new Error("Empty response");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Không thể kết nối Gemini API Key. App đã tự động dùng Bộ máy thông minh nội bộ!");
+                regenerateAllComments(true);
+            }
+        }
+
+        function showToast(msg) {
+            const box = document.getElementById("toastBox");
+            document.getElementById("toastMessage").innerText = msg;
+            box.classList.remove("hidden");
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => box.classList.add("hidden"), 3800);
+        }
+    </script>
+</body>
+</html>

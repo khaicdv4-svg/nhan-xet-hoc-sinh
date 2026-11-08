@@ -1983,8 +1983,11 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 throw new Error('Danh sách kiến thức trong JSON cần có nội dung bài học thật, không để trống.');
             }
             const lines = topics.map(topic => topic.trim());
+            if (!context && isLegacyMathPPCTSample(lines)) {
+                throw new Error('File JSON này chỉ có 3 câu mẫu Toán về phân số (bản mẫu cũ), không phải PPCT thật. Hãy nạp file Excel PPCT của tổ.');
+            }
             if (context && hasMisassignedPPCT(lines, context.subject)) {
-                throw new Error(`File chỉ chứa ba câu mẫu Toán về phân số, không thể gán vào môn ${context.subject}. Cần PPCT thật theo đúng lớp và kỳ.`);
+                throw new Error(`File JSON này chỉ có 3 câu mẫu Toán về phân số (bản mẫu cũ), không phải PPCT thật của môn ${context.subject}. Hãy nạp file Excel PPCT (.xlsx) của tổ, app sẽ tự chia theo giai đoạn và môn.`);
             }
             if (!Array.isArray(data) && ["grade", "period", "subject"].some(key => data[key] !== undefined)) {
                 const subject = typeof data.subject === "string" ? detectBankCategoryByName(data.subject) : null;
@@ -2013,6 +2016,149 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             }
         }
 
+        // 9b. ĐỌC BẢNG PPCT DẠNG EXCEL (cột Tuần - Chủ đề - Tên bài học) VÀ CHIA THEO GIAI ĐOẠN
+        function ppctPeriodByWeek(week) {
+            if (week <= 9) return "GK1";
+            if (week <= 18) return "CK1";
+            if (week <= 27) return "GK2";
+            return "CK2";
+        }
+
+        function cleanPPCTLesson(raw) {
+            let t = String(raw || "").replace(/\s*\n\s*/g, " ");
+            t = t.replace(/\(\s*\d+\s*tiết\s*\)/gi, "").replace(/\(\s*tiết[^)]*\)/gi, "");
+            t = t.replace(/^HĐ\s*(?:SHDC|SHL|GDTCĐ)\s*:\s*(?:CĐ\s*:\s*)?/i, "");
+            t = t.replace(/^(?:Bài|Phần)\s*\d+\s*[:.]?\s*/i, "");
+            t = t.replace(/\s+/g, " ").replace(/[\s.:;,]+$/, "").trim();
+            return t;
+        }
+
+        function cleanPPCTTopic(raw) {
+            let t = String(raw || "").replace(/\s*\n\s*/g, " ");
+            t = t.replace(/\(\s*Thực hiện[^)]*\)/gi, "");
+            let word = "";
+            const m = t.match(/^(Chủ đề|Chủ điểm)\s*\d+\s*[:.]?\s*/i);
+            if (m) { word = m[1].toLowerCase(); t = t.slice(m[0].length); }
+            t = t.replace(/Gócvà/g, "Góc và").replace(/\s+/g, " ").replace(/[\s.:;,]+$/, "").trim();
+            if (t && t === t.toUpperCase()) t = t.toLowerCase();
+            return { name: t, word };
+        }
+
+        // Bỏ các mục ôn tập, kiểm tra, đánh giá (không phải kiến thức mới). Giữ "Ôn tập và bổ sung" vì là chủ đề có nội dung thật.
+        function isReviewPPCTTopic(name) {
+            return /đánh giá|kiểm tra|tổng kết|ôn tập\s*(học kỳ|học kì|cuối|giữa|chung|cả năm)|^ôn tập$/i.test(name);
+        }
+
+        function isGenericPPCTName(name) {
+            return /^(ôn tập chung|ôn tập (học kỳ|học kì|cuối|giữa)|ôn tập$|ôn tập tiết|kiểm tra|luyện tập chung|thực hành kĩ năng|thực hành kỹ năng|tổng kết)/i.test(name);
+        }
+
+        function buildPPCTTopicText(unit) {
+            const lessons = unit.lessons.filter(l => l.toLowerCase() !== unit.name.toLowerCase());
+            let text = `nắm được nội dung ${unit.word ? unit.word + " " : ""}“${unit.name}”`;
+            if (lessons.length) {
+                const shown = lessons.slice(0, 3).join("; ");
+                text += ` (các bài: ${shown}${lessons.length > 3 ? "; …" : ""})`;
+            }
+            if (text.length > 240 && lessons.length > 2) {
+                text = `nắm được nội dung ${unit.word ? unit.word + " " : ""}“${unit.name}” (các bài: ${lessons.slice(0, 2).join("; ")}; …)`;
+            }
+            return text;
+        }
+
+        function parsePPCTSheet(ws, fallbackGrade) {
+            const rows = [];
+            ws.eachRow({ includeEmpty: false }, row => {
+                const cells = [];
+                for (let c = 1; c <= 12; c++) cells.push(getCellValueSafe(row.getCell(c)));
+                rows.push(cells);
+            });
+            const headerIdx = rows.findIndex(r => r.some(v => /^tuần$/i.test(v.trim())) && r.some(v => /tên bài học/i.test(v)));
+            if (headerIdx < 0) return null;
+            const head = rows[headerIdx].map(v => v.toLowerCase());
+            const col = re => head.findIndex(v => re.test(v));
+            const cWeek = col(/^tuần$/), cTopic = col(/chủ đề|chủ điểm|mạch kiến thức/), cLesson = col(/tên bài học/);
+            if (cWeek < 0 || cLesson < 0) return null;
+
+            const titleRow = rows.slice(0, headerIdx).map(r => r.find(v => /môn học\s*:/i.test(v))).find(Boolean) || "";
+            const subjectText = (titleRow.split(/môn học\s*:/i)[1] || "").split(/\s-\s/)[0].trim();
+            const subject = detectBankCategoryByName(subjectText) || detectBankCategoryByName(ws.name);
+            if (!subject) return null;
+            const gradeMatch = subjectText.match(/(\d)\s*$/) || titleRow.match(/khối\s*(\d)/i);
+            const grade = gradeMatch && ["1", "2", "3", "4", "5"].includes(gradeMatch[1]) ? gradeMatch[1] : String(fallbackGrade);
+
+            let data = rows.slice(headerIdx + 1).filter(r => /\d/.test(r[cWeek] || ""));
+            const hasGDTCD = data.some(r => /^HĐ\s*GDTCĐ/i.test(r[cLesson] || ""));
+            if (subject === "Hoạt động trải nghiệm" && hasGDTCD) data = data.filter(r => /^HĐ\s*GDTCĐ/i.test(r[cLesson] || ""));
+
+            const periods = { GK1: new Map(), CK1: new Map(), GK2: new Map(), CK2: new Map() };
+            data.forEach(r => {
+                const week = parseInt((r[cWeek].match(/\d+/) || ["0"])[0], 10);
+                if (!week) return;
+                const topic = cleanPPCTTopic(cTopic >= 0 ? r[cTopic] : "");
+                const lesson = cleanPPCTLesson(r[cLesson]);
+                const key = topic.name.toLowerCase() || lesson.toLowerCase();
+                if (!key) return;
+                const map = periods[ppctPeriodByWeek(week)];
+                if (!map.has(key)) map.set(key, { name: topic.name || lesson, word: topic.word, lessons: [] });
+                const unit = map.get(key);
+                if (lesson && !isGenericPPCTName(lesson) && !unit.lessons.includes(lesson)) unit.lessons.push(lesson);
+            });
+
+            const result = {};
+            let total = 0;
+            Object.keys(periods).forEach(p => {
+                let units = Array.from(periods[p].values());
+                const main = units.filter(u => !isReviewPPCTTopic(u.name));
+                if (main.length) units = main;
+                result[p] = units.filter(u => u.name).map(buildPPCTTopicText);
+                total += result[p].length;
+            });
+            return total ? { name: ws.name, subject, grade, periods: result } : null;
+        }
+
+        function parsePPCTWorkbook(workbook, fallbackGrade) {
+            const sheets = [];
+            workbook.worksheets.forEach(ws => {
+                const parsed = parsePPCTSheet(ws, fallbackGrade);
+                if (parsed) sheets.push(parsed);
+            });
+            return { sheets };
+        }
+
+        function applyStructuredPPCT(result, file, period, catKey, fromModal) {
+            let topicCount = 0;
+            const saved = [];
+            result.sheets.forEach(sheet => {
+                ["GK1", "CK1", "GK2", "CK2"].forEach(p => {
+                    const topics = sheet.periods[p];
+                    if (!topics || !topics.length) return;
+                    if (hasMisassignedPPCT(topics, sheet.subject)) return;
+                    customPPCTStore[`${sheet.grade}_${p}_${sheet.subject}`] = topics;
+                    topicCount += topics.length;
+                });
+                saved.push(`${sheet.subject} (Lớp ${sheet.grade})`);
+            });
+            localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
+            pendingPPCTImport = null;
+            document.getElementById("ppctReviewPanel").classList.add("hidden");
+
+            const grades = Array.from(new Set(result.sheets.map(sh => sh.grade)));
+            const grade = grades.length === 1 ? grades[0] : document.getElementById("gradeSelect").value;
+            const shown = result.sheets.find(sh => sh.subject === catKey) || result.sheets[0];
+            document.getElementById("gradeSelect").value = grade;
+            document.getElementById("ppctModalGrade").value = grade;
+            document.getElementById("ppctModalPeriod").value = period;
+            document.getElementById("ppctModalSubject").value = shown.subject;
+            if (!fromModal) openModal("modalPPCT");
+            loadPPCTModalContent();
+            updatePPCTSummaryBox();
+            regenerateAllComments();
+            const message = `Đã nạp "${file.name}": ${saved.length} môn, ${topicCount} chủ đề chia theo 4 giai đoạn (tuần 1-9, 10-18, 19-27, 28-35). Môn đã nạp: ${saved.join(", ")}. Chọn giai đoạn và môn ở trên để kiểm tra nội dung.`;
+            setPPCTImportFeedback(message);
+            showToast(message);
+        }
+
         // 10. ĐỌC FILE PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG (.XLSX, .DOCX, .PDF, .TXT, .CSV, .JSON)
         async function handlePPCTFileUpload(event) {
             const file = event.target.files[0];
@@ -2037,8 +2183,12 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     extractedLines = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 12);
                 } else if (ext === "xlsx" || ext === "xls") {
                     const buf = await file.arrayBuffer();
-                    const wb = new ExcelJS.Workbook();
-                    await wb.xlsx.load(buf);
+                    const wb = (await loadStudentWorkbookCompatible(buf)).workbook;
+                    const structured = parsePPCTWorkbook(wb, grade);
+                    if (structured.sheets.length) {
+                        applyStructuredPPCT(structured, file, period, catKey, fromModal);
+                        return;
+                    }
                     wb.worksheets.forEach(ws => {
                         ws.eachRow(row => {
                             const rowTexts = [];

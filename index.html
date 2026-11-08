@@ -10,7 +10,7 @@
     <link rel="manifest" href="manifest.webmanifest">
     <title>ThayKhaiEdu - Hệ thống Trợ lý Nhận xét Học sinh Tiểu học TT27</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <!-- Google Fonts: Merriweather (Cổ kính) & Be Vietnam Pro (To rõ, dễ đọc) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
     <!-- PDF.js for reading .pdf PPCT files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@1.70.0/dist/umd/lucide.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -921,7 +921,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                     "hoàn thành xuất sắc các sản phẩm thực hành công nghệ và bài tập lập trình trực quan"
                 ],
                 "Hoạt động trải nghiệm": [
-                    "tự đánh giá tốt sự tiến bộ của bản thân sau năm học, biết lập kế hoạch rèn luyện mùa hè bổích, an toàn",
+                    "tự đánh giá tốt sự tiến bộ của bản thân sau năm học, biết lập kế hoạch rèn luyện mùa hè bổ ích, an toàn",
                     "phát huy tốt năng lực tự chủ, giao tiếp hợp tác và tích cực trong mọi hoạt động tập thể"
                 ]
             }
@@ -2846,9 +2846,9 @@ Mức đánh giá: T là Hoàn thành tốt/Tốt, H hoặc Đ là Hoàn thành/
 Trả về JSON array gồm các object: [{"stt": number, "comment": string}].
 Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
 
-                const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(userGeminiApiKey)}`, {
+                const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "application/json", "x-goog-api-key": userGeminiApiKey },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: promptText }] }],
                         generationConfig: { responseMimeType: "application/json" }

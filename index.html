@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#163d32">
+    <meta name="theme-color" content="#1d3f8f">
     <link rel="icon" href="icons/app.ico" sizes="any">
     <link rel="icon" type="image/png" href="icons/icon-32.png" sizes="32x32">
     <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -11,10 +11,10 @@
     <title>ThayKhaiEdu - Hệ thống Trợ lý Nhận xét Học sinh Tiểu học TT27</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-    <!-- Google Fonts: Merriweather (Cổ kính) & Be Vietnam Pro (To rõ, dễ đọc) -->
+    <!-- Google Fonts: Mali (chữ viết tay) & Be Vietnam Pro (To rõ, dễ đọc) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Mali:wght@600;700&display=swap" rel="stylesheet">
     <!-- ExcelJS for 100% style & formatting preservation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <!-- SheetJS (XLSX) for rock-solid reading of any .xlsx / .xls / .csv comment bank files -->
@@ -34,7 +34,7 @@
                 extend: {
                     fontFamily: {
                         sans: ['"Be Vietnam Pro"', 'sans-serif'],
-                        serif: ['"Merriweather"', 'serif'],
+                        serif: ['"Mali"', 'sans-serif'],
                     },
                     colors: {
                         vintage: {
@@ -56,185 +56,313 @@
         }
     </script>
     <style>
+        /* ThayKhaiEdu - giao diện "vở ô li": nền kẻ ô, mực xanh, lề đỏ, bút dạ vàng */
+        :root {
+            --page: #eef3fa; --grid: #dbe5f4; --paper: #ffffff; --tint: #e8effb; --tint-2: #f3f7fd;
+            --ink: #18233a; --muted: #52617c; --line: #cbd8ec; --line-strong: #aebfdc;
+            --blue: #1d3f8f; --blue-dark: #14306b; --blue-soft: #c9d9f5;
+            --red: #b3302a; --marker: #ffe27a; --marker-soft: #fff3b8;
+            --green: #1f7a4d;
+            --hand: "Mali", "Be Vietnam Pro", system-ui, sans-serif;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            background-color: #ece4d4;
-            background-image: 
-                radial-gradient(#c8b698 1px, transparent 1px),
-                linear-gradient(135deg, #f3ede0 0%, #e5dac3 100%);
-            background-size: 26px 26px, 100% 100%;
-            color: #1e1b18;
-            font-size: 16.5px;
+            background-color: var(--page);
+            background-image:
+                linear-gradient(var(--grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 28px 28px;
+            color: var(--ink);
+            font-family: "Be Vietnam Pro", system-ui, sans-serif;
+            font-size: 16px;
+            line-height: 1.55;
         }
+        button, input, select, textarea { font: inherit; }
+        button, summary { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        button svg { width: 18px; height: 18px; flex-shrink: 0; }
+        button:disabled { cursor: not-allowed; opacity: .5; }
+        button:focus-visible, summary:focus-visible, a:focus-visible, label:focus-within, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 3px solid var(--blue); outline-offset: 2px;
+        }
+        .hidden { display: none; }
 
-        /* THẺ 3D CỔ KÍNH NỔI BẬT (ROYAL VINTAGE 3D CARD) */
-        .card-3d {
-            background: linear-gradient(180deg, #fffdf9 0%, #f9f3e6 100%);
-            border: 2px solid #9c7444;
-            border-radius: 18px;
-            box-shadow: 
-                0 6px 0 #694923,
-                0 12px 24px rgba(58, 38, 18, 0.18),
-                inset 0 2px 0 rgba(255, 255, 255, 0.9);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        /* ---------- Thanh đầu trang ---------- */
+        .app-header {
+            display: flex; justify-content: space-between; align-items: center; gap: 16px;
+            min-height: 64px; padding: 10px max(20px, calc((100vw - 1480px) / 2));
+            background: var(--blue); color: #fff; border-bottom: 4px solid var(--marker);
         }
-        .card-3d-header {
-            background: linear-gradient(135deg, #1b4332 0%, #102a20 100%);
-            border-bottom: 3px solid #c59b27;
-            color: #fefae0;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-        }
-        .card-3d-amber {
-            background: linear-gradient(180deg, #fffcf2 0%, #f6ead1 100%);
-            border: 2px solid #b07d2b;
-            border-radius: 18px;
-            box-shadow: 
-                0 6px 0 #7a5213,
-                0 12px 22px rgba(77, 52, 12, 0.16),
-                inset 0 2px 0 rgba(255, 255, 255, 0.85);
-        }
+        .brand { display: flex; align-items: center; gap: 12px; color: #fff; text-decoration: none; font-family: var(--hand); font-size: 22px; font-weight: 700; flex-shrink: 0; line-height: 1.2; }
+        .brand small { display: block; font-family: "Be Vietnam Pro", sans-serif; font-size: 12px; font-weight: 400; color: var(--blue-soft); }
+        .brand-image { width: 40px; height: 40px; object-fit: contain; border-radius: 10px; background: #fff; padding: 2px; }
+        .header-note { font-size: 13px; color: var(--blue-soft); text-align: right; }
 
-        /* NÚT BẤM 3D NỔI KHỐI CỔ KÍNH */
-        .btn-3d-gold {
-            background: linear-gradient(180deg, #f3c65f 0%, #cf9619 100%);
-            color: #2b1803;
-            border: 2px solid #7c5307;
-            box-shadow: 0 4px 0 #634104, 0 6px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.6);
-            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-            transition: all 0.12s ease;
-        }
-        .btn-3d-gold:hover {
-            background: linear-gradient(180deg, #f8d278 0%, #dda221 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 0 #634104, 0 8px 15px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.7);
-        }
-        .btn-3d-gold:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #634104;
-        }
+        .app-main { width: min(1480px, 100%); margin: 0 auto; padding: 20px 20px 16px; min-width: 0; }
+        @media (min-width: 1700px) { .app-main { width: min(1660px, 100%); } }
 
-        .btn-3d-teal {
-            background: linear-gradient(180deg, #285948 0%, #16382c 100%);
-            color: #fefae0;
-            border: 2px solid #0d261d;
-            box-shadow: 0 4px 0 #091c15, 0 6px 12px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.25);
-            transition: all 0.12s ease;
+        /* ---------- Tiêu đề trang: một trang vở, có đường lề đỏ ---------- */
+        .page-heading {
+            position: relative; display: block; text-align: left;
+            padding: 22px 28px 22px 84px; margin: 0 0 14px;
+            background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(20, 48, 107, .08); overflow: hidden;
         }
-        .btn-3d-teal:hover {
-            background: linear-gradient(180deg, #316b57 0%, #1c4637 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 0 #091c15, 0 8px 16px rgba(0,0,0,0.25);
-        }
-        .btn-3d-teal:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #091c15;
-        }
+        .page-heading::before { content: ""; position: absolute; top: 0; bottom: 0; left: 56px; width: 2px; background: rgba(179, 48, 42, .55); }
+        .title-ornament { display: none; }
+        .title-copy { position: relative; }
+        .eyebrow { font-size: 14px; color: var(--muted); font-weight: 600; margin: 0 0 2px; }
+        .page-heading h1 { font-family: var(--hand); font-size: 38px; line-height: 1.25; font-weight: 700; color: var(--blue); margin: 0; letter-spacing: 0; }
+        .page-description { font-size: 15px; color: var(--muted); margin-top: 6px; }
 
-        .btn-3d-cream {
-            background: linear-gradient(180deg, #fffefb 0%, #ede2cc 100%);
-            color: #3d2812;
-            border: 2px solid #9c7a4c;
-            box-shadow: 0 4px 0 #6e522d, 0 5px 10px rgba(0,0,0,0.12), inset 0 1px 0 #ffffff;
-            transition: all 0.12s ease;
+        /* ---------- Phần đang làm việc ---------- */
+        .mode-status-panel {
+            display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px;
+            padding: 12px 20px; margin: 0; background: var(--blue-dark); color: #fff;
+            border-radius: 12px; border-left: 8px solid var(--marker);
         }
-        .btn-3d-cream:hover {
-            background: linear-gradient(180deg, #ffffff 0%, #f5ebd8 100%);
-            transform: translateY(-1px);
-        }
-        .btn-3d-cream:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #6e522d;
-        }
+        .mode-status-caption { font-size: 13px; font-weight: 600; color: var(--blue-soft); }
+        .mode-status-panel strong { font-size: 19px; font-weight: 800; line-height: 1.5; }
+        .mode-status-panel > span:last-child { margin-left: auto; font-size: 14px; font-weight: 700; color: var(--marker); }
+        .mode-status-panel.is-nlpc { background: #7a2420; border-left-color: #ffb4a8; }
+        .mode-status-panel.is-nlpc .mode-status-caption { color: #f6cfc8; }
 
-        .input-vintage {
-            background-color: #fffdf9;
-            border: 2px solid #b59469;
-            box-shadow: inset 0 2px 4px rgba(92, 58, 33, 0.08);
-            color: #1e1b18;
-            font-weight: 600;
-        }
-        .input-vintage:focus {
-            border-color: #1b4332;
-            box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.18), inset 0 1px 2px rgba(0,0,0,0.05);
-            outline: none;
-        }
+        /* ---------- Bố cục 2 cột ---------- */
+        .work-layout { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 18px; align-items: start; margin-top: 16px; }
+        .function-sidebar { min-width: 0; position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 0 4px 8px 0; }
+        .work-content { min-width: 0; }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        /* ---------- Các thẻ ở cột trái ---------- */
+        .import-panel, .scope-panel, .export-panel, .context-panel, .support-tools {
+            background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(20, 48, 107, .07); margin: 0 0 14px; overflow: hidden;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #e9dec9;
-            border-radius: 8px;
+        .import-panel { border-top: 5px solid var(--blue); }
+        .import-panel-heading { display: block; padding: 12px 16px 6px; }
+        .import-panel-heading h2, .scope-panel h2, .export-panel h2, .context-heading {
+            font-family: var(--hand); font-size: 18px; font-weight: 700; color: var(--blue); line-height: 1.4; margin: 0;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #9c7444;
-            border-radius: 8px;
+        .import-panel-heading p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+        .import-actions { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 10px 14px 6px; }
+        .mode-import-button {
+            display: grid; grid-template-columns: 28px 1fr; gap: 3px 10px; align-items: center; text-align: left;
+            padding: 12px; min-height: 76px; background: var(--paper); color: var(--ink);
+            border: 1.5px solid var(--line-strong); border-radius: 10px; transition: background .15s, border-color .15s;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #755329;
+        .mode-import-button > svg { width: 24px; height: 24px; grid-row: 1 / 3; color: var(--blue); }
+        .mode-import-button > span { font-size: 15px; font-weight: 700; line-height: 1.4; }
+        .mode-import-button > small { font-size: 12px; font-weight: 500; color: var(--muted); }
+        .mode-import-button:hover { background: var(--tint); border-color: var(--blue); }
+        .mode-import-button.is-active { background: var(--blue); border-color: var(--blue); color: #fff; }
+        .mode-import-button.is-active > svg, .mode-import-button.is-active > small { color: var(--marker-soft); }
+        .mode-import-nlpc.is-active { background: #8a2a25; border-color: #8a2a25; }
+        .import-note { padding: 4px 16px 12px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+        .student-import-feedback { margin: 4px 14px 14px; padding: 10px 12px; border: 1px solid #9bc3a8; border-radius: 8px; background: #eaf6ee; color: #1b4d31; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+        .student-import-feedback.student-import-loading { background: #fff7d6; border-color: #e0c25a; color: #6b5314; }
+        .student-import-feedback.student-import-error { background: #fdecea; border-color: #e0a29c; color: #8a2a25; }
+        .student-import-feedback.student-import-success { background: #eaf6ee; border-color: #9bc3a8; color: #1b4d31; }
+
+        .scope-panel, .export-panel { padding: 14px; }
+        .scope-panel h2, .export-panel h2 { margin-bottom: 10px; }
+        .scope-options { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 14px; }
+        .scope-panel .scope-options { flex-direction: column; align-items: stretch; gap: 8px; }
+        .scope-panel .scope-options > label { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--tint-2); font-size: 14px; font-weight: 600; cursor: pointer; }
+        .scope-panel .scope-options > label:has(input:checked) { border-color: var(--blue); background: var(--tint); }
+        .scope-panel input[type=radio], .scope-options input, .checkbox-line input { accent-color: var(--blue); }
+        .scope-panel input[type=radio] { width: 18px; height: 18px; flex-shrink: 0; }
+        .scope-panel #customSubjectsPanel { margin-top: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; }
+        .scope-panel #subjectCheckboxesContainer { grid-template-columns: 1fr; max-height: 260px; }
+        .scope-summary { margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+
+        .export-panel #primaryExport { width: 100%; }
+        .export-panel > .button-secondary, .export-panel > #btnGenerateWithGeminiAI { width: 100%; margin-top: 10px; }
+
+        /* ---------- Nút ---------- */
+        .button-primary, .button-secondary, .button-quiet {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            min-height: 44px; padding: 10px 14px; border-radius: 8px; max-width: 100%;
+            font-size: 14px; font-weight: 700; line-height: 1.4; transition: background .15s, border-color .15s;
+        }
+        .button-primary { background: var(--blue); color: #fff; border: 2px solid var(--blue); font-size: 16px; min-height: 48px; }
+        .button-primary:hover { background: var(--blue-dark); border-color: var(--blue-dark); }
+        .button-secondary { background: var(--paper); color: var(--blue); border: 1.5px solid var(--line-strong); }
+        .button-secondary:hover { background: var(--tint); border-color: var(--blue); }
+        .button-quiet { background: transparent; color: var(--muted); border: 1.5px solid transparent; }
+        .button-quiet:hover { background: var(--tint); color: var(--ink); }
+        .btn-3d-gold, .btn-3d-cream, .btn-3d-teal { border-radius: 8px; border-width: 1.5px; border-style: solid; transition: background .15s, border-color .15s; }
+        .btn-3d-gold { background: var(--marker); color: var(--ink); border-color: #d9b53a; }
+        .btn-3d-gold:hover { background: #ffd84d; }
+        .btn-3d-cream { background: var(--paper); color: var(--blue); border-color: var(--line-strong); }
+        .btn-3d-cream:hover { background: var(--tint); border-color: var(--blue); }
+        .btn-3d-teal { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .btn-3d-teal:hover { background: var(--blue-dark); }
+
+        /* ---------- Ô nhập, ô chọn ---------- */
+        .input-vintage, .field select, .field input {
+            background: #fff; color: var(--ink); border: 1.5px solid var(--line-strong); border-radius: 8px;
+            font-weight: 500; box-shadow: none;
+        }
+        .field select, .field input { width: 100%; min-width: 0; min-height: 44px; padding: 8px 10px; font-size: 15px; }
+        .input-vintage:focus, .field select:focus, .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29, 63, 143, .18); outline: none; }
+        .field { min-width: 0; }
+        .field > label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 5px; }
+        .field-caption { display: block; width: 100%; font-size: 12px; color: var(--muted); }
+        .file-name { display: block; max-width: 100%; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+        .muted-badge { display: inline-block; font-size: 12px; font-weight: 700; background: var(--tint); color: var(--blue); border-radius: 6px; padding: 3px 8px; line-height: 1.4; }
+        .file-summary .muted-badge { background: var(--blue); color: #fff; }
+        .count-badge { display: inline-block; margin-left: 8px; padding: 2px 10px; font-family: "Be Vietnam Pro", sans-serif; font-size: 13px; font-weight: 700; background: var(--marker); color: var(--ink); border-radius: 6px; vertical-align: middle; }
+
+        /* ---------- Thông tin file và thiết lập ---------- */
+        .context-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px; }
+        .context-heading { grid-column: 1 / -1; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+        .file-summary, .style-field { grid-column: 1 / -1; }
+        .file-summary { min-width: 0; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+
+        .support-tools > summary { display: block; padding: 12px 14px; font-size: 15px; font-weight: 700; color: var(--blue); list-style: none; line-height: 1.6; }
+        .support-tools > summary::before { content: "▸ "; }
+        .support-tools[open] > summary::before { content: "▾ "; }
+        .support-tools > summary > span { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: var(--muted); }
+        .support-tools[open] > summary { border-bottom: 1px solid var(--line); }
+        .resources { display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding: 12px; }
+        .resource-label { display: none; }
+        .resources > .button-secondary, .resources > .button-quiet { justify-content: flex-start; }
+        .settings-menu { margin: 0; width: 100%; font-size: 14px; }
+        .settings-menu > summary { list-style: none; width: 100%; min-height: 44px; padding: 10px 12px; border: 1.5px solid var(--line-strong); border-radius: 8px; background: var(--paper); color: var(--blue); font-weight: 700; }
+        .settings-menu > summary::after { content: "⌄"; padding-left: 10px; }
+        .settings-content { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 10px; padding: 12px; background: var(--tint-2); border: 1px solid var(--line); border-radius: 8px; }
+        .settings-content h2 { font-family: var(--hand); font-size: 15px; font-weight: 700; color: var(--blue); margin-bottom: 8px; }
+        .settings-content select { width: 100%; margin: 8px 0; padding: 8px; font-size: 14px; border: 1.5px solid var(--line-strong); border-radius: 8px; background: #fff; }
+        .settings-content p, .settings-note { font-size: 13px; color: var(--muted); line-height: 1.6; }
+        .checkbox-line { display: flex; gap: 8px; align-items: center; font-size: 14px; margin: 10px 0; }
+        .file-link { display: inline-block; margin: 6px 0; font-size: 14px; font-weight: 600; color: var(--blue); text-decoration: underline; cursor: pointer; }
+        .demo-data { border-top: 1px solid var(--line); padding-top: 12px; }
+        .demo-data summary { font-size: 14px; font-weight: 700; color: var(--blue); }
+        .demo-data p { margin: 8px 0; }
+
+        .sidebar-settings .header-links { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+        .sidebar-settings .header-links .button-quiet { background: var(--paper); color: var(--blue); border: 1.5px solid var(--line-strong); }
+        .sidebar-settings .header-links .button-quiet:hover { background: var(--tint); }
+
+        /* ---------- Khu làm việc bên phải ---------- */
+        .student-source-label { margin: 0 0 8px; padding: 10px 14px; background: #eaf6ee; border: 1px solid #9bc3a8; border-radius: 8px; color: #1b4d31; font-size: 14px; font-weight: 700; line-height: 1.6; overflow-wrap: anywhere; }
+        .student-source-label.is-demo { background: #fff7d6; border-color: #e0c25a; color: #6b5314; }
+        .scope-status-line { margin: 0 2px 12px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+        .ppct-feedback { padding: 12px 14px; margin: 0 0 14px; border: 1px solid #9bc3a8; border-radius: 8px; background: #eaf6ee; color: #1b4d31; font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+        .ppct-feedback-error { border-color: #e0c25a; background: #fff7d6; color: #6b5314; }
+
+        .workspace { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 6px 18px rgba(20, 48, 107, .08); overflow: hidden; min-width: 0; }
+        .workspace-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+        .workspace-heading h2 { font-family: var(--hand); font-size: 22px; font-weight: 700; color: var(--blue); line-height: 1.5; margin: 0; }
+        .workspace-heading p { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+        .workspace-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+        .table-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 260px); align-items: end; gap: 14px; padding: 12px 20px; background: var(--tint); }
+        .subject-field { max-width: 440px; }
+        .subject-field select { font-weight: 700; color: var(--blue); }
+        .contextual-tools { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+        .ppct-context, .keyword-tools { padding: 10px 20px; font-size: 13px; color: var(--muted); background: var(--paper); }
+        .contextual-tools > details + details { border-left: 1px solid var(--line); }
+        .ppct-context > summary, .keyword-tools > summary { width: fit-content; font-weight: 700; color: var(--blue); font-size: 14px; }
+        .ppct-context #activeSubjectPPCTBanner { padding: 10px 0 2px; background: transparent; border: 0; font-size: 13px; }
+        .ppct-context #activeSubjectPPCTText { font-size: 13px; font-weight: 500; color: var(--ink); }
+        .keyword-chips { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 10px; }
+        .keyword-chips button { min-height: 36px; }
+
+        /* ---------- Bảng học sinh: dòng kẻ ngang, lề đỏ bên cột STT ---------- */
+        .student-table-scroll { overflow: auto; max-height: calc(100vh - 300px); min-height: 260px; border-top: 1px solid var(--line); overscroll-behavior: contain; }
+        .student-table-scroll table { width: 100%; min-width: 1030px; table-layout: fixed; border-collapse: collapse; }
+        .student-table-scroll thead { background: var(--blue); color: #fff; text-transform: none; font-size: 14px; box-shadow: none; border-bottom: 3px solid var(--marker); }
+        .student-table-scroll th { padding: 12px; font-weight: 700; vertical-align: top; }
+        .student-table-scroll th:nth-child(1) { width: 56px; }
+        .student-table-scroll th:nth-child(2) { width: 180px; min-width: 0; }
+        .student-table-scroll th:nth-child(3) { width: 200px; }
+        .student-table-scroll th:nth-child(4) { width: 210px; min-width: 0; }
+        .student-table-scroll th:nth-child(5) { width: auto; min-width: 0; }
+        .student-table-scroll th:nth-child(6) { width: 60px; }
+        .student-table-scroll th div + div { color: var(--blue-soft); font-size: 12px; font-weight: 400; margin-top: 3px; }
+        .student-table-scroll th:first-child, .student-table-scroll td:first-child { border-right: 2px solid rgba(179, 48, 42, .55); }
+        .student-table-scroll tbody { background: var(--paper); font-size: 14px; }
+        .student-table-scroll tbody tr { border-bottom: 1px solid var(--line); transition: background .12s; }
+        .student-table-scroll tbody tr:hover { background: var(--tint-2); }
+        .student-table-scroll td { padding: 12px; vertical-align: top; }
+        .student-table-scroll td:first-child { padding-top: 20px; font-size: 14px; color: var(--muted); }
+        .student-table-scroll td:nth-child(2) > div:first-child { font-size: 15px; font-weight: 700; color: var(--ink); }
+        .student-table-scroll td:nth-child(2) > div + div { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 4px; line-height: 1.6; }
+        .student-table-scroll td select { width: 100%; min-height: 44px; padding: 8px 4px; font-size: 13px; font-weight: 700; border-width: 1.5px; border-radius: 8px; }
+        .student-table-scroll td input { padding: 9px 10px; font-size: 14px; border: 1.5px solid var(--line-strong); border-radius: 8px; box-shadow: none; min-height: 42px; }
+        .student-table-scroll td textarea { min-height: 92px; padding: 10px; font-size: 16px !important; line-height: 1.6; background: #fff; border: 1.5px solid var(--line-strong); border-radius: 8px; box-shadow: none; resize: vertical; }
+        .student-table-scroll td textarea:focus, .student-table-scroll td input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29, 63, 143, .18); outline: none; }
+        .student-table-scroll td button { min-width: 44px; min-height: 44px; border: 1.5px solid var(--line-strong); background: var(--paper); border-radius: 8px; box-shadow: none; }
+        .student-table-scroll td button:hover { background: var(--tint); border-color: var(--blue); }
+        .student-table-scroll td .text-xs { font-size: 12px; font-weight: 500; }
+        .empty-students { text-align: center !important; padding: 56px 18px !important; font-size: 15px !important; color: var(--muted) !important; font-weight: 500 !important; }
+
+        .table-footer { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 16px; background: var(--tint); border-top: 1px solid var(--line); }
+        .footer-stats { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); }
+        .export-note { margin: 12px 2px; font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+        .app-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: auto; padding: 14px 24px; background: var(--blue-dark); color: var(--blue-soft); font-size: 13px; }
+
+        /* ---------- Hộp thoại ---------- */
+        .card-3d, .card-3d-amber { background: var(--paper); border: 1px solid var(--line-strong); border-radius: 14px; box-shadow: 0 24px 60px rgba(20, 48, 107, .3); }
+        .card-3d-header { background: var(--blue); border-bottom: 4px solid var(--marker); border-radius: 13px 13px 0 0; color: #fff; }
+        .custom-scrollbar::-webkit-scrollbar { width: 10px; height: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: var(--tint); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; border: 2px solid var(--tint); }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+        .ppct-review-panel { padding: 14px 20px; border-top: 3px solid var(--marker); background: var(--marker-soft); color: #5c4710; font-size: 14px; line-height: 1.7; }
+        .ppct-review-panel strong { display: block; font-weight: 800; }
+        .ppct-review-panel p { font-size: 13px; margin: 5px 0; }
+        .ppct-review-panel label { display: flex; align-items: center; gap: 10px; font-weight: 700; margin: 10px 0; cursor: pointer; }
+        .ppct-review-panel input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--blue); }
+
+        /* ---------- Màn hình nhỏ ---------- */
+        @media (min-width: 901px) and (max-width: 1150px) {
+            .work-layout { grid-template-columns: 275px minmax(0, 1fr); gap: 14px; }
+            .table-toolbar, .contextual-tools { grid-template-columns: 1fr; }
+            .contextual-tools > details + details { border-left: 0; border-top: 1px solid var(--line); }
+        }
+        @media (max-width: 900px) {
+            .work-layout { grid-template-columns: 1fr; gap: 14px; }
+            .function-sidebar { position: static; max-height: none; overflow: visible; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+            .function-sidebar > * { margin-bottom: 0; }
+            .function-sidebar .import-panel, .function-sidebar .support-tools, .sidebar-settings { grid-column: 1 / -1; }
+            .import-actions { grid-template-columns: 1fr 1fr; }
+            .sidebar-settings .header-links { flex-direction: row; flex-wrap: wrap; }
+            .student-table-scroll { max-height: 560px; }
+            .header-note { font-size: 11px; max-width: 140px; }
+            .workspace-heading { display: block; }
+            .workspace-actions { margin-top: 10px; justify-content: flex-start; }
+        }
+        @media (max-width: 700px) {
+            .app-header { padding: 10px 14px; }
+            .brand { font-size: 19px; }
+            .app-main { padding: 14px 12px 12px; }
+            .page-heading { padding: 16px 16px 16px 50px; }
+            .page-heading::before { left: 30px; }
+            .page-heading h1 { font-size: 28px; }
+            .mode-status-panel { padding: 12px 14px; }
+            .mode-status-panel > span:last-child { margin-left: 0; width: 100%; }
+            .table-footer { display: block; }
+            .table-footer button { margin-top: 8px; }
+            .workspace-heading, .table-toolbar { padding-left: 14px; padding-right: 14px; }
+            .ppct-context, .keyword-tools { padding: 10px 14px; }
+            .app-footer { padding: 14px; font-size: 12px; }
+            .fixed[id^="modal"] { padding: 10px; }
+        }
+        @media (max-width: 600px) {
+            .function-sidebar { display: block; }
+            .function-sidebar > * { margin-bottom: 14px; }
+            .import-actions { grid-template-columns: 1fr; }
+            .table-toolbar { grid-template-columns: 1fr; }
+            .contextual-tools { display: block; }
+            .contextual-tools > details + details { border-left: 0; border-top: 1px solid var(--line); }
+            .header-note { display: none; }
+            .student-table-scroll { max-height: 520px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition: none !important; animation: none !important; }
         }
     </style>
-<style id="workspace-layout">
-:root{--ink:#1f3430;--muted:#65746f;--line:#dce4df;--green:#174d3e;--surface:#fff;--soft:#f4f7f5;--gold:#e6b84d}
-body{background:#f4f6f4;background-image:none;color:var(--ink);font-family:"Be Vietnam Pro",system-ui,sans-serif;font-size:14px}
-*{box-sizing:border-box}button,input,select,textarea{font:inherit}button,summary,label[for]{-webkit-tap-highlight-color:transparent}button,summary{cursor:pointer}button svg{width:17px;height:17px;flex-shrink:0}
-button:focus-visible,summary:focus-visible,a:focus-visible,label[for]:focus-visible{outline:3px solid #b78516;outline-offset:3px}
-.app-header{position:static;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:70px;padding:12px max(24px,calc((100vw - 1480px)/2));background:#163d32;border-bottom:1px solid #285548;color:#fff}
-.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-size:20px;font-weight:800;letter-spacing:-.4px;flex-shrink:0}.brand small{display:block;font-size:11px;font-weight:400;letter-spacing:0;color:#c5d8ce}.brand-icon{display:grid;place-items:center;background:var(--gold);color:#173d32;border-radius:8px;width:36px;height:38px;font-size:27px}.header-links{display:flex;align-items:center;gap:8px}.header-links .button-quiet{color:#e6eee9;font-size:12px}.header-links .button-quiet:hover{background:#285548}
-.app-main{width:min(1480px,100%);margin:0 auto;padding:28px 24px 16px;min-width:0}.page-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}.eyebrow{color:var(--muted);font-size:10px;letter-spacing:1.2px;font-weight:700;margin-bottom:5px}h1{font-size:28px;font-weight:750;letter-spacing:-.8px;line-height:1.3}.page-description{color:var(--muted);font-size:13px;margin-top:6px}.primary-actions{display:flex;gap:10px;flex-shrink:0}
-.button-primary,.button-secondary,.button-quiet{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:7px;min-height:38px;padding:9px 13px;font-weight:600;font-size:13px;line-height:1.4;max-width:100%}.button-primary{background:var(--green);color:white;border:1px solid var(--green)}.button-primary:hover{background:#103e30}.button-secondary{background:white;border:1px solid #cbd7ce;color:#25483b}.button-secondary:hover{background:#f1f6f2;border-color:#8ca999}.button-quiet{border:1px solid transparent;background:transparent;color:var(--muted)}.button-quiet:hover{background:#eaf0eb;color:var(--ink)}
-.workflow{list-style:none;display:flex;gap:28px;margin:0 0 18px;padding:0;font-size:12px;color:var(--muted)}.workflow li{display:flex;align-items:center;gap:7px}.workflow li span{display:grid;place-items:center;width:22px;height:22px;background:#e7eee8;border-radius:50%;font-size:11px;color:var(--green);font-weight:700}
-.context-panel{display:grid;grid-template-columns:minmax(240px,1.4fr) 140px 180px minmax(220px,1fr);gap:16px;background:white;border:1px solid var(--line);padding:16px 18px;border-radius:9px;align-items:center}.file-summary{min-width:0;display:flex;flex-wrap:wrap;gap:5px 8px;align-items:center}.field-caption{display:block;width:100%;color:var(--muted);font-size:11px}.file-name{display:block;max-width:100%;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.muted-badge{display:inline-block;font-size:10px;font-weight:600;color:#426451;background:#eaf2ec;border-radius:4px;padding:3px 6px;line-height:1.3}.field{min-width:0}.field>label{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-bottom:5px}.field select,.field input{width:100%;min-width:0;min-height:38px;border:1px solid #ced9d2;border-radius:6px;padding:8px 10px;background:#fff;font-size:13px;box-shadow:none;font-weight:500;color:var(--ink)}.field select:focus,.field input:focus{outline:2px solid #83ad96;outline-offset:1px}.field #activePreviewTarget{min-width:0}
-.resources{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 0 18px}.resource-label{font-size:11px;color:var(--muted);margin-right:2px}.resources>.button-secondary{background:transparent;font-size:12px;border-color:transparent;padding:7px 9px}.resources>.button-secondary:hover{background:#e6eee7}.settings-menu{position:relative;margin-left:auto;font-size:12px}.settings-menu>summary{list-style:none;padding:9px 12px;border:1px solid #d5dfd7;border-radius:6px;color:#405c4b;background:#fff}.settings-menu>summary::after{content:'⌄';padding-left:10px}.settings-menu[open]{flex-basis:100%;margin-left:0}.settings-menu[open]>summary{width:fit-content;margin-left:auto}.settings-content{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;border:1px solid var(--line);background:white;border-radius:8px;padding:20px;margin-top:10px}.settings-content h2{font-family:inherit;font-size:13px;font-weight:700;margin-bottom:10px}.settings-content select{max-width:100%;width:100%;margin:8px 0;background:white;border:1px solid var(--line);font-size:12px;padding:8px;border-radius:6px}.scope-options{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;align-items:center}.scope-options input,.checkbox-line input{accent-color:var(--green)}.checkbox-line{display:flex;gap:8px;align-items:center;font-size:12px;margin:10px 0}.checkbox-line input{width:16px;height:16px;flex-shrink:0}.settings-content p{font-size:11px;color:var(--muted);line-height:1.7}.settings-note{margin-top:6px}.file-link{display:inline-block;color:var(--green);text-decoration:underline;font-size:12px;margin:6px 0;cursor:pointer}.demo-data{grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px}.demo-data summary{font-weight:600;font-size:12px}.demo-data p{margin:8px 0}
-.workspace{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden;min-width:0}.workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 20px 16px}.workspace-heading h2{font-family:inherit;font-size:18px;font-weight:700;letter-spacing:-.3px;line-height:1.4}.count-badge{display:inline-block;font-size:11px;font-weight:500;background:#edf4ee;color:#396247;padding:4px 7px;border-radius:5px;vertical-align:middle;margin-left:8px;letter-spacing:0}.workspace-heading p{font-size:12px;color:var(--muted);margin-top:5px}.workspace-actions{display:flex;gap:8px;flex-shrink:0}.table-toolbar{display:grid;grid-template-columns:minmax(240px,1fr) minmax(220px,320px);align-items:end;gap:24px;padding:0 20px 16px}.subject-field{max-width:420px}.ppct-context,.keyword-tools{border-top:1px solid var(--line);padding:9px 20px;font-size:11px;color:#617468}.ppct-context>summary,.keyword-tools>summary{width:fit-content}.ppct-context #activeSubjectPPCTBanner{padding:12px 0 4px;background:white;border:0;font-size:12px}.ppct-context #activeSubjectPPCTText{font-size:12px;font-weight:400}.keyword-chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:10px}.keyword-chips button{font-size:11px;font-weight:500}
-.student-table-scroll{overflow:auto;max-height:620px;border-top:1px solid var(--line);overscroll-behavior:contain}.student-table-scroll table{width:100%;min-width:1050px;table-layout:fixed;border-collapse:collapse}.student-table-scroll thead{background:#f3f6f3;color:#587060;text-transform:none;border-bottom:1px solid var(--line);box-shadow:none;font-size:11px}.student-table-scroll th{padding:13px 12px;font-weight:600;vertical-align:top}.student-table-scroll th:nth-child(1){width:48px}.student-table-scroll th:nth-child(2){width:185px;min-width:0}.student-table-scroll th:nth-child(3){width:170px}.student-table-scroll th:nth-child(4){width:200px;min-width:0}.student-table-scroll th:nth-child(5){width:auto;min-width:0}.student-table-scroll th:nth-child(6){width:54px}.student-table-scroll th div+div{color:#87938a;font-size:10px;font-weight:400;margin-top:3px}.student-table-scroll tbody{background:white;font-size:13px;--tw-divide-opacity:1;border-color:var(--line)}.student-table-scroll tbody tr{border-bottom:1px solid var(--line);transition:background .15s}.student-table-scroll tbody tr:hover{background:#f7faf7}.student-table-scroll td{padding:12px;vertical-align:top;border-color:var(--line)}.student-table-scroll td:nth-child(2)>div:first-child{font-size:13px;font-weight:650;color:var(--ink)}.student-table-scroll td:nth-child(2)>div+div{font-size:10px;color:#7c8b80;font-weight:400;margin-top:5px;line-height:1.6}.student-table-scroll td:first-child{font-size:12px;color:#7f8d83;font-weight:500;padding-top:20px}.student-table-scroll td select{font-size:12px;font-weight:600;border-width:1px;min-height:38px;border-radius:6px;padding:8px 5px;width:100%}.student-table-scroll td input{border:1px solid #dbe3dc;border-radius:6px;padding:9px;font-size:12px;box-shadow:none}.student-table-scroll td textarea{min-height:88px;border:1px solid #d8e2da;border-radius:6px;box-shadow:none;padding:9px;font-size:15px!important;line-height:1.55;background:#fdfefd;resize:vertical}.student-table-scroll td button{box-shadow:none;border-width:1px;border-radius:6px;background:#fff}.student-table-scroll td .text-xs{font-size:10px;font-weight:400}
-.table-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 16px;background:#fafcf9}.footer-stats{display:flex;flex-wrap:wrap;gap:10px;font-size:10px;color:#7a887d}.table-footer button{font-size:11px}.export-note{font-size:10px;color:#87958a;margin:12px 2px;overflow-wrap:anywhere}.app-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:15px 24px;margin-top:auto;border-top:1px solid var(--line);font-size:11px;color:#829185;background:#f4f6f4}
-/* Các hộp thoại giữ nguyên nội dung, dùng cùng cách trình bày nhẹ hơn. */
-.card-3d,.card-3d-amber{background:#fff;border:1px solid #ced9d0;border-radius:10px;box-shadow:0 12px 36px #153d3220}.card-3d-header{background:#184a3a;border-bottom:1px solid #37644f;border-radius:9px 9px 0 0}.btn-3d-gold,.btn-3d-cream,.btn-3d-teal{box-shadow:none;text-shadow:none;border-width:1px;border-radius:7px;transition:background .15s}.btn-3d-gold{background:#f0cd77;border-color:#c5a34c}.btn-3d-cream{background:#fff;border-color:#cbd7ce}.btn-3d-teal{background:#174d3e;border-color:#174d3e}.btn-3d-gold:hover,.btn-3d-cream:hover,.btn-3d-teal:hover{transform:none;box-shadow:none}.input-vintage{border-width:1px;box-shadow:none;border-color:#cbd7ce}.hidden{display:none}
-@media(min-width:1600px){.app-main{padding-top:32px}.student-table-scroll th:nth-child(5){width:auto}}
-@media(max-width:1100px){.context-panel{grid-template-columns:minmax(220px,1fr) 130px 160px}.style-field{grid-column:1/-1;max-width:380px}.resources{gap:6px}.resource-label{display:none}.table-toolbar{gap:12px}.settings-content{gap:16px}.workspace-heading h2{font-size:17px}}
-@media(max-width:700px){.app-header{padding:12px 16px;min-height:64px}.brand{font-size:17px}.brand small{font-size:10px}.brand-icon{width:30px;height:33px;font-size:23px}.header-links{gap:0}.header-links .button-quiet{font-size:10px;padding:6px;max-width:110px}.header-links button:last-child{display:none}.app-main{padding:20px 14px 14px}.page-heading{display:block;margin-bottom:16px}h1{font-size:25px}.page-description{font-size:12px}.primary-actions{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.primary-actions button{font-size:12px;padding:10px 8px}.workflow{gap:14px;justify-content:space-between;font-size:10px;margin-bottom:14px}.workflow li{gap:5px}.workflow li span{width:19px;height:19px}.context-panel{grid-template-columns:1fr 1fr;padding:14px;gap:12px}.file-summary,.style-field{grid-column:1/-1}.style-field{max-width:none}.field select,.field input{font-size:13px;min-height:42px}.resources{padding:12px 0 14px;gap:5px}.resources>.button-secondary{font-size:11px;min-height:36px;padding:6px 5px}.resources .muted-badge{font-size:9px}.settings-menu{margin-left:0;width:100%}.settings-menu>summary{border:0;background:transparent;padding:7px 3px;min-height:34px}.settings-menu[open]>summary{margin-left:0}.settings-content{grid-template-columns:1fr;padding:14px}.workspace-heading{display:block;padding:16px 14px 12px}.workspace-heading h2{font-size:16px}.workspace-heading p{font-size:11px;line-height:1.7}.workspace-actions{margin-top:10px}.workspace-actions button{font-size:11px}.table-toolbar{grid-template-columns:1fr;padding:0 14px 14px;gap:10px}.subject-field{max-width:none}.ppct-context,.keyword-tools{padding:10px 14px}.table-footer{display:block;padding:12px}.table-footer button{margin-top:8px}.footer-stats{font-size:10px;gap:6px}.app-footer{padding:14px;font-size:10px}.student-table-scroll{max-height:560px}.export-note{font-size:10px}.fixed[id^="modal"]{padding:10px}}
-.app-main h1{font-size:28px;font-weight:750;line-height:1.3;letter-spacing:-.8px}
-.page-heading{margin-bottom:8px}
-@media(min-width:701px){.app-header{min-height:64px;padding-top:9px;padding-bottom:9px}.app-main{padding-top:20px}.page-heading{margin-bottom:16px}.workflow{margin-bottom:12px}.context-panel{padding-top:12px;padding-bottom:12px}.resources{padding-top:10px;padding-bottom:12px}.workspace-heading{padding-top:14px;padding-bottom:10px}.workspace-heading p{display:none}.table-toolbar{padding-bottom:12px}.contextual-tools{display:grid;grid-template-columns:1fr 1fr}.contextual-tools>details{padding-top:8px;padding-bottom:8px}.contextual-tools>details+details{border-left:1px solid var(--line)}}
-@media(max-width:700px){.app-main h1{font-size:25px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
-
-</style>
-<style id="title-and-feedback">
-.brand-image{width:38px;height:38px;object-fit:contain;border-radius:9px}
-.app-main .page-heading{position:relative;display:grid;grid-template-columns:1fr;align-items:center;min-height:132px;padding:20px 100px;margin:0 0 10px;text-align:center;border:1px solid #dfdfcc;border-radius:10px;background:linear-gradient(100deg,#f3f5ee,#fffdf5 50%,#f3f5ee);overflow:hidden}
-.app-main .page-heading h1{font-size:34px;letter-spacing:-.7px;font-weight:800;color:#174d3e;margin:5px 0}
-.page-heading .eyebrow{font-size:10px;letter-spacing:1.5px;color:#827443}.page-heading .page-description{font-size:12px;color:#64746a}.title-copy{position:relative;z-index:1}
-.title-ornament{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:88px;height:88px;color:#ac9152;opacity:.65;pointer-events:none}.title-ornament-right{left:auto;right:18px;transform:translateY(-50%) scaleX(-1)}
-.page-actions{justify-content:flex-end;margin:0 0 12px}.app-main .workflow{margin-bottom:10px}.app-main .workspace-heading{padding-top:12px;padding-bottom:8px}.app-main .table-toolbar{padding-bottom:10px}
-.ppct-feedback{padding:12px 14px;margin:0 0 14px;border:1px solid #8bb59b;border-radius:7px;background:#eff8f0;color:#194c30;font-size:12px;line-height:1.7;overflow-wrap:anywhere}.ppct-feedback-error{border-color:#c6a15c;background:#fff8e7;color:#745118}
-@media(max-width:700px){.app-main .page-heading{min-height:136px;padding:16px 48px}.app-main .page-heading h1{font-size:25px}.page-heading .eyebrow{font-size:8px;letter-spacing:.4px}.page-heading .page-description{font-size:11px;line-height:1.6}.title-ornament{width:45px;height:70px;left:4px}.title-ornament-right{left:auto;right:4px}.page-actions{margin-top:8px}.page-actions #installAppButton{grid-column:1/-1;padding:4px;min-height:30px}}
-</style>
-<style id="classic-cards-and-modes">/* Trả lại màu, thẻ và nút nổi của giao diện đầu; phân tầng rõ vùng thao tác. */
-body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transparent .65px);background-size:24px 24px;font-size:16px}
-.app-main{padding-top:18px}.app-main .page-heading{min-height:110px;padding-top:14px;padding-bottom:14px;background:linear-gradient(100deg,#eee5d0,#fffaf0 50%,#eee5d0);border:2px solid #b69763;box-shadow:0 3px 0 #c7b48e}.app-main .page-heading h1{font-size:32px}.page-heading .page-description{font-size:13px}.page-heading .eyebrow{font-size:11px}.title-ornament{color:#8f713b}
-.mode-status-panel{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap;padding:12px 18px;margin:15px 0;background:linear-gradient(100deg,#163d32,#245746);border:2px solid #b18b37;border-radius:10px;color:#fff8dd;box-shadow:0 3px 0 #b6a275}.mode-status-caption{font-size:11px;font-weight:700;color:#d5e2ce;letter-spacing:.8px}.mode-status-panel strong{font-size:19px;font-weight:800;line-height:1.5}.mode-status-panel>span:last-child{font-size:13px;margin-left:auto;color:#f5da8c}.mode-status-panel.is-nlpc{background:linear-gradient(100deg,#632b39,#884150);border-color:#b69763}
-.import-panel{border:2px solid #a58452;border-radius:12px;background:#fffaf0;margin-bottom:16px;box-shadow:0 4px 0 #b9a17a;overflow:hidden}.import-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f0dfba;border-bottom:1px solid #c2a269;padding:11px 18px}.import-panel-heading h2{font-size:18px;font-weight:800;color:#3d2d17}.import-panel-heading p{font-size:12px;color:#6c583a}.import-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 18px 10px}.mode-import-button{position:relative;display:grid;grid-template-columns:30px 1fr;gap:5px 10px;align-items:center;text-align:left;padding:13px 17px;border:2px solid #8d743f;border-radius:9px;background:linear-gradient(#fffef9,#ead9b7);color:#3e2b13;box-shadow:0 4px 0 #9a7d48;min-height:82px}.mode-import-button>svg{width:25px;height:25px;grid-row:1/3;color:#214e3c}.mode-import-button>span{font-size:18px;line-height:1.5;font-weight:800}.mode-import-button>small{font-size:11px;font-weight:650;color:#6e5a38}.mode-import-button:hover{background:linear-gradient(#fffdf3,#f0d48e);transform:translateY(-1px)}.mode-import-button.is-active{border-color:#1d6249;background:linear-gradient(#e9f4dd,#cedfb4);box-shadow:0 4px 0 #39714c}.mode-import-nlpc.is-active{border-color:#7b3245;background:linear-gradient(#fae8e7,#ead1d0);box-shadow:0 4px 0 #824858}.mode-import-nlpc.is-active>svg{color:#7c3545}.import-note{padding:4px 18px 11px;font-size:12px;line-height:1.7;color:#78654a}.student-import-error{margin:4px 18px 14px;padding:11px 13px;border:1px solid #b48739;border-radius:6px;background:#fff0c8;color:#6c4318;font-size:13px;font-weight:600;line-height:1.7}
-.context-panel{background:#fffbf2;border:2px solid #b89a69;box-shadow:0 3px 0 #c4b08b;border-radius:10px;padding:12px 18px;gap:12px 16px;margin-bottom:16px}.context-heading{grid-column:1/-1;font-size:16px;font-weight:800;color:#2b4a37;border-bottom:1px solid #deceb0;padding-bottom:8px}.field>label{font-size:13px;color:#57462b;font-weight:700}.field select,.field input{min-height:44px;border:1.5px solid #b59b75;background:#fffef9;font-size:15px;font-weight:600;box-shadow:inset 0 1px 3px #8f6e3020}.field-caption{font-size:12px;color:#77664d}.file-name{font-size:13px}.muted-badge{background:#e8ddc4;color:#51452f;font-size:11px}.file-summary .muted-badge{background:#254e3c;color:#fff0bd}.count-badge{font-size:12px;background:#e7d59c;color:#3c321a;font-weight:750}
-#main-content .button-secondary,#main-content .button-quiet{border:1.5px solid #a18353;background:linear-gradient(#fffdf7,#eadfc8);color:#493617;box-shadow:0 3px 0 #a68d65;border-radius:8px;font-size:14px;font-weight:750;min-height:42px;padding:10px 13px}#main-content .button-secondary:hover,#main-content .button-quiet:hover{background:#f4e5bc;transform:translateY(-1px)}#main-content .button-primary{background:linear-gradient(#f2cc68,#d7a22d);color:#2e210c;border:2px solid #97701d;box-shadow:0 4px 0 #8e671d;font-size:16px;font-weight:800;min-height:46px;padding:11px 18px;border-radius:8px}#main-content .button-primary:hover{background:linear-gradient(#f7d77f,#e1ae3e)}
-.support-tools{background:#fbf3e2;border:1.5px solid #b9a17b;border-radius:9px;margin-bottom:16px;box-shadow:0 2px 0 #d1c1a3}.support-tools>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;min-height:48px;color:#593e21;font-size:15px;font-weight:750;list-style:none;cursor:pointer}.support-tools>summary::before{content:'▸';font-size:16px}.support-tools[open]>summary::before{content:'▾'}.support-tools>summary>span{font-size:11px;font-weight:400;color:#837258;margin-left:auto}.support-tools[open]>summary{border-bottom:1px solid #d5c5a5}.support-tools .resources{padding:15px;gap:12px}.support-tools .resource-label{display:none}.support-tools .settings-menu{margin-left:auto}.settings-menu>summary{border:1.5px solid #a18353;background:linear-gradient(#fffdf7,#eadfc8);color:#493617;box-shadow:0 3px 0 #a68d65;font-size:14px;min-height:42px;padding:10px 12px;font-weight:700}.settings-content{border-color:#c2a878;background:#fffcf4}.settings-content h2{font-size:15px}.settings-content p{font-size:12px}.settings-content select{font-size:14px}.checkbox-line,.scope-options{font-size:13px}.file-link{font-size:13px}.demo-data>summary{font-size:14px}
-.workspace{background:#fffaf0;border:2px solid #9f8556;border-radius:12px;box-shadow:0 4px 0 #b3a07b}.workspace-heading{background:linear-gradient(100deg,#173e31,#2a5b47);border-bottom:3px solid #c7a247;padding:16px 18px!important;align-items:center}.workspace-heading h2{color:#fff5ce;font-size:20px;font-weight:800;line-height:1.5}.workspace-heading .count-badge{background:#f0d788;color:#2e371f;font-size:12px}.workspace-heading p{color:#d4e3d3;font-size:12px}.workspace-actions{flex-wrap:wrap;justify-content:flex-end}.workspace-actions #primaryExport{order:2}.table-toolbar{padding-top:14px;padding-bottom:14px!important;background:#f1e4c7}.ppct-context,.keyword-tools{background:#fbf2df;border-color:#d0bb94;font-size:12px;color:#59452b;padding:10px 16px}.contextual-tools>details>summary{display:inline-block;list-style:none;border:1px solid #b99b68;border-radius:6px;padding:7px 10px;background:#fffbf0;box-shadow:0 2px 0 #d1bc94;font-weight:700;cursor:pointer}.contextual-tools>details>summary::before{content:'▸ ';color:#8b672f}.contextual-tools>details[open]>summary::before{content:'▾ '}.student-table-scroll{border-color:#baa171}.student-table-scroll thead{background:#254b39;color:#fff2c9;border-bottom:2px solid #c9a350;font-size:13px}.student-table-scroll th{font-size:13px;font-weight:750}.student-table-scroll th div+div{color:#e1cc91;font-size:10px}.student-table-scroll td{border-color:#ddd0b7}.student-table-scroll td:nth-child(2)>div:first-child{font-size:14px}.student-table-scroll td:first-child{font-size:13px}.student-table-scroll td textarea{font-size:16px!important;border-color:#bca987;background:#fffefa}.student-table-scroll td select{font-size:13px;border-width:1.5px}.student-table-scroll td input{font-size:13px;border-color:#c9b593}.student-table-scroll td button{border:1px solid #ac9261;background:#f6e9cc;box-shadow:0 2px 0 #c2ab7d}.table-footer{background:#f4e9d2;border-top:1px solid #d1bd92}.footer-stats{font-size:11px;color:#706042}.export-note{color:#806c4c;font-size:11px}.header-links .button-quiet{background:#234c3d;border:1px solid #8f9c76;box-shadow:0 2px 0 #0e2c21;font-size:13px;font-weight:700}.app-footer{background:#214d3a;color:#e8e6cb;border-top:2px solid #a2874c}
-@media(max-width:1100px){.workspace-heading{display:block}.workspace-actions{margin-top:12px;justify-content:flex-start}.mode-status-panel strong{font-size:17px}.mode-import-button>span{font-size:16px}}
-@media(max-width:700px){.app-main .page-heading{min-height:116px}.app-main .page-heading h1{font-size:27px}.mode-status-panel{padding:11px 13px;gap:5px}.mode-status-caption{width:100%;font-size:10px}.mode-status-panel strong{font-size:17px}.mode-status-panel>span:last-child{font-size:12px;margin-left:0;width:100%}.import-panel-heading{padding:10px 13px;display:block}.import-panel-heading h2{font-size:17px}.import-panel-heading p{font-size:11px;margin-top:3px}.import-actions{grid-template-columns:1fr;padding:12px 13px 8px;gap:12px}.mode-import-button{padding:12px;min-height:80px}.mode-import-button>span{font-size:16px}.import-note{padding:4px 13px 10px;font-size:11px}.context-panel{padding:12px;gap:12px}.context-heading{font-size:15px}.field>label{font-size:12px}.field select,.field input{font-size:14px}.support-tools>summary{padding:11px 12px;font-size:14px;flex-wrap:wrap}.support-tools>summary>span{font-size:10px;margin:0;width:100%;padding-left:16px}.support-tools .resources{padding:12px}.workspace-heading{padding:14px!important}.workspace-heading h2{font-size:18px}.workspace-actions{gap:10px}#main-content .workspace-actions button{font-size:12px;min-height:42px;padding:10px}#main-content .workspace-actions #primaryExport{font-size:14px}.student-table-scroll table{min-width:1050px}.header-links .button-quiet{font-size:10px}.settings-menu{width:100%}.settings-content{padding:12px}.ppct-context,.keyword-tools{padding:10px 12px}.contextual-tools>details>summary{font-size:12px}.file-name{font-size:12px}.table-footer{padding:12px}.app-footer{font-size:10px}}
-</style>
-<style id="left-function-layout">.work-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start;margin-top:16px}.function-sidebar{min-width:0;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto;overscroll-behavior:contain;padding:0 4px 6px 0}.work-content{min-width:0}.header-note{font-size:12px;color:#d4e1d3}.app-main .page-heading{min-height:110px}.mode-status-panel{margin-bottom:0}
-.function-sidebar .import-panel,.function-sidebar .context-panel,.scope-panel,.export-panel{margin:0 0 14px;border:2px solid #af9262;border-radius:10px;background:#fffaf0;box-shadow:0 3px 0 #c2ad87;overflow:hidden}.function-sidebar .import-panel-heading{display:block;padding:11px 13px}.function-sidebar .import-panel-heading h2{font-size:16px}.function-sidebar .import-panel-heading p{font-size:11px;margin-top:4px}.function-sidebar .import-actions{grid-template-columns:1fr;padding:12px 12px 6px;gap:12px}.function-sidebar .mode-import-button{padding:11px 10px;grid-template-columns:24px 1fr;gap:4px 8px;min-height:84px}.function-sidebar .mode-import-button>span{font-size:14px;line-height:1.65}.function-sidebar .mode-import-button>svg{width:23px;height:23px}.function-sidebar .mode-import-button>small{font-size:10px}.function-sidebar .import-note{font-size:11px;padding:4px 12px 10px;line-height:1.7}.function-sidebar .student-import-error{margin:4px 12px 12px;font-size:12px}
-.scope-panel{padding:13px}.scope-panel h2,.export-panel h2{font-size:16px;font-weight:800;color:#284b37;margin:0 0 11px}.scope-panel .scope-options{display:flex;flex-direction:column;align-items:stretch;gap:8px}.scope-panel .scope-options>label{display:flex;align-items:center;gap:9px;min-height:44px;padding:9px;border:1px solid #b9a17a;background:#fffdf6;border-radius:6px;font-size:13px;font-weight:650;cursor:pointer}.scope-panel input[type=radio]{width:17px;height:17px;flex-shrink:0}.scope-panel #customSubjectsPanel{margin-top:11px;padding:10px;border:1px solid #b69a6b}.scope-panel #subjectCheckboxesContainer{grid-template-columns:1fr;max-height:260px}.scope-summary{margin-top:10px;font-size:11px;line-height:1.7;color:#6d5b3e}.scope-panel #customSubjectsPanel button{font-size:12px}.export-panel{padding:13px}.export-panel #primaryExport{width:100%;font-size:15px;padding:11px;min-height:46px}.export-panel>.button-secondary,.export-panel>#btnGenerateWithGeminiAI{width:100%;margin-top:10px;font-size:13px;min-height:42px}
-.function-sidebar .context-panel{display:grid;grid-template-columns:1fr 1fr;padding:13px;gap:12px}.function-sidebar .context-heading{font-size:14px;line-height:1.6}.function-sidebar .file-summary,.function-sidebar .style-field{grid-column:1/-1}.function-sidebar .field>label{font-size:11px}.function-sidebar .field select{font-size:12px;padding:8px 6px;min-height:42px}.function-sidebar .file-name{font-size:11px;white-space:normal;overflow-wrap:anywhere}.function-sidebar .muted-badge{font-size:10px}.function-sidebar .support-tools{margin-bottom:14px}.function-sidebar .support-tools>summary{font-size:14px;padding:11px;display:block;line-height:1.7}.function-sidebar .support-tools>summary>span{display:block;font-size:10px;padding:0;margin:4px 0 0}.function-sidebar .resources{display:flex;flex-direction:column;align-items:stretch;padding:11px;gap:10px}.function-sidebar .resources>.button-secondary,.function-sidebar .resources>.button-quiet{justify-content:flex-start;font-size:12px;padding:10px;min-height:42px}.function-sidebar .resources .muted-badge{font-size:9px}.function-sidebar .settings-menu{margin:0;width:100%}.function-sidebar .settings-menu>summary{font-size:12px;width:100%;margin:0;padding:10px}.function-sidebar .settings-content{grid-template-columns:1fr;gap:14px;padding:11px}.function-sidebar .settings-content h2{font-size:13px}.function-sidebar .settings-content select{font-size:12px}.function-sidebar .demo-data{grid-column:auto}.sidebar-settings .header-links{display:flex;flex-direction:column;align-items:stretch;gap:9px}.sidebar-settings .header-links .button-quiet{min-height:40px;padding:9px 12px;background:#fff8e8;color:#4a3b23;border:1px solid #b09a73;box-shadow:0 2px 0 #c5b28d;font-size:12px;max-width:100%}
-.student-source-label{background:#eaf2e4;border:1px solid #9fb78b;color:#214e32;font-size:12px;font-weight:750;line-height:1.7;padding:11px 14px;border-radius:7px;margin-bottom:9px;overflow-wrap:anywhere}.student-source-label.is-demo{background:#fff0c8;border-color:#bc8c30;color:#734c16}.scope-status-line{font-size:12px;color:#6a5b42;line-height:1.8;margin:0 2px 12px}.work-content .workspace-heading{padding:16px!important}.work-content .workspace-heading h2{font-size:20px;line-height:1.65}.work-content .workspace-heading p{display:block;font-size:11px;margin-top:4px}.work-content .table-toolbar{grid-template-columns:minmax(0,1fr) minmax(160px,240px);gap:14px;padding:13px 16px}.work-content .field>label{font-size:12px}.work-content .field select,.work-content .field input{font-size:13px}.work-content .workspace{box-shadow:0 3px 0 #b3a07b}.work-content .student-table-scroll{max-height:calc(100vh - 300px);min-height:250px}.work-content .student-table-scroll table{min-width:990px}.work-content .student-table-scroll th:nth-child(2){width:170px}.work-content .student-table-scroll th:nth-child(3){width:170px}.work-content .student-table-scroll th:nth-child(4){width:180px}.work-content .student-table-scroll th:nth-child(6){width:52px}.empty-students{text-align:center!important;padding:55px 18px!important;font-size:14px!important;color:#73654b!important;font-weight:500!important}.student-import-feedback{margin:5px 12px 12px;border:1px solid #a5b795;border-radius:6px;padding:11px;font-size:12px;line-height:1.7;background:#eff5e9;color:#285235;overflow-wrap:anywhere}.student-import-feedback.student-import-loading{background:#fff6da;color:#75581e;border-color:#c9ab5c}.student-import-feedback.student-import-error{background:#fff0dc;border-color:#c29954;color:#7a4c1b}.student-import-feedback.student-import-success{background:#eaf6e9;color:#245533;border-color:#92b88b}button:disabled{cursor:not-allowed;opacity:.55;transform:none!important;box-shadow:none!important}
-@media(min-width:1700px){.app-main{width:min(1660px,100%)}.work-layout{grid-template-columns:310px minmax(0,1fr)}}
-@media(min-width:901px) and (max-width:1150px){.work-layout{grid-template-columns:275px minmax(0,1fr);gap:14px}.function-sidebar .mode-import-button>span{font-size:13px}.work-content .table-toolbar{grid-template-columns:1fr}.work-content .contextual-tools{grid-template-columns:1fr}.work-content .contextual-tools>details+details{border-left:0}.work-content .workspace-heading h2{font-size:18px}.function-sidebar .field select{font-size:11px}}
-@media(max-width:900px){.work-layout{grid-template-columns:1fr;gap:14px}.function-sidebar{position:static;max-height:none;overflow:visible;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}.function-sidebar>*{margin-bottom:0!important}.function-sidebar .import-panel{grid-column:1/-1}.function-sidebar .import-actions{grid-template-columns:1fr 1fr}.function-sidebar .support-tools{grid-column:1/-1}.sidebar-settings{grid-column:1/-1}.sidebar-settings .header-links{flex-direction:row;flex-wrap:wrap}.sidebar-settings .header-links .button-quiet{display:inline-flex}.work-content .student-table-scroll{max-height:560px}.header-note{font-size:10px;max-width:130px;text-align:right}}
-@media(max-width:600px){.function-sidebar{display:block}.function-sidebar>*{margin-bottom:14px!important}.function-sidebar .import-actions{grid-template-columns:1fr}.function-sidebar .mode-import-button>span{font-size:15px}.work-content .table-toolbar{grid-template-columns:1fr}.work-content .workspace-heading h2{font-size:18px}.header-note{display:none}.work-content .student-table-scroll{max-height:520px}.function-sidebar .field select{font-size:13px}.work-content .contextual-tools{display:block}.sidebar-settings .header-links .button-quiet:last-child{display:inline-flex}}
-</style>
-<style>.ppct-review-panel{padding:14px 20px;border-top:2px solid #c09c49;background:#fff5d5;color:#684b19;font-size:13px;line-height:1.7}.ppct-review-panel strong{display:block;font-weight:800}.ppct-review-panel p{font-size:12px;margin:5px 0}.ppct-review-panel label{display:flex;align-items:center;gap:9px;font-weight:700;margin:10px 0;cursor:pointer}.ppct-review-panel input{width:18px;height:18px;flex-shrink:0}.ppct-review-panel button{font-size:12px}</style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
@@ -247,10 +375,10 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
 <span class="header-note">Công cụ nhận xét học sinh · Thông tư 27</span></header>
 <main id="main-content" class="app-main">
   <div class="page-heading"><svg class="title-ornament" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg><svg class="title-ornament title-ornament-right" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg>
-    <div class="title-copy"><p class="eyebrow">THAYKHAIEDU · ĐỒNG HÀNH CÙNG GIÁO VIÊN</p><h1>Nhận xét học sinh</h1><p class="page-description">Tải danh sách, kiểm tra từng em và xuất file Excel.</p></div>
+    <div class="title-copy"><p class="eyebrow">Đồng hành cùng giáo viên tiểu học</p><h1>Nhận xét học sinh</h1><p class="page-description">Tải danh sách, kiểm tra từng em và xuất file Excel.</p></div>
   </div>
   <section id="modeStatusPanel" class="mode-status-panel" aria-live="polite">
-    <span class="mode-status-caption">PHẦN ĐANG LÀM VIỆC</span><strong id="activeModeTitle">NHẬN XÉT MÔN HỌC</strong><span id="activeModeDescription">Mức đánh giá: T / H / C</span>
+    <span class="mode-status-caption">Đang làm việc với</span><strong id="activeModeTitle">NHẬN XÉT MÔN HỌC</strong><span id="activeModeDescription">Mức đánh giá: T / H / C</span>
   </section>
   
   
@@ -265,13 +393,13 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
     </div>
     <p class="import-note">File được nhập sẽ thay danh sách đang mở. Chọn nút nhập không làm mất dữ liệu nếu thầy/cô chưa chọn file.</p>
     <p id="studentImportFeedback" class="hidden" role="status" aria-live="polite"></p>
-  </section><section id="scopePanel" class="scope-panel"><h2 id="scopePanelTitle">Chọn môn cần nhận xét</h2><div class="scope-options"><label><input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()"> <span id="allScopeLabel">Nhận xét tất cả môn</span></label><label><input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()"> <span id="customScopeLabel">Chọn một hoặc nhiều môn</span></label></div><div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-3">
+  </section><section id="scopePanel" class="scope-panel"><h2 id="scopePanelTitle">Chọn môn cần nhận xét</h2><div class="scope-options"><label><input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()"> <span id="allScopeLabel">Nhận xét tất cả môn</span></label><label><input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()"> <span id="customScopeLabel">Chọn một hoặc nhiều môn</span></label></div><div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#edf2fa] border-2 border-[#b9c8e0] space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs font-extrabold text-[#3d2812]">Tích chọn mục cần nhận xét:</span>
+                                    <span class="text-xs font-extrabold text-[#18233a]">Tích chọn mục cần nhận xét:</span>
                                     <div class="flex gap-2 text-xs font-bold">
-                                        <button type="button" onclick="selectAllSubjects(true)" class="text-[#163832] underline">Chọn hết</button>
+                                        <button type="button" onclick="selectAllSubjects(true)" class="text-[#1d3f8f] underline">Chọn hết</button>
                                         <span>|</span>
-                                        <button type="button" onclick="selectAllSubjects(false)" class="text-[#6e1e2a] underline">Bỏ hết</button>
+                                        <button type="button" onclick="selectAllSubjects(false)" class="text-[#b3302a] underline">Bỏ hết</button>
                                     </div>
                                 </div>
                                 <div id="subjectCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-44 overflow-y-auto custom-scrollbar pr-1"></div>
@@ -279,8 +407,8 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                                     <i data-lucide="check" class="w-4 h-4"></i>
                                     <span>Xong - Áp dụng mục đã chọn</span>
                                 </button>
-                            </div><p id="scopeSummary" class="scope-summary"></p></section><section class="export-panel"><h2>Xuất kết quả</h2><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#f3c65f]">
-                                <i data-lucide="sparkles" class="w-4 h-4 text-[#f3c65f]"></i>
+                            </div><p id="scopeSummary" class="scope-summary"></p></section><section class="export-panel"><h2>Xuất kết quả</h2><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#ffe27a]">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-[#ffe27a]"></i>
                                 <span>Viết bằng Gemini AI</span>
                             </button></section><section class="context-panel" aria-label="Danh sách và kỳ đánh giá"><h2 class="context-heading">2. Thông tin file và thiết lập nhận xét</h2>
     <div id="loadedFileNameBox" class="file-summary"><span class="field-caption">Danh sách đang mở</span><span id="loadedFileName" class="file-name"></span><span id="fileTypeBadge" class="muted-badge"></span></div>
@@ -305,19 +433,19 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
     <span class="resource-label">CHỨC NĂNG BỔ TRỢ</span><button type="button" id="installAppButton" class="button-quiet" onclick="installApp()">Cài trên máy</button><button type="button"  class="button-secondary" onclick="openModal('modalBank')"><i data-lucide="book-open" aria-hidden="true"></i>Ngân hàng mẫu câu <span id="customBankBadge" class="hidden muted-badge"></span></button><button type="button"  class="button-secondary" onclick="openModal('modalPPCT')"><i data-lucide="calendar-range" aria-hidden="true"></i>Phân phối chương trình <span id="ppctActiveBadge" class="muted-badge">Đang bật</span></button>
     <details id="workflowSettings" class="settings-menu"><summary>Thiết lập nhận xét</summary><div class="settings-content">
       
-      <section><h2>Mức đánh giá và xuất file</h2><span id="tt27ScaleHintBadge" class="px-2 py-0.5 rounded bg-[#163832] text-[#fce89c] text-xs font-extrabold">
+      <section><h2>Mức đánh giá và xuất file</h2><span id="tt27ScaleHintBadge" class="px-2 py-0.5 rounded bg-[#1d3f8f] text-[#fff1a8] text-xs font-extrabold">
                                     Môn học: T / H / C
                                 </span><select id="defaultLevelMode" onchange="applyDefaultLevelsToStudents()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-sm sm:text-base">
                                 <option value="2LEVELS" selected id="opt2Levels">Mặc định 2 mức: Hoàn thành tốt (T) & Hoàn thành (H)</option>
                                 <option value="ALL_T" id="optAllT">Đồng loạt mức cao nhất: Hoàn thành tốt (T)</option>
                                 <option value="ALL_MID" id="optAllMid">Đồng loạt mức đạt chuẩn: Hoàn thành (H)</option>
                                 <option value="3LEVELS" id="opt3Levels">Phân hóa 3 mức: Tốt (T) / Hoàn thành (H) / Chưa HT (C)</option>
-                            </select><p id="tt27RuleNote" class="text-xs font-bold text-[#5c3a21] leading-snug">
+                            </select><p id="tt27RuleNote" class="text-xs font-bold text-[#44546f] leading-snug">
                                 • Chuẩn TT27: Môn học dùng <strong>Hoàn thành tốt (T), Hoàn thành (H), Chưa hoàn thành (C)</strong>. Năng lực & Phẩm chất dùng <strong>Tốt (T), Đạt (Đ), Cần cố gắng (C)</strong>.
-                            </p><label class="checkbox-line"><input type="checkbox" id="autoFillLevelCode" checked class="w-5 h-5 accent-[#163832] rounded"> Tự điền mã mức đạt đã chọn khi xuất Excel</label><p class="settings-note">Chỉ chọn áp dụng đồng loạt khi đã kiểm tra kết quả đánh giá của cả lớp.</p></section>
-      <section><h2>Phân phối chương trình</h2><label class="checkbox-line"><input type="checkbox" id="usePPCTToggle" checked onchange="onTogglePPCT()" class="w-5 h-5 accent-[#163832]"> Lồng ghép kiến thức PPCT vào nhận xét</label><label for="ppctQuickUpload" class="file-link">Tải file PPCT (Excel, Word, PDF, TXT, CSV, JSON)</label><input type="file" id="ppctQuickUpload" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null"><span id="ppctCurrentStageLabel" class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded bg-[#163832] text-[#fce89c]">
+                            </p><label class="checkbox-line"><input type="checkbox" id="autoFillLevelCode" checked class="w-5 h-5 accent-[#1d3f8f] rounded"> Tự điền mã mức đạt đã chọn khi xuất Excel</label><p class="settings-note">Chỉ chọn áp dụng đồng loạt khi đã kiểm tra kết quả đánh giá của cả lớp.</p></section>
+      <section><h2>Phân phối chương trình</h2><label class="checkbox-line"><input type="checkbox" id="usePPCTToggle" checked onchange="onTogglePPCT()" class="w-5 h-5 accent-[#1d3f8f]"> Lồng ghép kiến thức PPCT vào nhận xét</label><label for="ppctQuickUpload" class="file-link">Tải file PPCT (Excel, Word, PDF, TXT, CSV, JSON)</label><input type="file" id="ppctQuickUpload" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null"><span id="ppctCurrentStageLabel" class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded bg-[#1d3f8f] text-[#fff1a8]">
                                     Lớp 4 • Giữa HK1
-                                </span><p id="ppctPreviewSummaryText" class="text-sm font-semibold text-[#2b1d0e] leading-relaxed line-clamp-3">
+                                </span><p id="ppctPreviewSummaryText" class="text-sm font-semibold text-[#18233a] leading-relaxed line-clamp-3">
                                 Đang áp dụng kiến thức trọng tâm giai đoạn Giữa Học kỳ I.
                             </p></section>
       <section><h2>Ngân hàng mẫu câu</h2><label for="sidebarBankFileUpload" class="file-link">Nạp thêm file mẫu câu</label><input type="file" id="sidebarBankFileUpload" accept=".xlsx,.xls,.csv,.txt,.docx" class="hidden" onchange="handleBankFileUpload(event, true)" onclick="this.value=null"><div id="sidebarBankStatusBox"><p id="sidebarBankStatusText"></p></div><button type="button"  class="button-quiet" onclick="downloadSampleCommentBankExcel()">Tải Excel mẫu ngân hàng</button></section>
@@ -328,45 +456,45 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
   </details><div class="sidebar-settings"><nav aria-label="Thông tin và thiết lập" class="header-links"><button type="button"  class="button-quiet" onclick="openModal('modalTT27Rules')">Quy tắc TT27</button><button type="button"  class="button-quiet" onclick="openModal('modalAIKey')"><span id="aiModeBadgeHeader">Chế độ: Miễn phí 100%</span></button></nav></div></aside><div class="work-content">  <p id="ppctUploadFeedback" class="hidden" role="status" aria-live="polite"></p>
   <p id="studentSourceLabel" class="student-source-label" role="status"></p><p id="scopeStatusLine" class="scope-status-line"></p><section class="workspace" aria-labelledby="workspace-title">
     <div class="workspace-heading"><div><h2 id="workspace-title"><span id="workspaceModeLabel">Danh sách nhận xét môn học</span> <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div></div>
-    <div class="table-toolbar"><div class="field subject-field"><label for="activePreviewTarget">Xem bảng của môn / nhóm</label><select id="activePreviewTarget" onchange="renderStudentTable()" class="input-vintage rounded-xl px-4 py-2 text-base font-extrabold text-[#163832] cursor-pointer min-w-[240px]">
+    <div class="table-toolbar"><div class="field subject-field"><label for="activePreviewTarget">Xem bảng của môn / nhóm</label><select id="activePreviewTarget" onchange="renderStudentTable()" class="input-vintage rounded-xl px-4 py-2 text-base font-extrabold text-[#1d3f8f] cursor-pointer min-w-[240px]">
                                 <!-- Tự động điền các Sheet môn học hoặc NLPC -->
                             </select></div><div class="field search-field"><label for="searchStudentInput">Tìm học sinh</label><input type="text" id="searchStudentInput" oninput="renderStudentTable()" placeholder="Tìm tên hoặc mã học sinh..." class="w-full input-vintage pl-10 pr-4 py-2 rounded-xl text-base"></div></div>
-    <div class="contextual-tools"><details class="ppct-context"><summary>Nội dung PPCT đang áp dụng</summary><div id="activeSubjectPPCTBanner" class="px-5 py-3 bg-[#fdf8eb] border-b-2 border-[#dfc89e] flex flex-wrap items-center justify-between gap-2">
+    <div class="contextual-tools"><details class="ppct-context"><summary>Nội dung PPCT đang áp dụng</summary><div id="activeSubjectPPCTBanner" class="px-5 py-3 bg-[#f3f7fd] border-b-2 border-[#cbd8ec] flex flex-wrap items-center justify-between gap-2">
                         <div class="flex items-center gap-2.5 text-sm sm:text-base">
-                            <span class="px-2.5 py-0.5 rounded-md bg-[#6e1e2a] text-[#fce89c] font-bold text-xs uppercase shrink-0">
+                            <span class="px-2.5 py-0.5 rounded-md bg-[#b3302a] text-[#fff1a8] font-bold text-xs uppercase shrink-0">
                                 Kiến thức PPCT
                             </span>
-                            <span id="activeSubjectPPCTText" class="font-bold text-[#3d250a]">
+                            <span id="activeSubjectPPCTText" class="font-bold text-[#18233a]">
                                 Đọc mở rộng, viết đoạn văn miêu tả/kể chuyện, danh từ - động từ - tính từ.
                             </span>
                         </div>
-                        <button type="button" onclick="openModal('modalPPCT')" class="text-xs sm:text-sm font-extrabold text-[#163832] underline shrink-0">
+                        <button type="button" onclick="openModal('modalPPCT')" class="text-xs sm:text-sm font-extrabold text-[#1d3f8f] underline shrink-0">
                             Thay đổi nội dung PPCT
                         </button>
                     </div></details>
     <details class="keyword-tools"><summary>Gợi ý từ khóa cho học sinh đang chọn</summary><div id="quickKeywordChips" class="keyword-chips"></div></details></div>
     <div class="student-table-scroll custom-scrollbar">
                         <table class="w-full text-left border-collapse">
-                            <thead class="bg-[#163832] text-[#fce89c] text-sm sm:text-base uppercase font-extrabold sticky top-0 z-20 shadow-md border-b-2 border-[#c59b27]">
+                            <thead class="bg-[#1d3f8f] text-[#fff1a8] text-sm sm:text-base uppercase font-extrabold sticky top-0 z-20 shadow-md border-b-2 border-[#ffe27a]">
                                 <tr>
                                     <th class="py-3.5 px-3 text-center w-14">STT</th>
                                     <th class="py-3.5 px-4 min-w-[200px]">Họ và Tên Học Sinh</th>
                                     <th class="py-3.5 px-3 w-56">
                                         <div id="tableLevelColumnTitle">Mức Đạt Chuẩn TT27</div>
-                                        <div id="tableLevelColumnSub" class="text-xs font-medium text-[#e6c670] normal-case">Môn học: T / H / C</div>
+                                        <div id="tableLevelColumnSub" class="text-xs font-medium text-[#c9d9f5] normal-case">Môn học: T / H / C</div>
                                     </th>
                                     <th class="py-3.5 px-4 min-w-[260px]">
                                         <div>Từ Khóa Thực Tế (Tùy Chọn)</div>
-                                        <div class="text-xs font-medium text-[#e6c670] normal-case">Bỏ trống máy tự viết theo PPCT</div>
+                                        <div class="text-xs font-medium text-[#c9d9f5] normal-case">Bỏ trống máy tự viết theo PPCT</div>
                                     </th>
                                     <th class="py-3.5 px-4 min-w-[390px]">
                                         <div id="previewColumnHeaderTitle">Nội Dung Nhận Xét (Times New Roman, 11pt)</div>
-                                        <div class="text-xs font-medium text-[#e6c670] normal-case">Chuẩn TT27 (&le; 500 ký tự) • Sửa trực tiếp</div>
+                                        <div class="text-xs font-medium text-[#c9d9f5] normal-case">Chuẩn TT27 (&le; 500 ký tự) • Sửa trực tiếp</div>
                                     </th>
                                     <th class="py-3.5 px-3 text-center w-20">Đổi</th>
                                 </tr>
                             </thead>
-                            <tbody id="studentTableBody" class="divide-y-2 divide-[#e2d3b5] text-base bg-[#fffdf9]">
+                            <tbody id="studentTableBody" class="divide-y-2 divide-[#dbe5f3] text-base bg-[#ffffff]">
                                 <!-- Được render bằng JavaScript -->
                             </tbody>
                         </table>
@@ -384,12 +512,12 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
         <div class="card-3d max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh]">
             <div class="card-3d-header px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-[#ffe27a] text-[#18233a] flex items-center justify-center">
                         <i data-lucide="library" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Ngân Hàng Mẫu Câu Nhận Xét (Hỗ trợ .xlsx, .xls, .docx, .txt)</h3>
-                        <p class="text-xs sm:text-sm text-[#d8e8df]">Quét các sheet và cột; xem kho hiện có và kết quả phân loại từng sheet bên dưới</p>
+                        <h3 class="font-serif font-bold text-xl text-[#fff1a8]">Ngân Hàng Mẫu Câu Nhận Xét (Hỗ trợ .xlsx, .xls, .docx, .txt)</h3>
+                        <p class="text-xs sm:text-sm text-[#c9d9f5]">Quét các sheet và cột; xem kho hiện có và kết quả phân loại từng sheet bên dưới</p>
                     </div>
                 </div>
                 <button onclick="closeModal('modalBank')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
@@ -397,21 +525,21 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 </button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fdfbf7]">
+            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fbfcff]">
                 <!-- Khu vực tải file Excel mẫu nhận xét nổi bật -->
-                <div class="p-4 rounded-2xl bg-[#f5ebd6] border-2 border-[#b07d2b] flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="p-4 rounded-2xl bg-[#edf2fa] border-2 border-[#b9c8e0] flex flex-col md:flex-row items-center justify-between gap-4">
                     <div class="space-y-1">
-                        <div class="font-extrabold text-[#3d250a] text-base flex items-center gap-2">
-                            <i data-lucide="file-spreadsheet" class="w-5 h-5 text-[#163832]"></i>
+                        <div class="font-extrabold text-[#18233a] text-base flex items-center gap-2">
+                            <i data-lucide="file-spreadsheet" class="w-5 h-5 text-[#1d3f8f]"></i>
                             <span>Tải File Excel Mẫu Nhận Xét (.xlsx, .xls) hoặc Word (.docx), Text (.txt):</span>
                         </div>
-                        <p class="text-sm text-[#5c3a21] font-medium">
+                        <p class="text-sm text-[#44546f] font-medium">
                             Nếu file Excel của thầy/cô có nhiều Sheet (Toán, Tiếng Việt, Năng lực, Phẩm chất...), App sẽ <strong>nạp bổ sung và phân loại theo tên sheet</strong> hoặc nạp vào mục đang chọn!
                         </p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2.5 shrink-0">
                         <button type="button" onclick="downloadSampleCommentBankExcel()" class="btn-3d-cream px-3.5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-1.5">
-                            <i data-lucide="download" class="w-4 h-4 text-[#163832]"></i>
+                            <i data-lucide="download" class="w-4 h-4 text-[#1d3f8f]"></i>
                             <span>Tải File Mẫu (.xlsx)</span>
                         </button>
                         <label class="btn-3d-gold px-5 py-2.5 rounded-xl font-extrabold text-sm sm:text-base cursor-pointer flex items-center gap-2">
@@ -428,11 +556,11 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                     <span class="text-xs uppercase px-2 py-0.5 rounded bg-emerald-800 text-white">Kết quả đọc</span>
                 </div>
 
-                <div id="bankInventory" class="p-4 rounded-xl bg-[#f4ead5] border border-[#b59469]" aria-live="polite"></div>
-                <div id="bankImportHistory" class="p-4 rounded-xl border border-[#b59469]"></div>
+                <div id="bankInventory" class="p-4 rounded-xl bg-[#edf2fa] border border-[#b9c8e0]" aria-live="polite"></div>
+                <div id="bankImportHistory" class="p-4 rounded-xl border border-[#b9c8e0]"></div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">Chọn Môn học / Năng lực - Phẩm chất để xem hoặc sửa:</label>
+                        <label class="block text-sm font-extrabold text-[#18233a] mb-1.5">Chọn Môn học / Năng lực - Phẩm chất để xem hoặc sửa:</label>
                         <select id="bankCategorySelect" onchange="loadCustomBankCategoryPreview()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
                             <option value="Tiếng việt">Môn: Tiếng Việt</option>
                             <option value="Toán">Môn: Toán</option>
@@ -447,20 +575,20 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                         </select>
                     </div>
                     <div class="flex flex-col justify-end">
-                        <div class="p-2.5 rounded-xl bg-[#f4ead5] border border-[#b59469] text-xs sm:text-sm font-semibold text-[#3d250a]">
+                        <div class="p-2.5 rounded-xl bg-[#edf2fa] border border-[#b9c8e0] text-xs sm:text-sm font-semibold text-[#18233a]">
                             💡 Mẹo: Thầy/cô cũng có thể copy cột nhận xét từ Excel và dán thẳng vào ô văn bản bên dưới (mỗi dòng 1 câu nhận xét).
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">Danh sách câu nhận xét mẫu của mục đang chọn (Mỗi dòng 1 câu):</label>
+                    <label class="block text-sm font-extrabold text-[#18233a] mb-1.5">Danh sách câu nhận xét mẫu của mục đang chọn (Mỗi dòng 1 câu):</label>
                     <textarea id="customBankTextarea" rows="7" class="w-full input-vintage rounded-xl p-3.5 text-base custom-scrollbar" placeholder="Nhập hoặc tải file Excel chứa các câu nhận xét mẫu..."></textarea>
                 </div>
             </div>
 
-            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex flex-wrap items-center justify-between gap-3">
-                <button onclick="resetCustomBank()" class="text-sm font-extrabold text-[#6e1e2a] hover:underline">Khôi phục ngân hàng chuẩn mặc định</button>
+            <div class="p-4 bg-[#edf2fa] border-t-2 border-[#b9c8e0] flex flex-wrap items-center justify-between gap-3">
+                <button onclick="resetCustomBank()" class="text-sm font-extrabold text-[#b3302a] hover:underline">Khôi phục ngân hàng chuẩn mặc định</button>
                 <div class="flex gap-3">
                     <button onclick="closeModal('modalBank')" class="btn-3d-cream px-5 py-2.5 rounded-xl font-bold text-sm">Đóng</button>
                     <button onclick="saveCustomBank()" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2">
@@ -479,12 +607,12 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
         <div class="card-3d max-w-3xl w-full overflow-hidden flex flex-col max-h-[90vh]">
             <div class="card-3d-header px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-[#ffe27a] text-[#18233a] flex items-center justify-center">
                         <i data-lucide="shield-check" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Quy Tắc Cốt Lõi Thông Tư 27/2020/TT-BGDĐT (Đã Tích Hợp Sẵn)</h3>
-                        <p class="text-xs sm:text-sm text-[#d8e8df]">App đã nạp sẵn toàn bộ chuẩn đánh giá TT27 mà không cần tải lại mỗi lần dùng</p>
+                        <h3 class="font-serif font-bold text-xl text-[#fff1a8]">Quy Tắc Cốt Lõi Thông Tư 27/2020/TT-BGDĐT (Đã Tích Hợp Sẵn)</h3>
+                        <p class="text-xs sm:text-sm text-[#c9d9f5]">App đã nạp sẵn toàn bộ chuẩn đánh giá TT27 mà không cần tải lại mỗi lần dùng</p>
                     </div>
                 </div>
                 <button onclick="closeModal('modalTT27Rules')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
@@ -492,26 +620,26 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 </button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fdfbf7]">
+            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fbfcff]">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 rounded-xl bg-[#e9f5ef] border-2 border-[#163832] space-y-2">
-                        <h4 class="font-extrabold text-[#163832] text-base flex items-center gap-2">
+                    <div class="p-4 rounded-xl bg-[#e9f5ef] border-2 border-[#1d3f8f] space-y-2">
+                        <h4 class="font-extrabold text-[#1d3f8f] text-base flex items-center gap-2">
                             <i data-lucide="book-open" class="w-5 h-5"></i>
                             <span>1. Đánh giá Môn học & Hoạt động GD</span>
                         </h4>
-                        <ul class="list-disc list-inside text-sm font-semibold text-[#1e1b18] space-y-1">
+                        <ul class="list-disc list-inside text-sm font-semibold text-[#18233a] space-y-1">
                             <li><strong>Hoàn thành tốt (Ký hiệu: T):</strong> Thực hiện tốt các yêu cầu học tập, thường xuyên thể hiện sự tiến bộ, sáng tạo.</li>
                             <li><strong>Hoàn thành (Ký hiệu: H):</strong> Thực hiện được các yêu cầu học tập cơ bản của môn học.</li>
                             <li><strong>Chưa hoàn thành (Ký hiệu: C):</strong> Chưa thực hiện được một số yêu cầu, cần hướng dẫn và hỗ trợ thêm.</li>
                         </ul>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-[#fdf4e3] border-2 border-[#b07d2b] space-y-2">
-                        <h4 class="font-extrabold text-[#5c3a21] text-base flex items-center gap-2">
+                    <div class="p-4 rounded-xl bg-[#edf2fa] border-2 border-[#b9c8e0] space-y-2">
+                        <h4 class="font-extrabold text-[#44546f] text-base flex items-center gap-2">
                             <i data-lucide="award" class="w-5 h-5"></i>
                             <span>2. Đánh giá Năng lực & Phẩm chất (3N - 5P)</span>
                         </h4>
-                        <ul class="list-disc list-inside text-sm font-semibold text-[#1e1b18] space-y-1">
+                        <ul class="list-disc list-inside text-sm font-semibold text-[#18233a] space-y-1">
                             <li><strong>Tốt (Ký hiệu: T):</strong> Đáp ứng tốt yêu cầu giáo dục, biểu hiện rõ và thường xuyên.</li>
                             <li><strong>Đạt (Ký hiệu: Đ):</strong> Đáp ứng được yêu cầu giáo dục, biểu hiện nhưng chưa thường xuyên.</li>
                             <li><strong>Cần cố gắng (Ký hiệu: C):</strong> Chưa đáp ứng được đầy đủ yêu cầu, biểu hiện chưa rõ.</li>
@@ -519,22 +647,22 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                     </div>
                 </div>
 
-                <div class="p-4 rounded-xl bg-[#f4ead5] border-2 border-[#9c7444] space-y-2 text-sm font-semibold text-[#2b1d0e]">
-                    <div class="font-extrabold text-base text-[#6e1e2a]">3. Cấu trúc 3 Năng lực chung - 7 Năng lực đặc thù - 5 Phẩm chất chủ yếu (Đã nạp sẵn):</div>
+                <div class="p-4 rounded-xl bg-[#edf2fa] border-2 border-[#b9c8e0] space-y-2 text-sm font-semibold text-[#18233a]">
+                    <div class="font-extrabold text-base text-[#b3302a]">3. Cấu trúc 3 Năng lực chung - 7 Năng lực đặc thù - 5 Phẩm chất chủ yếu (Đã nạp sẵn):</div>
                     <p>• <strong>3 Năng lực chung:</strong> Tự chủ và tự học; Giao tiếp và hợp tác; Giải quyết vấn đề và sáng tạo.</p>
                     <p>• <strong>7 Năng lực đặc thù:</strong> Ngôn ngữ; Tính toán; Khoa học; Công nghệ; Tin học; Thẩm mĩ; Thể chất.</p>
                     <p>• <strong>5 Phẩm chất chủ yếu:</strong> Yêu nước; Nhân ái; Chăm chỉ; Trung thực; Trách nhiệm.</p>
                 </div>
 
                 <!-- Tùy chọn tải thêm văn bản chỉ đạo đặc thù của trường/phòng -->
-                <div class="p-4 rounded-xl bg-white border-2 border-[#b59469] space-y-3">
+                <div class="p-4 rounded-xl bg-white border-2 border-[#b9c8e0] space-y-3">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                            <h4 class="font-extrabold text-[#163832] text-base">Tải thêm Văn bản chỉ đạo đặc thù của Trường / Phòng GD (Tùy chọn):</h4>
-                            <p class="text-xs sm:text-sm text-[#5c3a21] font-medium">Nếu trường của thầy có quy định từ ngữ riêng, thầy có thể tải file (.docx, .xlsx, .txt) hoặc ghi chú vào dưới đây:</p>
+                            <h4 class="font-extrabold text-[#1d3f8f] text-base">Tải thêm Văn bản chỉ đạo đặc thù của Trường / Phòng GD (Tùy chọn):</h4>
+                            <p class="text-xs sm:text-sm text-[#44546f] font-medium">Nếu trường của thầy có quy định từ ngữ riêng, thầy có thể tải file (.docx, .xlsx, .txt) hoặc ghi chú vào dưới đây:</p>
                         </div>
                         <label class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm cursor-pointer shrink-0 flex items-center gap-1.5">
-                            <i data-lucide="file-up" class="w-4 h-4 text-[#6e1e2a]"></i>
+                            <i data-lucide="file-up" class="w-4 h-4 text-[#b3302a]"></i>
                             <span>Tải Văn Bản (.docx, .txt, .xlsx)</span>
                             <input type="file" accept=".docx,.txt,.xlsx,.xls" class="hidden" onchange="handleCustomDirectiveUpload(event)" onclick="this.value=null">
                         </label>
@@ -543,7 +671,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 </div>
             </div>
 
-            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex justify-end gap-3">
+            <div class="p-4 bg-[#edf2fa] border-t-2 border-[#b9c8e0] flex justify-end gap-3">
                 <button onclick="saveCustomDirective()" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm">Lưu Cấu Hình Quy Tắc</button>
             </div>
         </div>
@@ -556,12 +684,12 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
         <div class="card-3d max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
             <div class="card-3d-header px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-[#ffe27a] text-[#18233a] flex items-center justify-center">
                         <i data-lucide="cpu" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Cấu Hình Bộ Máy Viết Nhận Xét & Gemini API Key</h3>
-                        <p class="text-xs sm:text-sm text-[#d8e8df]">Hoạt động miễn phí 100% không cần Key hoặc kết nối Google Gemini AI</p>
+                        <h3 class="font-serif font-bold text-xl text-[#fff1a8]">Cấu Hình Bộ Máy Viết Nhận Xét & Gemini API Key</h3>
+                        <p class="text-xs sm:text-sm text-[#c9d9f5]">Hoạt động miễn phí 100% không cần Key hoặc kết nối Google Gemini AI</p>
                     </div>
                 </div>
                 <button onclick="closeModal('modalAIKey')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
@@ -569,34 +697,34 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 </button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fdfbf7]">
-                <div class="p-4 rounded-xl bg-[#e9f5ef] border-2 border-[#163832] space-y-1.5">
-                    <div class="font-extrabold text-[#163832] text-lg flex items-center gap-2">
+            <div class="p-6 overflow-y-auto space-y-4 text-base bg-[#fbfcff]">
+                <div class="p-4 rounded-xl bg-[#e9f5ef] border-2 border-[#1d3f8f] space-y-1.5">
+                    <div class="font-extrabold text-[#1d3f8f] text-lg flex items-center gap-2">
                         <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-700"></i>
                         <span>Chế độ 1 (Mặc định): Bộ Máy Thông Minh Nội Bộ — MIỄN PHÍ 100% VĨNH VIỄN</span>
                     </div>
-                    <p class="text-sm text-[#1e1b18] font-medium leading-relaxed">
+                    <p class="text-sm text-[#18233a] font-medium leading-relaxed">
                         <strong>Không cần bất kỳ API Key nào!</strong> App tự động phân tích từ khóa của học sinh + Kiến thức Phân phối chương trình + Ngân hàng mẫu câu của thầy để viết lời nhận xét chuẩn Thông tư 27 chỉ trong <strong>0.1 giây</strong> cho cả lớp, không bao giờ hết hạn mức.
                     </p>
                 </div>
 
-                <div class="p-4 rounded-xl bg-[#fdf4e3] border-2 border-[#b07d2b] space-y-3">
-                    <div class="font-extrabold text-[#5c3a21] text-lg flex items-center gap-2">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-[#8c4a08]"></i>
+                <div class="p-4 rounded-xl bg-[#edf2fa] border-2 border-[#b9c8e0] space-y-3">
+                    <div class="font-extrabold text-[#44546f] text-lg flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-[#b3302a]"></i>
                         <span>Chế độ 2 (Tùy chọn nâng cao): Kết nối Google Gemini AI (Miễn phí 1.500 lượt/ngày)</span>
                     </div>
-                    <p class="text-sm text-[#2b1d0e] font-medium leading-relaxed">
+                    <p class="text-sm text-[#18233a] font-medium leading-relaxed">
                         Nếu thầy muốn sử dụng mô hình ngôn ngữ lớn Gemini để diễn đạt câu văn biến hóa hơn nữa: Google cấp miễn phí khóa API Key tại <strong>aistudio.google.com</strong> với hạn mức <strong>15 lượt/phút và 1.500 lượt/ngày</strong> (Mỗi lượt gom nhóm cả lớp 35 học sinh, tức là miễn phí đủ dùng cho hơn 1.000 lớp học mỗi ngày!).
                     </p>
                     <div>
-                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Nhập Gemini API Key cá nhân (Để trống nếu dùng Chế độ Miễn phí Nội bộ):</label>
+                        <label class="block text-sm font-extrabold text-[#18233a] mb-1">Nhập Gemini API Key cá nhân (Để trống nếu dùng Chế độ Miễn phí Nội bộ):</label>
                         <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy... (Không bắt buộc)" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
                     </div>
                 </div>
             </div>
 
-            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex items-center justify-between">
-                <button onclick="clearGeminiApiKey()" class="text-sm font-extrabold text-[#6e1e2a] hover:underline">Xóa Key (Dùng mặc định miễn phí)</button>
+            <div class="p-4 bg-[#edf2fa] border-t-2 border-[#b9c8e0] flex items-center justify-between">
+                <button onclick="clearGeminiApiKey()" class="text-sm font-extrabold text-[#b3302a] hover:underline">Xóa Key (Dùng mặc định miễn phí)</button>
                 <div class="flex gap-3">
                     <button onclick="closeModal('modalAIKey')" class="btn-3d-cream px-5 py-2.5 rounded-xl font-bold text-sm">Đóng</button>
                     <button onclick="saveGeminiApiKey()" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm">Lưu Cấu Hình</button>
@@ -612,12 +740,12 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
         <div class="card-3d max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh]">
             <div class="card-3d-header px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-[#ffe27a] text-[#18233a] flex items-center justify-center">
                         <i data-lucide="calendar-range" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Kho Phân Phối Chương Trình (PPCT) Đa Định Dạng</h3>
-                        <p class="text-xs sm:text-sm text-[#d8e8df]">Cung cấp kiến thức từng giai đoạn để App viết lời nhận xét sát thực tế bài học</p>
+                        <h3 class="font-serif font-bold text-xl text-[#fff1a8]">Kho Phân Phối Chương Trình (PPCT) Đa Định Dạng</h3>
+                        <p class="text-xs sm:text-sm text-[#c9d9f5]">Cung cấp kiến thức từng giai đoạn để App viết lời nhận xét sát thực tế bài học</p>
                     </div>
                 </div>
                 <button onclick="closeModal('modalPPCT')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
@@ -625,15 +753,15 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 </button>
             </div>
 
-            <div class="p-6 overflow-y-auto space-y-5 text-base bg-[#fdfbf7]">
+            <div class="p-6 overflow-y-auto space-y-5 text-base bg-[#fbfcff]">
                 <!-- Khu vực tải file PPCT đa định dạng -->
-                <div class="p-4 rounded-2xl bg-[#f5ebd6] border-2 border-[#b07d2b] flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="p-4 rounded-2xl bg-[#edf2fa] border-2 border-[#b9c8e0] flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="space-y-1">
-                        <div class="font-extrabold text-[#3d250a] text-base flex items-center gap-2">
-                            <i data-lucide="file-up" class="w-5 h-5 text-[#6e1e2a]"></i>
+                        <div class="font-extrabold text-[#18233a] text-base flex items-center gap-2">
+                            <i data-lucide="file-up" class="w-5 h-5 text-[#b3302a]"></i>
                             <span>Nhập File Phân Phối Chương Trình (Excel, Word, PDF, Text, CSV, JSON):</span>
                         </div>
-                        <p class="text-sm text-[#5c3a21] font-medium">
+                        <p class="text-sm text-[#44546f] font-medium">
                             App tự động bóc tách tên chủ đề/bài học trong file PPCT của thầy/cô để đưa vào kho kiến thức của giai đoạn đang chọn.
                         </p>
                     </div>
@@ -650,7 +778,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 <!-- Bộ lọc chọn Khối - Kỳ - Môn học trong kho PPCT -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Khối lớp:</label>
+                        <label class="block text-sm font-extrabold text-[#18233a] mb-1">Khối lớp:</label>
                         <select id="ppctModalGrade" onchange="loadPPCTModalContent()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
                             <option value="1">Khối Lớp 1</option>
                             <option value="2">Khối Lớp 2</option>
@@ -660,7 +788,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Giai đoạn / Thời điểm:</label>
+                        <label class="block text-sm font-extrabold text-[#18233a] mb-1">Giai đoạn / Thời điểm:</label>
                         <select id="ppctModalPeriod" onchange="loadPPCTModalContent()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
                             <option value="GK1" selected>Giữa Học kỳ 1 (Tuần 1 - 9)</option>
                             <option value="CK1">Cuối Học kỳ 1 (Tuần 10 - 18)</option>
@@ -669,7 +797,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1">Môn học / Hoạt động GD:</label>
+                        <label class="block text-sm font-extrabold text-[#18233a] mb-1">Môn học / Hoạt động GD:</label>
                         <select id="ppctModalSubject" onchange="loadPPCTModalContent()" class="w-full input-vintage rounded-xl px-3.5 py-2.5 text-base">
                             <option value="Tiếng việt">Môn: Tiếng Việt</option>
                             <option value="Toán">Môn: Toán</option>
@@ -683,7 +811,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                 </div>
 
                 <div>
-                    <label class="block text-sm font-extrabold text-[#2b1d0e] mb-1.5">
+                    <label class="block text-sm font-extrabold text-[#18233a] mb-1.5">
                         Nội dung kiến thức / kỹ năng học sinh học trong giai đoạn này (Mỗi dòng 1 cụm kiến thức để App ghép vào câu):
                     </label>
                     <textarea id="ppctModalTextarea" oninput="document.getElementById('ppctContextConfirmed').checked=false" rows="7" class="w-full input-vintage rounded-xl p-4 text-base leading-relaxed custom-scrollbar" placeholder="Ví dụ: nắm vững cách đọc, viết số có nhiều chữ số và giải toán có lời văn..."></textarea>
@@ -696,8 +824,8 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
                     <label><input type="checkbox" id="ppctContextConfirmed"> Tôi đã kiểm tra nội dung đúng môn, lớp và kỳ đang chọn.</label>
                     <button type="button" class="btn-3d-cream px-3 py-2" onclick="cancelPPCTImportDraft()">Hủy bản nháp</button>
                 </div>
-            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex flex-wrap items-center justify-between gap-3">
-                <button type="button" onclick="resetPPCTData()" class="text-sm font-extrabold text-[#6e1e2a] hover:underline">
+            <div class="p-4 bg-[#edf2fa] border-t-2 border-[#b9c8e0] flex flex-wrap items-center justify-between gap-3">
+                <button type="button" onclick="resetPPCTData()" class="text-sm font-extrabold text-[#b3302a] hover:underline">
                     Khôi phục PPCT chuẩn mặc định
                 </button>
                 <div class="flex items-center gap-3">
@@ -716,35 +844,35 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
         <div class="card-3d max-w-2xl w-full overflow-hidden">
             <div class="card-3d-header px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-[#f3c65f] text-[#1e1b18] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-[#ffe27a] text-[#18233a] flex items-center justify-center">
                         <i data-lucide="rocket" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-serif font-bold text-xl text-[#fce89c]">Triển Khai ThayKhaiEdu Lên GitHub & Vercel</h3>
-                        <p class="text-xs sm:text-sm text-[#d8e8df]">Hoạt động độc lập 100% trên trình duyệt, bảo mật dữ liệu học sinh</p>
+                        <h3 class="font-serif font-bold text-xl text-[#fff1a8]">Triển Khai ThayKhaiEdu Lên GitHub & Vercel</h3>
+                        <p class="text-xs sm:text-sm text-[#c9d9f5]">Hoạt động độc lập 100% trên trình duyệt, bảo mật dữ liệu học sinh</p>
                     </div>
                 </div>
                 <button onclick="closeModal('modalDeploy')" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            <div class="p-6 space-y-4 text-base text-[#2b1d0e] bg-[#fdfbf7]">
-                <div class="p-4 rounded-xl bg-[#f4ead5] border-2 border-[#b59469] space-y-2">
-                    <p class="font-extrabold text-[#163832] text-lg">Bước 1: Lưu mã nguồn lên GitHub</p>
+            <div class="p-6 space-y-4 text-base text-[#18233a] bg-[#fbfcff]">
+                <div class="p-4 rounded-xl bg-[#edf2fa] border-2 border-[#b9c8e0] space-y-2">
+                    <p class="font-extrabold text-[#1d3f8f] text-lg">Bước 1: Lưu mã nguồn lên GitHub</p>
                     <ol class="list-decimal list-inside space-y-1.5 font-medium">
                         <li>Tạo Repository mới trên GitHub (VD: <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">thaykhaiedu-tt27</code>).</li>
                         <li>Tải file <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">index.html</code> này lên Repository đó và bấm Commit.</li>
                     </ol>
                 </div>
-                <div class="p-4 rounded-xl bg-[#e6f2ed] border-2 border-[#163832] space-y-2">
-                    <p class="font-extrabold text-[#163832] text-lg">Bước 2: Kết nối Vercel (Miễn phí 100%)</p>
+                <div class="p-4 rounded-xl bg-[#e6f2ed] border-2 border-[#1d3f8f] space-y-2">
+                    <p class="font-extrabold text-[#1d3f8f] text-lg">Bước 2: Kết nối Vercel (Miễn phí 100%)</p>
                     <ol class="list-decimal list-inside space-y-1.5 font-medium">
                         <li>Truy cập <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">vercel.com</code> bằng tài khoản GitHub của thầy.</li>
                         <li>Chọn <strong>Add New Project</strong> &rarr; Chọn <code class="bg-white px-2 py-0.5 rounded border font-mono font-bold">thaykhaiedu-tt27</code> &rarr; Bấm <strong>Deploy</strong>.</li>
                     </ol>
                 </div>
             </div>
-            <div class="p-4 bg-[#efe3c8] border-t-2 border-[#b59469] flex justify-end">
+            <div class="p-4 bg-[#edf2fa] border-t-2 border-[#b9c8e0] flex justify-end">
                 <button onclick="closeModal('modalDeploy')" class="btn-3d-teal px-6 py-2.5 rounded-xl font-bold text-sm">Đã hiểu</button>
             </div>
         </div>
@@ -752,8 +880,8 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
 
     <!-- TOAST NOTIFICATION -->
     <div id="toastBox" class="fixed bottom-6 right-6 z-50 hidden transform transition-all duration-300">
-        <div class="bg-[#163832] text-[#fefae0] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#f3c65f] flex items-center gap-3 text-base font-bold">
-            <i data-lucide="sparkles" class="w-5 h-5 text-[#f3c65f] shrink-0"></i>
+        <div class="bg-[#1d3f8f] text-[#fff1a8] px-5 py-4 rounded-2xl shadow-2xl border-2 border-[#ffe27a] flex items-center gap-3 text-base font-bold">
+            <i data-lucide="sparkles" class="w-5 h-5 text-[#ffe27a] shrink-0"></i>
             <span id="toastMessage">Thông báo hệ thống</span>
         </div>
     </div>
@@ -1239,7 +1367,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
             const container = document.getElementById("quickKeywordChips");
             container.innerHTML = QUICK_KEYWORDS.map(kw => `
                 <button type="button" onclick="insertQuickKeyword('${kw}')"
-                    class="px-3 py-1 rounded-xl bg-[#fffdf9] hover:bg-[#163832] hover:text-[#fce89c] text-[#2b1d0e] border-2 border-[#9c7444] text-sm font-bold transition shadow-sm">
+                    class="px-3 py-1 rounded-xl bg-[#ffffff] hover:bg-[#1d3f8f] hover:text-[#fff1a8] text-[#18233a] border-2 border-[#b9c8e0] text-sm font-bold transition shadow-sm">
                     + ${kw}
                 </button>
             `).join("");
@@ -1281,7 +1409,7 @@ body{background:#f1eadb;background-image:radial-gradient(#d4c7b0 .65px,transpare
             const badge = document.getElementById("ppctActiveBadge");
             badge.innerText = enabled ? "Đang bật" : "Đang tắt";
             badge.className = enabled
-                ? "px-2 py-0.5 text-xs bg-[#16382c] text-[#fce89c] rounded-full font-extrabold"
+                ? "px-2 py-0.5 text-xs bg-[#1d3f8f] text-[#fff1a8] rounded-full font-extrabold"
                 : "px-2 py-0.5 text-xs bg-slate-600 text-white rounded-full font-extrabold";
             updatePPCTSummaryBox();
             regenerateAllComments();
@@ -2093,9 +2221,9 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         function renderSubjectCheckboxes() {
             const container = document.getElementById("subjectCheckboxesContainer");
             container.innerHTML = availableSheetsOrTargets.map(t => `
-                <label class="flex items-center gap-2 p-2 rounded-lg border border-[#b59469] bg-[#fffdf9] cursor-pointer text-sm font-bold text-[#2b1d0e]">
+                <label class="flex items-center gap-2 p-2 rounded-lg border border-[#b9c8e0] bg-[#ffffff] cursor-pointer text-sm font-bold text-[#18233a]">
                     <input type="checkbox" value="${t.key}" ${selectedTargets.has(t.key) ? "checked" : ""}
-                        class="subject-checkbox w-4 h-4 accent-[#163832] rounded">
+                        class="subject-checkbox w-4 h-4 accent-[#1d3f8f] rounded">
                     <span class="truncate">${t.label.replace("Môn: ", "")}</span>
                 </label>
             `).join("");
@@ -2177,11 +2305,11 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 const detectedTags = getDetectedCategoryBadges(st.keywords);
 
                 return `
-                <tr class="hover:bg-[#f6ebd4] transition ${idx === activeStudentIdForChip ? 'bg-[#f5e6c8]' : ''}" onclick="setActiveStudentRow(${idx})">
-                    <td class="py-3.5 px-3 text-center font-black text-[#5c3a21] text-base">${st.stt}</td>
+                <tr class="hover:bg-[#f3f7fd] transition ${idx === activeStudentIdForChip ? 'bg-[#fff3b8]' : ''}" onclick="setActiveStudentRow(${idx})">
+                    <td class="py-3.5 px-3 text-center font-black text-[#44546f] text-base">${st.stt}</td>
                     <td class="py-3.5 px-4">
-                        <div class="font-extrabold text-[#1e1b18] text-base sm:text-lg">${st.name}</div>
-                        <div class="text-xs sm:text-sm text-[#6e522d] font-bold">Mã: ${st.code || '---'} • NS: ${st.dob || '---'}</div>
+                        <div class="font-extrabold text-[#18233a] text-base sm:text-lg">${st.name}</div>
+                        <div class="text-xs sm:text-sm text-[#44546f] font-bold">Mã: ${st.code || '---'} • NS: ${st.dob || '---'}</div>
                     </td>
                     <td class="py-3.5 px-3">
                         <select onchange="updateStudentLevel(${idx}, this.value)"
@@ -2203,13 +2331,13 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                         <textarea rows="2"
                             oninput="updateManualComment(${idx}, '${activeTargetKey}', this.value)"
                             style="font-family: 'Times New Roman', Times, serif; font-size: 16.5px;"
-                            class="w-full rounded-xl border-2 border-[#b59469] focus:border-[#163832] p-2.5 text-[#1a1612] font-medium bg-[#fffefb] outline-none leading-snug resize-none shadow-inner">${escapeHtml(currentComment)}</textarea>
+                            class="w-full rounded-xl border-2 border-[#b9c8e0] focus:border-[#1d3f8f] p-2.5 text-[#18233a] font-medium bg-[#ffffff] outline-none leading-snug resize-none shadow-inner">${escapeHtml(currentComment)}</textarea>
                     </td>
                     <td class="py-3.5 px-3 text-center">
                         <button type="button" onclick="shuffleSingleStudentComment(${idx}, '${activeTargetKey}')"
                             title="Đổi câu nhận xét khác cho học sinh này"
                             class="btn-3d-cream p-2.5 rounded-xl inline-flex items-center justify-center">
-                            <i data-lucide="dices" class="w-5 h-5 text-[#163832]"></i>
+                            <i data-lucide="dices" class="w-5 h-5 text-[#1d3f8f]"></i>
                         </button>
                     </td>
                 </tr>
@@ -2232,7 +2360,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
 
         function getDetectedCategoryBadges(keywordsStr) {
             if (!keywordsStr || !keywordsStr.trim()) {
-                return `<span class="text-xs text-[#6e522d] font-semibold italic">Tự động viết theo PPCT & Mức độ</span>`;
+                return `<span class="text-xs text-[#44546f] font-semibold italic">Tự động viết theo PPCT & Mức độ</span>`;
             }
             const lower = keywordsStr.toLowerCase();
             const badges = new Set();
@@ -2250,10 +2378,10 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 }
             });
             if (badges.size === 0) {
-                return `<span class="text-xs text-[#163832] font-bold">Đã ghi nhận từ khóa</span>`;
+                return `<span class="text-xs text-[#1d3f8f] font-bold">Đã ghi nhận từ khóa</span>`;
             }
             return Array.from(badges).slice(0, 4).map(b =>
-                `<span class="px-2 py-0.5 rounded-md bg-[#163832] text-[#fce89c] text-xs font-bold">→ ${b}</span>`
+                `<span class="px-2 py-0.5 rounded-md bg-[#1d3f8f] text-[#fff1a8] text-xs font-bold">→ ${b}</span>`
             ).join("");
         }
 
@@ -2636,7 +2764,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             const historyBox = document.getElementById("bankImportHistory");
             const statuses = { imported: "Đã phân loại", selected: "Nạp vào mục đang chọn", unmapped: "CHƯA NẠP — chưa nhận diện tên sheet. Đổi tên sheet theo môn/mục rồi nạp lại.", instructions: "Bỏ qua sheet hướng dẫn", empty: "Không có câu hợp lệ (tối thiểu 12 ký tự)" };
             historyBox.innerHTML = history.length ? `<p class="font-extrabold">Lịch sử 20 lần đọc gần nhất</p>` + history.map((report, index) => `
-                <details ${index === 0 ? "open" : ""} class="mt-2 rounded-xl border border-[#b59469] p-3">
+                <details ${index === 0 ? "open" : ""} class="mt-2 rounded-xl border border-[#b9c8e0] p-3">
                     <summary class="cursor-pointer font-bold">${escapeHtml(report.fileName)} — thêm ${report.added} câu · ${report.sheets.length} sheet/mục</summary>
                     <p class="text-xs my-2">${escapeHtml(new Date(report.time).toLocaleString("vi-VN"))}</p>
                     ${report.sheets.map(sheet => `<p class="text-sm mt-1">${escapeHtml(sheet.name)} → ${escapeHtml(sheet.category ? label(sheet.category) : "Chưa phân loại")}: tìm ${sheet.found}, thêm ${sheet.added}. ${escapeHtml(statuses[sheet.status] || "")}</p>`).join("")}

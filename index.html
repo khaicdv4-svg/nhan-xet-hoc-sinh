@@ -771,8 +771,11 @@
                         <input type="file" accept=".xlsx,.xls,.docx,.pdf,.txt,.csv,.json" class="hidden" onchange="handlePPCTFileUpload(event)" onclick="this.value=null">
                     </label>
                 </div>
-                    <p class="text-sm mt-2">File JSON cần ghi đúng lớp, kỳ và môn. File không ghi các thông tin này chỉ được đọc thành bản nháp để kiểm tra. Khung tải xuống để trống bài học; thầy/cô điền nội dung PPCT thật rồi lưu sau khi đối chiếu.</p>
-                <button type="button" onclick="downloadPPCTJSONTemplate()" class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm">Tải khung JSON đúng môn đang chọn</button>
+                    <p class="text-sm mt-2">Cách nhanh nhất: nạp file Excel PPCT của tổ, app tự chia theo giai đoạn và môn. Sau đó bấm "Sao lưu toàn bộ PPCT" để có file JSON nạp lại trên máy khác. File JSON một môn cần ghi đúng lớp, kỳ, môn và chỉ được đọc thành bản nháp để kiểm tra.</p>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="downloadPPCTBackup()" class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm">Sao lưu toàn bộ PPCT (JSON)</button>
+                    <button type="button" onclick="downloadPPCTJSONTemplate()" class="btn-3d-cream px-4 py-2 rounded-xl font-bold text-sm">Tải khung JSON đúng môn đang chọn</button>
+                </div>
 
                 <p id="ppctImportFeedback" class="hidden" role="status" aria-live="polite"></p>
                 <!-- Bộ lọc chọn Khối - Kỳ - Môn học trong kho PPCT -->
@@ -1987,7 +1990,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 throw new Error('File JSON này chỉ có 3 câu mẫu Toán về phân số (bản mẫu cũ), không phải PPCT thật. Hãy nạp file Excel PPCT của tổ.');
             }
             if (context && hasMisassignedPPCT(lines, context.subject)) {
-                throw new Error(`File JSON này chỉ có 3 câu mẫu Toán về phân số (bản mẫu cũ), không phải PPCT thật của môn ${context.subject}. Hãy nạp file Excel PPCT (.xlsx) của tổ, app sẽ tự chia theo giai đoạn và môn.`);
+                throw new Error(`File JSON này chỉ có 3 câu mẫu Toán về phân số (bản mẫu cũ), không phải PPCT thật của môn ${context.subject}. Hãy nạp file Excel PPCT (.xlsx) của tổ hoặc file sao lưu JSON tạo bằng nút "Sao lưu toàn bộ PPCT".`);
             }
             if (!Array.isArray(data) && ["grade", "period", "subject"].some(key => data[key] !== undefined)) {
                 const subject = typeof data.subject === "string" ? detectBankCategoryByName(data.subject) : null;
@@ -2126,26 +2129,23 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             return { sheets };
         }
 
-        function applyStructuredPPCT(result, file, period, catKey, fromModal) {
+        // Lưu nhiều mục PPCT cùng lúc (từ Excel nhiều sheet hoặc file sao lưu JSON) rồi mở hộp thoại để kiểm tra
+        function applyPPCTEntries(entries, file, period, catKey, fromModal, sourceNote) {
             let topicCount = 0;
-            const saved = [];
-            result.sheets.forEach(sheet => {
-                ["GK1", "CK1", "GK2", "CK2"].forEach(p => {
-                    const topics = sheet.periods[p];
-                    if (!topics || !topics.length) return;
-                    if (hasMisassignedPPCT(topics, sheet.subject)) return;
-                    customPPCTStore[`${sheet.grade}_${p}_${sheet.subject}`] = topics;
-                    topicCount += topics.length;
-                });
-                saved.push(`${sheet.subject} (Lớp ${sheet.grade})`);
+            const subjects = [];
+            entries.forEach(entry => {
+                customPPCTStore[`${entry.grade}_${entry.period}_${entry.subject}`] = entry.topics;
+                topicCount += entry.topics.length;
+                const label = `${entry.subject} (Lớp ${entry.grade})`;
+                if (!subjects.includes(label)) subjects.push(label);
             });
             localStorage.setItem("THAYKHAIEDU_PPCT_STORE", JSON.stringify(customPPCTStore));
             pendingPPCTImport = null;
             document.getElementById("ppctReviewPanel").classList.add("hidden");
 
-            const grades = Array.from(new Set(result.sheets.map(sh => sh.grade)));
+            const grades = Array.from(new Set(entries.map(e => e.grade)));
             const grade = grades.length === 1 ? grades[0] : document.getElementById("gradeSelect").value;
-            const shown = result.sheets.find(sh => sh.subject === catKey) || result.sheets[0];
+            const shown = entries.find(e => e.subject === catKey && e.grade === grade) || entries.find(e => e.grade === grade) || entries[0];
             document.getElementById("gradeSelect").value = grade;
             document.getElementById("ppctModalGrade").value = grade;
             document.getElementById("ppctModalPeriod").value = period;
@@ -2154,9 +2154,64 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             loadPPCTModalContent();
             updatePPCTSummaryBox();
             regenerateAllComments();
-            const message = `Đã nạp "${file.name}": ${saved.length} môn, ${topicCount} chủ đề chia theo 4 giai đoạn (tuần 1-9, 10-18, 19-27, 28-35). Môn đã nạp: ${saved.join(", ")}. Chọn giai đoạn và môn ở trên để kiểm tra nội dung.`;
+            const message = `Đã nạp "${file.name}": ${subjects.length} môn, ${entries.length} mục, ${topicCount} chủ đề ${sourceNote}. Môn đã nạp: ${subjects.join(", ")}. Chọn giai đoạn và môn ở trên để kiểm tra nội dung.`;
             setPPCTImportFeedback(message);
             showToast(message);
+        }
+
+        function applyStructuredPPCT(result, file, period, catKey, fromModal) {
+            const entries = [];
+            result.sheets.forEach(sheet => {
+                ["GK1", "CK1", "GK2", "CK2"].forEach(p => {
+                    const topics = sheet.periods[p];
+                    if (!topics || !topics.length || hasMisassignedPPCT(topics, sheet.subject)) return;
+                    entries.push({ grade: sheet.grade, period: p, subject: sheet.subject, topics });
+                });
+            });
+            applyPPCTEntries(entries, file, period, catKey, fromModal, "chia theo 4 giai đoạn (tuần 1-9, 10-18, 19-27, 28-35)");
+        }
+
+        // Sao lưu toàn bộ PPCT đã nạp ra một file JSON, nạp lại được trên máy khác
+        const PPCT_BACKUP_TYPE = "thaykhaiedu-ppct-backup";
+        const PPCT_SUBJECT_KEYS = ["Tiếng việt", "Toán", "Đạo đức", "Khoa học", "Lịch sử và Địa lý", "TH-CN (Công nghệ)", "Hoạt động trải nghiệm"];
+
+        function buildPPCTBackup() {
+            const store = {};
+            Object.keys(customPPCTStore).sort().forEach(key => {
+                const m = key.match(/^([1-5])_(GK1|CK1|GK2|CK2)_(.+)$/);
+                const topics = customPPCTStore[key];
+                if (!m || !Array.isArray(topics) || !topics.length || isLegacyMathPPCTSample(topics)) return;
+                store[key] = topics;
+            });
+            return { type: PPCT_BACKUP_TYPE, version: 1, createdAt: new Date().toISOString(), store };
+        }
+
+        function downloadPPCTBackup() {
+            const backup = buildPPCTBackup();
+            const count = Object.keys(backup.store).length;
+            if (!count) {
+                setPPCTImportFeedback("Chưa có PPCT nào để sao lưu. Hãy nạp file Excel PPCT trước.", true);
+                return;
+            }
+            const d = new Date();
+            const stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+            saveAs(new Blob([JSON.stringify(backup, null, 2)], { type: "application/json;charset=utf-8" }), `thaykhaiedu_ppct_backup_${stamp}.json`);
+            setPPCTImportFeedback(`Đã sao lưu ${count} mục PPCT (khối, giai đoạn, môn) ra file JSON.`);
+        }
+
+        // Trả về null nếu không phải file sao lưu; trả về danh sách mục hợp lệ nếu đúng định dạng
+        function parsePPCTBackup(data) {
+            if (!data || typeof data !== "object" || Array.isArray(data) || !data.store || typeof data.store !== "object") return null;
+            const entries = [];
+            Object.entries(data.store).forEach(([key, topics]) => {
+                const m = key.match(/^([1-5])_(GK1|CK1|GK2|CK2)_(.+)$/);
+                if (!m || !PPCT_SUBJECT_KEYS.includes(m[3]) || !Array.isArray(topics)) return;
+                const lines = topics.filter(t => typeof t === "string" && t.trim()).map(t => t.trim());
+                if (!lines.length || isLegacyMathPPCTSample(lines)) return;
+                entries.push({ grade: m[1], period: m[2], subject: m[3], topics: lines });
+            });
+            if (!entries.length) throw new Error("File sao lưu không có mục PPCT hợp lệ nào. Hãy nạp file Excel PPCT của tổ.");
+            return entries;
         }
 
         // 10. ĐỌC FILE PHÂN PHỐI CHƯƠNG TRÌNH ĐA ĐỊNH DẠNG (.XLSX, .DOCX, .PDF, .TXT, .CSV, .JSON)
@@ -2177,7 +2232,13 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 let extractedLines = [];
 
                 if (ext === "json") {
-                    extractedLines = parsePPCTJSON(await file.text(), { grade, period, subject: catKey });
+                    const jsonText = await file.text();
+                    const backupEntries = parsePPCTBackup(JSON.parse(jsonText.replace(/^\uFEFF/, "")));
+                    if (backupEntries) {
+                        applyPPCTEntries(backupEntries, file, period, catKey, fromModal, "từ file sao lưu");
+                        return;
+                    }
+                    extractedLines = parsePPCTJSON(jsonText, { grade, period, subject: catKey });
                 } else if (ext === "txt" || ext === "csv") {
                     const text = await file.text();
                     extractedLines = text.split(/\r?\n/).map(s => s.trim()).filter(s => s.length > 12);

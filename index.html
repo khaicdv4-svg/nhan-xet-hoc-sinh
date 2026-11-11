@@ -1408,6 +1408,21 @@
             `).join("");
         }
 
+        // Từ khóa của từng em được giữ trong bộ nhớ khi nạp file khác (ví dụ file môn học rồi file năng lực - phẩm chất).
+        // Chỉ giữ trong lần mở trang này, không lưu vào trình duyệt vì là dữ liệu học sinh.
+        const sessionKeywordMemory = new Map();
+
+        function studentMemoryKey(st) {
+            const code = String(st.code || "").trim();
+            return code ? "c:" + code : "n:" + String(st.name || "").trim().toLowerCase() + "|" + String(st.dob || "").trim();
+        }
+
+        function rememberStudentKeywords(st) {
+            const key = studentMemoryKey(st);
+            if (String(st.keywords || "").trim()) sessionKeywordMemory.set(key, st.keywords);
+            else sessionKeywordMemory.delete(key);
+        }
+
         function insertQuickKeyword(kw) {
             if (!studentsData.length) return;
             const targetIdx = activeStudentIdForChip < studentsData.length ? activeStudentIdForChip : 0;
@@ -1416,6 +1431,7 @@
             if (!currentKws.includes(kw)) {
                 currentKws.push(kw);
                 st.keywords = currentKws.join(", ");
+                rememberStudentKeywords(st);
                 generateCommentsForSingleStudent(targetIdx);
                 renderStudentTable();
                 showToast(`Đã thêm "${kw}" cho HS: ${st.name}`);
@@ -2056,8 +2072,12 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 populatePreviewTargetSelect();
                 regenerateAllComments();
                 updatePPCTSummaryBox();
+                const restoredKeywords = studentsData.filter(st => st.keywords).length;
+                const missingLevel = studentsData.filter(st => !["T", "H", "Đ", "C"].includes(st.level)).length;
+                const extraNotes = (restoredKeywords ? ` Đã giữ lại từ khóa của ${restoredKeywords} học sinh từ file trước.` : "") +
+                    (missingLevel ? ` ${missingLevel} học sinh chưa có mức đạt: hãy chọn mức hoặc dùng "Nhận xét nhanh cả lớp".` : "");
                 const message = studentsData.length
-                    ? `Đã nhập "${file.name}": ${studentsData.length} học sinh · ${availableSheetsOrTargets.length} môn / nhóm.${loaded.normalizedParts ? " Đã xử lý tương thích định dạng XLSX." : ""}`
+                    ? `Đã nhập "${file.name}": ${studentsData.length} học sinh · ${availableSheetsOrTargets.length} môn / nhóm.${loaded.normalizedParts ? " Đã xử lý tương thích định dạng XLSX." : ""}${extraNotes}`
                     : `Đã đọc "${file.name}" nhưng không có học sinh hợp lệ. Danh sách đã được xóa; vui lòng kiểm tra cột STT, mã, họ tên.`;
                 setStudentImportFeedback(message, studentsData.length ? "success" : "error");
                 showToast(message);
@@ -2100,7 +2120,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     if (["T", "H", "Đ", "C"].includes(existingLv)) {
                         lv = existingLv === "H" && currentFileMode === "NLPC" ? "Đ" : (existingLv === "Đ" && currentFileMode === "MON_HOC" ? "H" : existingLv);
                     }
-                    parsed.push({
+                    const student = {
                         rowNumber: rowNumber,
                         stt: sttVal || (idx + 1),
                         code: codeVal,
@@ -2109,7 +2129,9 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                         level: lv,
                         keywords: "",
                         comments: {}
-                    });
+                    };
+                    student.keywords = sessionKeywordMemory.get(studentMemoryKey(student)) || "";
+                    parsed.push(student);
                 }
             });
             studentsData = parsed;
@@ -2805,6 +2827,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
 
         function updateStudentKeywords(idx, newKw) {
             studentsData[idx].keywords = newKw;
+            rememberStudentKeywords(studentsData[idx]);
             generateCommentsForSingleStudent(idx);
             renderStudentTable();
             const inputs = document.querySelectorAll('#studentTableBody input[type="text"]');

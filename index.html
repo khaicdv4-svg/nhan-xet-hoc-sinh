@@ -305,6 +305,8 @@
         .student-table-scroll td button { min-width: 44px; min-height: 44px; border: 1.5px solid var(--line-strong); background: var(--paper); border-radius: 8px; box-shadow: none; }
         .student-table-scroll td button:hover { background: var(--tint); border-color: var(--blue); }
         .student-table-scroll td .text-xs { font-size: 12px; font-weight: 500; }
+        .score-note { margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--muted); line-height: 1.5; }
+        .score-note.is-warn { color: var(--red); font-weight: 700; }
         .empty-students { text-align: center !important; padding: 56px 18px !important; font-size: 15px !important; color: var(--muted) !important; font-weight: 500 !important; }
 
         .table-footer { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px 16px; background: var(--tint); border-top: 1px solid var(--line); }
@@ -475,7 +477,7 @@
   </section>
   </details><div class="sidebar-settings"><nav aria-label="Thông tin và thiết lập" class="header-links"><button type="button"  class="button-quiet" onclick="openModal('modalTT27Rules')">Quy tắc TT27</button><button type="button"  class="button-quiet" onclick="openModal('modalAIKey')"><span id="aiModeBadgeHeader">Chế độ: Miễn phí 100%</span></button></nav></div></aside><div class="work-content">  <p id="ppctUploadFeedback" class="hidden" role="status" aria-live="polite"></p>
   <p id="studentSourceLabel" class="student-source-label" role="status"></p><p id="scopeStatusLine" class="scope-status-line"></p><section class="workspace" aria-labelledby="workspace-title">
-    <div class="workspace-heading"><div><h2 id="workspace-title"><span id="workspaceModeLabel">Danh sách nhận xét môn học</span> <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div><div class="workspace-actions"><button type="button" id="btnQuickComment" class="button-secondary" onclick="quickCommentAll()" title="Máy tự viết nhận xét cho cả lớp, không cần nhập từ khóa"><i data-lucide="sparkles" aria-hidden="true"></i>Nhận xét nhanh cả lớp</button><button type="button" id="btnQuickExport" class="btn-3d-gold px-4 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-2" onclick="quickExportAll()" title="Xuất ngay file Excel gồm tất cả các môn, không cần chỉnh thêm"><i data-lucide="zap" aria-hidden="true"></i>Xuất nhanh tất cả môn</button></div></div>
+    <div class="workspace-heading"><div><h2 id="workspace-title"><span id="workspaceModeLabel">Danh sách nhận xét môn học</span> <span id="studentCountBadge" class="count-badge">35 học sinh</span></h2><p>Kiểm tra mức đánh giá, bổ sung từ khóa hoặc sửa trực tiếp lời nhận xét.</p></div><div class="workspace-actions"><button type="button" id="btnSuggestScore" class="button-secondary hidden" onclick="suggestLevelsFromScores()" title="Điền mức đạt cho các em còn trống dựa vào điểm KTĐK; giáo viên xem lại"><i data-lucide="list-checks" aria-hidden="true"></i>Gợi ý mức theo điểm</button><button type="button" id="btnQuickComment" class="button-secondary" onclick="quickCommentAll()" title="Máy tự viết nhận xét cho cả lớp, không cần nhập từ khóa"><i data-lucide="sparkles" aria-hidden="true"></i>Nhận xét nhanh cả lớp</button><button type="button" id="btnQuickExport" class="btn-3d-gold px-4 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-2" onclick="quickExportAll()" title="Xuất ngay file Excel gồm tất cả các môn, không cần chỉnh thêm"><i data-lucide="zap" aria-hidden="true"></i>Xuất nhanh tất cả môn</button></div></div>
     <div class="table-toolbar"><div class="field subject-field"><label for="activePreviewTarget">Xem bảng của môn / nhóm</label><select id="activePreviewTarget" onchange="renderStudentTable()" class="input-vintage rounded-xl px-4 py-2 text-base font-extrabold text-[#1d3f8f] cursor-pointer min-w-[240px]">
                                 <!-- Tự động điền các Sheet môn học hoặc NLPC -->
                             </select></div><div class="field search-field"><label for="searchStudentInput">Tìm học sinh</label><input type="text" id="searchStudentInput" oninput="renderStudentTable()" placeholder="Tìm tên hoặc mã học sinh..." class="w-full input-vintage pl-10 pr-4 py-2 rounded-xl text-base"></div></div>
@@ -1790,6 +1792,8 @@
         function applyDefaultLevelsToStudents() {
             const mode = document.getElementById("defaultLevelMode").value;
             studentsData.forEach((st, idx) => {
+                st.subjectLevels = {};
+                st.suggested = {};
                 if (!dualSources) {
                     st.level = defaultLevelValue(mode, idx, currentFileMode === "NLPC" ? "Đ" : "H");
                     return;
@@ -1997,7 +2001,149 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         // Mức đạt dùng cho một môn / nhóm: khi mở 2 file, NL-PC có mức riêng
         function levelFor(st, targetKey) {
             if (dualSources && targetMode(targetKey) === "NLPC") return st.levelNLPC || "";
+            // Môn học: mỗi môn có mức riêng (đọc từ cột "Mức đạt được" của sheet hoặc do giáo viên chọn)
+            if (targetMode(targetKey) === "MON_HOC" && st.subjectLevels && Object.prototype.hasOwnProperty.call(st.subjectLevels, targetKey)) {
+                return st.subjectLevels[targetKey];
+            }
             return st.level;
+        }
+
+        // ---- Điểm kiểm tra định kì ----
+        // Ngưỡng gợi ý mức đạt từ điểm KTĐK (chỉ là gợi ý, giáo viên quyết định theo Thông tư 27)
+        const SCORE_LEVEL_T = 9;
+        const SCORE_LEVEL_H = 5;
+
+        function levelFromScore(score) {
+            return score >= SCORE_LEVEL_T ? "T" : (score >= SCORE_LEVEL_H ? "H" : "C");
+        }
+
+        function isScoreMismatch(level, score) {
+            return (level === "T" && score < 7) || (level === "C" && score >= 7);
+        }
+
+        function formatScore(score) {
+            return String(score).replace(".", ",");
+        }
+
+        function parseScore(value) {
+            const text = String(value === null || value === undefined ? "" : value).trim().replace(",", ".");
+            if (!text) return null;
+            const n = Number(text);
+            return Number.isFinite(n) && n >= 0 && n <= 10 ? n : null;
+        }
+
+        function findHeaderColumn(ws, re) {
+            let hit = 0;
+            ws.getRow(1).eachCell({ includeEmpty: false }, (cell, col) => {
+                if (!hit && re.test(normHeader(getCellValueSafe(cell)))) hit = col;
+            });
+            return hit;
+        }
+
+        // Đọc mức đạt và điểm KTĐK của từng môn (mỗi sheet) cho từng em
+        function attachSubjectSheetData(sheets, students) {
+            const byCode = new Map(), byName = new Map();
+            students.forEach(st => {
+                st.subjectLevels = {};
+                st.scores = {};
+                st.suggested = {};
+                const code = String(st.code || "").trim();
+                if (code) byCode.set(code, st);
+                byName.set(String(st.name || "").trim().toLowerCase(), st);
+            });
+            sheets.forEach(ws => {
+                const levelCol = findHeaderColumn(ws, /mức đạt/);
+                const scoreCol = findHeaderColumn(ws, /điểm ktđk|điểm kiểm tra/);
+                ws.eachRow({ includeEmpty: false }, (row, n) => {
+                    if (n < 2) return;
+                    const code = String(getCellValueSafe(row.getCell(2)) || "").trim();
+                    const name = String(getCellValueSafe(row.getCell(3)) || "").trim().toLowerCase();
+                    const st = (code && byCode.get(code)) || byName.get(name);
+                    if (!st) return;
+                    if (levelCol) {
+                        let lv = String(getCellValueSafe(row.getCell(levelCol)) || "").trim().toUpperCase();
+                        if (lv === "Đ") lv = "H";
+                        if (["T", "H", "C"].includes(lv)) st.subjectLevels[ws.name] = lv;
+                    }
+                    if (scoreCol) {
+                        const sc = parseScore(getCellValueSafe(row.getCell(scoreCol)));
+                        if (sc !== null) st.scores[ws.name] = sc;
+                    }
+                });
+            });
+        }
+
+        function scoreSubjects() {
+            return availableSheetsOrTargets
+                .filter(t => targetMode(t.key) === "MON_HOC" && studentsData.some(st => st.scores && typeof st.scores[t.key] === "number"))
+                .map(t => t.key);
+        }
+
+        function countScoreMismatches() {
+            let n = 0;
+            scoreSubjects().forEach(key => studentsData.forEach(st => {
+                const sc = st.scores && st.scores[key];
+                const lv = levelFor(st, key);
+                if (typeof sc === "number" && VALID_LEVELS.includes(lv) && isScoreMismatch(lv, sc)) n++;
+            }));
+            return n;
+        }
+
+        function scoreImportNote() {
+            const subjects = scoreSubjects();
+            if (!subjects.length) return "";
+            const mismatch = countScoreMismatches();
+            return ` Có điểm KTĐK ở môn ${subjects.join(", ")}: bấm "Gợi ý mức theo điểm" để điền mức cho các em còn trống.` +
+                (mismatch ? ` Có ${mismatch} chỗ mức đạt lệch với điểm, nên xem lại (dòng có chữ đỏ dưới ô mức đạt).` : "");
+        }
+
+        // Ghi chú điểm dưới ô mức đạt trong bảng
+        function scoreNoteHTML(st, key) {
+            const sc = st.scores && st.scores[key];
+            if (typeof sc !== "number") return "";
+            const lv = levelFor(st, key);
+            const warn = VALID_LEVELS.includes(lv) && isScoreMismatch(lv, sc);
+            const suggested = st.suggested && st.suggested[key];
+            return `<div class="score-note${warn ? " is-warn" : ""}">Điểm KTĐK: ${formatScore(sc)}${suggested ? " · mức gợi ý theo điểm" : ""}${warn ? " · lệch với mức đạt, nên xem lại" : ""}</div>`;
+        }
+
+        function suggestLevelsFromScores() {
+            const subjects = scoreSubjects();
+            if (!subjects.length) {
+                showToast("File đang mở chưa có điểm KTĐK.");
+                return;
+            }
+            const plan = [];
+            const perSubject = {};
+            studentsData.forEach(st => subjects.forEach(key => {
+                const sc = st.scores && st.scores[key];
+                if (typeof sc !== "number") return;
+                const own = st.subjectLevels ? st.subjectLevels[key] : "";
+                if (VALID_LEVELS.includes(own)) return; // mức giáo viên đã có trong file hoặc đã chọn: giữ nguyên
+                plan.push({ st, key, level: levelFromScore(sc) });
+                perSubject[key] = (perSubject[key] || 0) + 1;
+            }));
+            if (!plan.length) {
+                showToast("Các em có điểm đều đã có mức đạt. Không có gì để gợi ý.");
+                return;
+            }
+            const detail = Object.entries(perSubject).map(([k, n]) => `${k}: ${n} em`).join(", ");
+            const ok = window.confirm(`Gợi ý mức đạt theo điểm KTĐK cho ${plan.length} lượt (${detail}):
+
+• Từ ${SCORE_LEVEL_T} điểm: Hoàn thành tốt (T)
+• Từ ${SCORE_LEVEL_H} đến dưới ${SCORE_LEVEL_T} điểm: Hoàn thành (H)
+• Dưới ${SCORE_LEVEL_H} điểm: Chưa hoàn thành (C)
+
+Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. Đây chỉ là gợi ý: theo Thông tư 27, mức đạt là đánh giá của giáo viên trong cả quá trình, nên cần xem lại trước khi xuất.`);
+            if (!ok) return;
+            plan.forEach(({ st, key, level }) => {
+                if (!st.subjectLevels) st.subjectLevels = {};
+                if (!st.suggested) st.suggested = {};
+                st.subjectLevels[key] = level;
+                st.suggested[key] = true;
+            });
+            regenerateAllComments();
+            showToast(`Đã gợi ý mức theo điểm cho ${plan.length} lượt (${detail}). Các ô có ghi "mức gợi ý theo điểm" cần xem lại.`);
         }
 
         function isNLPCWorkbook(workbook) {
@@ -2019,7 +2165,10 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 } else {
                     const sheets = loaded.workbook.worksheets.filter(ws => ws.name.toLowerCase() !== "huongdan");
                     targets = sheets.map(ws => ({ key: ws.name, label: `Môn: ${ws.name}` }));
-                    if (sheets.length) parseStudentsFromSheet(sheets[0], 2);
+                    if (sheets.length) {
+                        parseStudentsFromSheet(sheets[0], 2);
+                        attachSubjectSheetData(sheets, studentsData);
+                    }
                 }
                 return { name: file.name, buffer: loaded.buffer, targets, students: studentsData, normalizedParts: loaded.normalizedParts };
             } finally {
@@ -2107,7 +2256,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     onlyNLPC ? `${onlyNLPC} em chỉ có trong file năng lực – phẩm chất` : "",
                     missing ? `${missing} em còn thiếu mức đạt: hãy chọn mức hoặc dùng "Nhận xét nhanh cả lớp"` : ""
                 ].filter(Boolean);
-                const message = `Đã nạp cùng lúc 2 file: ${studentsData.length} học sinh, ${subject.targets.length} môn và 3 nhóm năng lực – phẩm chất. Từ khóa của mỗi em dùng chung cho cả hai.` + (notes.length ? ` Lưu ý: ${notes.join("; ")}.` : "");
+                const message = `Đã nạp cùng lúc 2 file: ${studentsData.length} học sinh, ${subject.targets.length} môn và 3 nhóm năng lực – phẩm chất. Từ khóa của mỗi em dùng chung cho cả hai.` + (notes.length ? ` Lưu ý: ${notes.join("; ")}.` : "") + scoreImportNote();
                 setStudentImportFeedback(message, "success");
                 showToast(message);
             } catch (err) {
@@ -2188,6 +2337,8 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 document.getElementById("exportAllTitle").textContent = "Xuất cả 2 file";
                 document.getElementById("exportAllHint").textContent = `Xuất "${dualSources.subject.name}" và "${dualSources.nlpc.name}", mỗi file giữ đúng cấu trúc đã nhập.`;
             }
+            const suggestBtn = document.getElementById("btnSuggestScore");
+            if (suggestBtn) suggestBtn.classList.toggle("hidden", !scoreSubjects().length);
             ["btnExportAll", "btnQuickComment", "btnQuickExport", "btnUpdateComments"].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = !studentsData.length;
@@ -2243,6 +2394,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     document.getElementById("fileTypeBadge").innerText = `File ${availableSheetsOrTargets.length} Môn Học`;
                     if (validSubjectSheets.length > 0) {
                         parseStudentsFromSheet(validSubjectSheets[0], 2);
+                        attachSubjectSheetData(validSubjectSheets, studentsData);
                     }
                 }
 
@@ -2256,9 +2408,10 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 regenerateAllComments();
                 updatePPCTSummaryBox();
                 const restoredKeywords = studentsData.filter(st => st.keywords).length;
-                const missingLevel = studentsData.filter(st => !["T", "H", "Đ", "C"].includes(st.level)).length;
+                const missingLevel = countMissingLevels();
                 const extraNotes = (restoredKeywords ? ` Đã giữ lại từ khóa của ${restoredKeywords} học sinh từ file trước.` : "") +
-                    (missingLevel ? ` ${missingLevel} học sinh chưa có mức đạt: hãy chọn mức hoặc dùng "Nhận xét nhanh cả lớp".` : "");
+                    (missingLevel ? ` ${missingLevel} học sinh chưa có đủ mức đạt: hãy chọn mức, dùng "Gợi ý mức theo điểm" hoặc "Nhận xét nhanh cả lớp".` : "") +
+                    scoreImportNote();
                 const message = studentsData.length
                     ? `Đã nhập "${file.name}": ${studentsData.length} học sinh · ${availableSheetsOrTargets.length} môn / nhóm.${loaded.normalizedParts ? " Đã xử lý tương thích định dạng XLSX." : ""}${extraNotes}`
                     : `Đã đọc "${file.name}" nhưng không có học sinh hợp lệ. Danh sách đã được xóa; vui lòng kiểm tra cột STT, mã, họ tên.`;
@@ -2937,6 +3090,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                             class="w-full rounded-xl border-2 px-3 py-2 text-sm sm:text-base font-extrabold outline-none cursor-pointer shadow-sm ${getLevelSelectColorClass(levelFor(st, activeTargetKey))}">
                             ${levelOptionsHTML(levelFor(st, activeTargetKey))}
                         </select>
+                        ${scoreNoteHTML(st, activeTargetKey)}
                     </td>
                     <td class="py-3.5 px-4">
                         <input type="text" value="${escapeHtml(st.keywords)}"
@@ -3007,8 +3161,14 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         }
 
         function updateStudentLevel(idx, newLevel, targetKey) {
-            if (dualSources && targetKey && targetMode(targetKey) === "NLPC") studentsData[idx].levelNLPC = newLevel;
-            else studentsData[idx].level = newLevel;
+            const st = studentsData[idx];
+            if (dualSources && targetKey && targetMode(targetKey) === "NLPC") st.levelNLPC = newLevel;
+            else if (targetKey && targetMode(targetKey) === "MON_HOC") {
+                if (!st.subjectLevels) st.subjectLevels = {};
+                st.subjectLevels[targetKey] = newLevel;
+                if (st.suggested) delete st.suggested[targetKey];
+            }
+            else st.level = newLevel;
             generateCommentsForSingleStudent(idx);
             renderStudentTable();
         }
@@ -3177,11 +3337,12 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                             const rowNum = rowsByCode.get(String(st.code || "").trim()) || st.rowNumber || (idx + 2);
                             const row = ws.getRow(rowNum);
 
-                            if (autoFillCode && ["T", "H", "Đ", "C"].includes(st.level)) {
+                            const subjectLevel = levelFor(st, ws.name);
+                            if (autoFillCode && ["T", "H", "Đ", "C"].includes(subjectLevel)) {
                                 const levelCell = row.getCell(cols.level);
                                 if (!getCellValueSafe(levelCell)) {
                                     // Môn học chuẩn TT27: T (Hoàn thành tốt), H (Hoàn thành), C (Chưa hoàn thành)
-                                    setExportCell(levelCell, st.level === "T" ? "T" : (st.level === "C" ? "C" : "H"), false);
+                                    setExportCell(levelCell, subjectLevel === "T" ? "T" : (subjectLevel === "C" ? "C" : "H"), false);
                                 }
                             }
                             setExportCell(row.getCell(cols.comment), (st.comments && st.comments[ws.name]) || buildSmartCommentForTarget(st, ws.name), true);
@@ -3230,7 +3391,8 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
 
                 const unit = currentFileMode === "NLPC" ? "nhóm" : "môn";
                 const missing = countMissingLevels();
-                showToast(`Đã xuất file "${currentOriginalFileName}" (${writtenSheets} ${unit}).` + (missing ? ` Còn ${missing} học sinh chưa có mức đạt nên chưa có nhận xét.` : ""));
+                const mismatch = currentFileMode === "MON_HOC" ? countScoreMismatches() : 0;
+                showToast(`Đã xuất file "${currentOriginalFileName}" (${writtenSheets} ${unit}).` + (missing ? ` Còn ${missing} học sinh chưa có mức đạt nên chưa có nhận xét.` : "") + (mismatch ? ` Có ${mismatch} chỗ mức đạt lệch với điểm KTĐK, nên xem lại.` : ""));
             } catch (err) {
                 console.error(err);
                 showToast("Có lỗi khi xuất file Excel. Vui lòng thử lại!");
@@ -3241,10 +3403,17 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         const VALID_LEVELS = ["T", "H", "Đ", "C"];
 
         // Những ô mức đạt còn trống của một em: "level" (môn học), "levelNLPC" (năng lực – phẩm chất khi mở 2 file)
+        function subjectLevelMissing(st) {
+            return availableSheetsOrTargets.some(t => targetMode(t.key) === "MON_HOC" && !VALID_LEVELS.includes(levelFor(st, t.key)));
+        }
+
         function missingLevelFields(st) {
-            if (!dualSources) return VALID_LEVELS.includes(st.level) ? [] : ["level"];
+            if (!dualSources) {
+                if (currentFileMode === "NLPC") return VALID_LEVELS.includes(st.level) ? [] : ["level"];
+                return subjectLevelMissing(st) ? ["level"] : [];
+            }
             const fields = [];
-            if (st.rowNumberSubject && !VALID_LEVELS.includes(st.level)) fields.push("level");
+            if (st.rowNumberSubject && subjectLevelMissing(st)) fields.push("level");
             if (st.rowNumberNLPC && !VALID_LEVELS.includes(st.levelNLPC)) fields.push("levelNLPC");
             return fields;
         }
@@ -3262,7 +3431,17 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 if (!fields.length) return;
                 fields.forEach(field => {
                     const midCode = field === "levelNLPC" || (!dualSources && currentFileMode === "NLPC") ? "Đ" : "H";
-                    st[field] = defaultLevelValue(mode, idx, midCode);
+                    const value = defaultLevelValue(mode, idx, midCode);
+                    if (field === "level" && st.subjectLevels) {
+                        // Chỉ điền các môn còn trống; môn đã có mức giữ nguyên
+                        Object.keys(st.subjectLevels).forEach(k => { if (!VALID_LEVELS.includes(st.subjectLevels[k])) delete st.subjectLevels[k]; });
+                        if (!VALID_LEVELS.includes(st.level)) st.level = value;
+                        availableSheetsOrTargets.forEach(t => {
+                            if (targetMode(t.key) === "MON_HOC" && !VALID_LEVELS.includes(levelFor(st, t.key))) st.subjectLevels[t.key] = value;
+                        });
+                    } else {
+                        st[field] = value;
+                    }
                 });
                 assigned.push(idx);
             });
@@ -3737,7 +3916,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 const studentPayload = studentsData.map(st => ({
                     stt: st.stt,
                     name: st.name,
-                    level: st.level,
+                    level: levelFor(st, activeTargetKey),
                     keywords: st.keywords || ""
                 }));
 

@@ -2160,8 +2160,9 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     document.getElementById("nlpcModeState").textContent = "Năng lực, phẩm chất · T / Đ / C";
                 }
             }
-            document.getElementById("monHocModeState").textContent = !nlpc ? "ĐANG LÀM VIỆC · T / H / C" : "Môn học · T / H / C";
-            document.getElementById("nlpcModeState").textContent = nlpc ? "ĐANG LÀM VIỆC · T / Đ / C" : "Năng lực, phẩm chất · T / Đ / C";
+            // Khi mở cùng lúc 2 file, chỉ nút "Nạp cùng lúc 2 file" hiện "Đang làm việc"
+            document.getElementById("monHocModeState").textContent = !nlpc && !dualSources ? "ĐANG LÀM VIỆC · T / H / C" : "Môn học · T / H / C";
+            document.getElementById("nlpcModeState").textContent = nlpc && !dualSources ? "ĐANG LÀM VIỆC · T / Đ / C" : "Năng lực, phẩm chất · T / Đ / C";
             const total = availableSheetsOrTargets.length, count = selectedTargets.size;
             const unit = nlpc ? "nhóm NL–PC" : "môn";
             document.getElementById("scopePanelTitle").textContent = nlpc ? "Chọn nhóm năng lực – phẩm chất" : "Chọn môn cần nhận xét";

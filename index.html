@@ -1351,7 +1351,7 @@
                 XS: ["{GV} rất tự hào về em, hãy tiếp tục tỏa sáng nhé!", "Em hãy giữ vững tinh thần học tập tuyệt vời này nhé!", "Chúc mừng em đã đạt kết quả thật đáng khen!", "{GV} tin em sẽ còn tiến xa hơn nữa, hãy tiếp tục cố gắng nhé!", "Em là tấm gương tốt cho các bạn, hãy tiếp tục phát huy nhé!"],
                 HTT: ["Em hãy phát huy đà tiến bộ này để đạt kết quả cao hơn nữa nhé!", "{GV} rất vui trước sự nỗ lực đều đặn của em!", "Hãy tiếp tục giữ vững sự chăm chỉ này nhé!", "{GV} tin em sẽ làm tốt hơn nữa nếu cố gắng mỗi ngày.", "Cố gắng thêm một chút, em sẽ còn tiến bộ nhiều hơn nữa!"],
                 HT: ["Cố gắng thêm một chút nữa em sẽ tiến bộ vượt bậc đấy!"],
-                CCG: ["{GV} và các bạn luôn đồng hành cùng em cố gắng mỗi ngày nhé!", "Em đừng nản lòng, {GV} sẽ giúp em tiến bộ từng ngày nhé!", "Chỉ cần chăm chỉ ôn luyện mỗi ngày, em sẽ tiến bộ nhanh thôi!"]
+                CCG: ["{GV} và các bạn luôn đồng hành cùng em cố gắng mỗi ngày nhé!", "Em đừng nản lòng, {gv} sẽ giúp em tiến bộ từng ngày nhé!", "Chỉ cần chăm chỉ ôn luyện mỗi ngày, em sẽ tiến bộ nhanh thôi!"]
             },
             ancan: {
                 XS: ["Mong em luôn giữ vững nét chăm ngoan và học giỏi như hiện tại.", "Gia đình cùng nhà trường tiếp tục khích lệ để em phát triển toàn diện nhé.", "{GV} mong em giữ vững phong độ này trong thời gian tới."],
@@ -1559,6 +1559,7 @@
         function applyTeacherTitle(text) {
             return String(text || "")
                 .replace(/\{GV\}/g, teacherTitle)
+                .replace(/\{gv\}/g, teacherTitle.toLowerCase())
                 .replace(/Thầy\s*\/\s*[cC]ô/g, teacherTitle)
                 .replace(/thầy\s*\/\s*cô/g, teacherTitle.toLowerCase());
         }
@@ -1602,30 +1603,6 @@
             h ^= h >>> 16;
             return pool[(h >>> 0) % pool.length];
         }
-
-        // Ý chính khi PPCT có tên chủ đề: {about} là chủ đề hoặc chủ điểm đang học
-        const TOPIC_BODIES = {
-            T: [
-                "nắm vững kiến thức {about}",
-                "tiếp thu tốt bài học về {about}",
-                "hiểu bài và làm tốt các bài tập thuộc {about}",
-                "học tập tích cực, nắm chắc nội dung {about}",
-                "nắm chắc kiến thức {about} và làm bài cẩn thận",
-                "hoàn thành tốt các nội dung của {about}"
-            ],
-            H: [
-                "nắm được kiến thức cơ bản của {about}",
-                "hiểu bài và làm được các bài tập cơ bản thuộc {about}",
-                "hoàn thành yêu cầu bài học về {about}",
-                "tiếp thu được nội dung {about}",
-                "thực hiện đúng các yêu cầu cơ bản của {about}"
-            ],
-            C: [
-                "cần ôn tập thêm {about} để nắm vững kiến thức",
-                "chưa nắm chắc {about}, cần được hướng dẫn thêm",
-                "cần chăm chỉ luyện tập hơn để theo kịp nội dung {about}"
-            ]
-        };
 
         // PPCT do giáo viên tự nhập: giữ nguyên cụm kiến thức, chỉ đổi lời dẫn
         const FREE_TOPIC_LEADS = {
@@ -1682,23 +1659,178 @@
             }
         };
 
-        // Lấy tên chủ đề từ cụm PPCT đã nhập từ Excel: nắm được nội dung chủ đề “X”
-        function parseTopicRef(topic) {
-            const m = String(topic || "").match(/^nắm được nội dung\s+(?:(chủ đề|chủ điểm)\s+)?“([^”]+)”/i);
-            return m ? { about: (m[1] ? m[1] + " " : "") + "“" + m[2] + "”" } : null;
+        // ---- Ý kiến thức lấy từ PPCT: dựa vào mạch kiến thức và nội dung bài, không nêu tên chủ đề / chủ điểm ----
+
+        // Viết thường chữ đầu, trừ khi là tên riêng (từ thứ hai cũng viết hoa)
+        function lowerFirst(text) {
+            const t = String(text || "").trim();
+            const words = t.split(/\s+/);
+            if (words.length > 1 && words[1].charAt(0) !== words[1].charAt(0).toLowerCase()) return t;
+            return t.charAt(0).toLowerCase() + t.slice(1);
+        }
+
+        function cleanKnowledgeItem(item) {
+            return lowerFirst(String(item || "")
+                .replace(/\(.*?\)/g, "")
+                .replace(/\s*[“"][^”"]*[”"]/g, "")
+                .replace(/^em\s+/i, "")
+                .replace(/^(luyện tập v[êề]|luyện tập)\s+/i, "")
+                .replace(/^ôn tập\s+về\s+/i, "")
+                .replace(/^ôn tập\s+(?=các)/i, "")
+                .replace(/[.?!]\s+(\S)/g, (m, c) => ", " + c.toLowerCase())
+                .replace(/[\s.;:,…?!]+$/g, "")
+                .replace(/\s+/g, " ")
+                .trim());
+        }
+
+        // Một dòng PPCT: "Mạch / chủ đề: nội dung 1; nội dung 2" (dạng mới) hoặc "nắm được nội dung chủ đề “X” (các bài: ...)" (dạng cũ)
+        function parsePPCTLine(line) {
+            const text = String(line || "").trim();
+            const old = text.match(/^nắm được nội dung\s+(?:(?:chủ đề|chủ điểm)\s+)?“([^”]+)”\s*(?:\((?:các bài:\s*)?(.*)\))?/i);
+            if (old) {
+                const items = (old[2] || "").split(/\s*;\s*/).filter(x => x && x !== "…");
+                return { label: old[1], items: items.length ? items : [old[1]], oldFormat: true };
+            }
+            const m = text.match(/^([^:“”]{1,80}):\s*(.+)$/);
+            if (!m) return null;
+            return { label: m[1].trim(), items: m[2].split(/\s*;\s*/).filter(Boolean) };
+        }
+
+        const TV_STRANDS = { doc: /^đọc$/i, ltvc: /^luyện từ và câu$/i, viet: /^viết$/i, noi: /^nói và nghe$/i };
+
+        const TV_READING = {
+            T: ["đọc to, rõ ràng, lưu loát và hiểu nội dung bài đọc", "đọc diễn cảm, trả lời đúng trọng tâm các câu hỏi đọc hiểu", "đọc trôi chảy, biết ngắt nghỉ đúng và nêu được ý chính của bài", "đọc hiểu tốt, biết liên hệ nội dung bài đọc với thực tế"],
+            H: ["đọc được bài và trả lời được các câu hỏi cơ bản", "đọc tương đối trôi chảy, hiểu được nội dung chính của bài", "đọc đúng các bài đọc, cần đọc diễn cảm hơn"],
+            C: ["cần luyện đọc thêm ở nhà để đọc lưu loát hơn", "đọc còn chậm, cần chú ý ngắt nghỉ và hiểu nội dung bài"]
+        };
+        const TV_SPEAKING = {
+            T: ["mạnh dạn, tự tin khi nói và nghe trước lớp", "biết kể chuyện, trao đổi ý kiến rõ ràng cùng bạn"],
+            H: ["biết trao đổi, chia sẻ ý kiến cùng bạn", "bước đầu tự tin khi nói trước lớp"],
+            C: ["cần mạnh dạn hơn khi nói và trao đổi cùng bạn"]
+        };
+        const TV_LTVC = {
+            T: ["nhận biết và sử dụng đúng {a}", "vận dụng tốt kiến thức về {a} khi nói và viết", "nắm chắc {a} và đặt câu đúng"],
+            H: ["nhận biết được {a}", "bước đầu biết dùng {a} khi đặt câu"],
+            C: ["cần luyện thêm cách nhận biết {a}", "chưa nắm chắc {a}, cần ôn tập thêm"]
+        };
+        const TV_LTVC_RULE = {
+            T: ["nắm vững {a}", "vận dụng đúng {a}"],
+            H: ["nắm được {a}"],
+            C: ["cần ôn lại {a}"]
+        };
+        const TV_WRITING = {
+            T: ["biết {a} rõ ràng, mạch lạc", "{a} đúng yêu cầu, diễn đạt giàu hình ảnh", "{a} đúng bố cục, dùng từ chính xác"],
+            H: ["bước đầu biết {a}", "{a} được theo yêu cầu, cần diễn đạt mạch lạc hơn"],
+            C: ["cần rèn thêm kĩ năng {a}", "chưa {a} được theo yêu cầu, cần luyện thêm"]
+        };
+
+        const TV_PLANNING = {
+            T: ["biết {a} đầy đủ, hợp lí", "{a} nhanh và đúng yêu cầu"],
+            H: ["bước đầu biết {a}", "{a} được theo gợi ý"],
+            C: ["cần luyện thêm cách {a}"]
+        };
+
+        // Nội dung "Viết" trong PPCT -> việc học sinh làm được ("viết đoạn văn nêu ý kiến")
+        function toWritingTask(item) {
+            const t = cleanKnowledgeItem(item)
+                .replace(/^tìm hiểu cách\s+/i, "")
+                .replace(/^luyện\s+(?=viết)/i, "");
+            return /^(viết|lập dàn ý|tìm ý)\s/i.test(t) ? t : "";
+        }
+
+        // Mẫu ý chính theo nhóm môn; {a} là nội dung bài học (không phải tên chủ đề)
+        const KNOWLEDGE_TEMPLATES = {
+            default: {
+                T: ["nắm vững kiến thức về {a}", "hiểu bài và làm tốt các bài tập về {a}", "tiếp thu nhanh các nội dung về {a}", "vận dụng tốt kiến thức về {a} vào bài tập", "nắm chắc nội dung bài học về {a}"],
+                H: ["nắm được kiến thức cơ bản về {a}", "làm được các bài tập cơ bản về {a}", "hiểu được nội dung bài học về {a}"],
+                C: ["cần ôn tập thêm về {a}", "chưa nắm chắc kiến thức về {a}, cần được hướng dẫn thêm", "cần luyện tập thêm các bài về {a}"]
+            },
+            "Khoa học": {
+                T: ["hiểu rõ {a}", "nắm vững kiến thức về {a} và biết liên hệ với thực tế", "biết giải thích các hiện tượng liên quan đến {a}"],
+                H: ["nắm được kiến thức cơ bản về {a}", "hiểu được một số nội dung về {a}"],
+                C: ["cần ôn tập thêm về {a}", "chưa nắm chắc kiến thức về {a}, cần quan sát và lắng nghe kĩ hơn"]
+            },
+            "Lịch sử và Địa lý": {
+                T: ["nắm vững kiến thức về {a}", "trình bày tốt những hiểu biết về {a}", "biết khai thác tranh ảnh, lược đồ để tìm hiểu {a}"],
+                H: ["nắm được những nét chính về {a}", "trình bày được một số hiểu biết về {a}"],
+                C: ["cần đọc kĩ bài để ghi nhớ hơn về {a}", "chưa nắm chắc nội dung về {a}, cần ôn tập thêm"]
+            },
+            "TH-CN (Công nghệ)": {
+                T: ["nắm vững kiến thức về {a} và thực hành khéo léo", "thực hành tốt các nội dung về {a}", "hiểu bài và vận dụng tốt kiến thức về {a}"],
+                H: ["nắm được kiến thức cơ bản về {a}", "thực hành được các nội dung cơ bản về {a}"],
+                C: ["cần luyện tập thêm các thao tác về {a}", "chưa nắm chắc nội dung về {a}, cần hướng dẫn thêm"]
+            },
+            "Đạo đức": {
+                T: ["hiểu và thực hiện tốt việc {a}", "có ý thức {a} trong cuộc sống hằng ngày", "biết vận dụng bài học về {a} vào việc làm cụ thể"],
+                H: ["hiểu được ý nghĩa của việc {a}", "bước đầu thực hiện được việc {a}"],
+                C: ["cần thực hiện tốt hơn việc {a}", "cần ghi nhớ và thực hành thêm bài học về {a}"]
+            },
+            "Hoạt động trải nghiệm": {
+                T: ["tích cực tham gia các hoạt động, thể hiện tốt nội dung {a}", "hào hứng tham gia và thực hiện tốt nội dung {a}", "chủ động, tự tin trong hoạt động về {a}"],
+                H: ["tham gia đầy đủ các hoạt động, thực hiện được nội dung {a}", "bước đầu thực hiện được nội dung {a}"],
+                C: ["cần tích cực hơn khi thực hiện nội dung {a}", "cần mạnh dạn hơn khi tham gia hoạt động về {a}"]
+            }
+        };
+
+        function joinItems(items) {
+            return items.length > 1 ? `${items[0]} và ${items[1]}` : (items[0] || "");
+        }
+
+        // Tiếng Việt: kết hợp đọc với luyện từ và câu hoặc viết, theo đúng mạch trong PPCT
+        function buildTiengVietBody(levelKey, entries, pick) {
+            const find = re => entries.find(e => re.test(e.label));
+            const ltvc = find(TV_STRANDS.ltvc), viet = find(TV_STRANDS.viet), noi = find(TV_STRANDS.noi);
+            const parts = [pick(TV_READING[levelKey], "tv-doc")];
+            const options = [];
+            if (ltvc) {
+                const items = ltvc.items.map(cleanKnowledgeItem).filter(x => x && !/^mở rộng vốn từ/i.test(x));
+                if (items.length) options.push(() => {
+                    const item = pick(items, "tv-ltvc-item");
+                    const pool = /^(quy tắc|cách|biện pháp|dấu)/i.test(item) ? TV_LTVC_RULE : TV_LTVC;
+                    return pick(pool[levelKey], "tv-ltvc").replace(/\{a\}/g, item);
+                });
+            }
+            if (viet) {
+                const tasks = Array.from(new Set(viet.items.map(toWritingTask).filter(Boolean)));
+                if (tasks.length) options.push(() => {
+                    const task = pick(tasks, "tv-viet-item");
+                    const pool = /^viết\s/i.test(task) ? TV_WRITING : TV_PLANNING;
+                    return pick(pool[levelKey], "tv-viet").replace(/\{a\}/g, task);
+                });
+            }
+            if (noi) options.push(() => pick(TV_SPEAKING[levelKey], "tv-noi"));
+            if (options.length) parts.push(pick(options, "tv-part")());
+            return parts.join(", ");
         }
 
         // Ý chính về kiến thức, bắt đầu bằng động từ (không có chữ "Em"); trả về "" nếu không có gì để nói
-        function buildKnowledgeBody(levelKey, cat, topic, pick) {
-            if (topic) {
-                const ref = parseTopicRef(topic);
-                if (ref) return pick(TOPIC_BODIES[levelKey], "body").replace(/\{about\}/g, ref.about);
-                return levelKey === "C" ? pick(FREE_TOPIC_C, "body") : pick(FREE_TOPIC_LEADS[levelKey], "lead") + topic;
+        function buildKnowledgeBody(levelKey, cat, topics, pick) {
+            const entries = (topics || []).map(parsePPCTLine).filter(Boolean);
+            if (entries.length) {
+                if (cat === "Tiếng việt") {
+                    const hasStrand = entries.some(e => Object.values(TV_STRANDS).some(re => re.test(e.label)));
+                    if (hasStrand) return { text: buildTiengVietBody(levelKey, entries, pick), skipSkill: true };
+                    // PPCT cũ chỉ có tên bài đọc: viết theo kĩ năng đọc, không nêu tên bài
+                    return { text: pick(TV_READING[levelKey], "tv-doc"), skipSkill: false };
+                }
+                const entry = pick(entries, "entry");
+                const items = Array.from(new Set(entry.items.map(cleanKnowledgeItem).filter(x => x && !isGenericPPCTName(x) && !isReviewPPCTTopic(x) && !/chủ đề|chủ điểm|^ôn tập/i.test(x))));
+                if (!items.length) items.push(cleanKnowledgeItem(entry.label));
+                const first = pick(items, "item1");
+                const second = levelKey !== "C" && items.length > 1 && pick([true, false], "two") ? pick(items.filter(x => x !== first), "item2") : "";
+                const templates = KNOWLEDGE_TEMPLATES[cat] || KNOWLEDGE_TEMPLATES.default;
+                const canJoin = second && (first + second).length < 80 && !/\svà\s/.test(first + " " + second);
+                const a = joinItems(canJoin ? [first, second] : [first]);
+                return { text: pick(templates[levelKey], "body").replace(/\{a\}/g, a), skipSkill: false };
             }
-            if (levelKey === "C") return "";
+            const topic = (topics && topics.length) ? pick(topics, "topic") : "";
+            if (topic) {
+                return { text: levelKey === "C" ? pick(FREE_TOPIC_C, "body") : pick(FREE_TOPIC_LEADS[levelKey], "lead") + topic, skipSkill: false };
+            }
+            if (levelKey === "C") return { text: "", skipSkill: false };
             const special = SUBJECT_ONLY_BODIES[cat];
-            if (special) return pick(special[levelKey], "body");
-            return pick(SUBJECT_ONLY_TEMPLATES[levelKey], "body").replace(/\{subj\}/g, SUBJECT_LABELS[cat] || cat);
+            if (special) return { text: pick(special[levelKey], "body"), skipSkill: false };
+            return { text: pick(SUBJECT_ONLY_TEMPLATES[levelKey], "body").replace(/\{subj\}/g, SUBJECT_LABELS[cat] || cat), skipSkill: false };
         }
 
         function cutToSentence(text, limit) {
@@ -1727,8 +1859,8 @@
 
             // 2. Kiến thức PPCT của môn và giai đoạn hiện tại (chỉ áp dụng cho môn học)
             const ppctTopics = (usePPCT && !isNLPCTarget) ? getPPCTTopicsForSubject(period, categoryKey) : [];
-            const topic = ppctTopics.length ? pick(ppctTopics, "topic") : "";
-            const knowledge = isNLPCTarget ? "" : buildKnowledgeBody(levelKey, categoryKey, topic, pick);
+            const knowledgeInfo = isNLPCTarget ? { text: "", skipSkill: false } : buildKnowledgeBody(levelKey, categoryKey, ppctTopics, pick);
+            const knowledge = knowledgeInfo.text;
 
             // 3. Câu nền từ ngân hàng mẫu (của giáo viên nếu có, nếu không dùng kho mặc định)
             let basePool = [];
@@ -1754,8 +1886,12 @@
                     : `Em ${kwText}. ${baseSentence().split(".")[0]}.`;
             } else if (knowledge) {
                 const skills = (SUBJECT_SKILLS[categoryKey] || {})[levelKey];
-                const addSkill = skills && pick([true, true, false], "skillflag");
-                main = `Em ${knowledge}${addSkill ? ", " + pick(skills, "skill") : ""}.`;
+                // Bỏ điểm nổi bật trùng ý với câu chính (ví dụ cùng "biết giải thích")
+                const SAME_IDEA = ["vận dụng", "giải thích", "trình bày", "thực hành", "đọc", "viết", "tính toán", "phát biểu"];
+                const freshSkills = (skills || []).filter(sk => !knowledge.includes(sk.split(" ").slice(0, 2).join(" ")) &&
+                    !SAME_IDEA.some(w => sk.includes(w) && knowledge.includes(w)));
+                const addSkill = freshSkills.length && !knowledgeInfo.skipSkill && pick([true, true, false], "skillflag");
+                main = `Em ${knowledge}${addSkill ? ", " + pick(freshSkills, "skill") : ""}.`;
             } else {
                 main = baseSentence();
             }
@@ -2615,19 +2751,6 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
             return /^(ôn tập chung|ôn tập (học kỳ|học kì|cuối|giữa)|ôn tập$|ôn tập tiết|kiểm tra|luyện tập chung|thực hành kĩ năng|thực hành kỹ năng|tổng kết)/i.test(name);
         }
 
-        function buildPPCTTopicText(unit) {
-            const lessons = unit.lessons.filter(l => l.toLowerCase() !== unit.name.toLowerCase());
-            let text = `nắm được nội dung ${unit.word ? unit.word + " " : ""}“${unit.name}”`;
-            if (lessons.length) {
-                const shown = lessons.slice(0, 3).join("; ");
-                text += ` (các bài: ${shown}${lessons.length > 3 ? "; …" : ""})`;
-            }
-            if (text.length > 240 && lessons.length > 2) {
-                text = `nắm được nội dung ${unit.word ? unit.word + " " : ""}“${unit.name}” (các bài: ${lessons.slice(0, 2).join("; ")}; …)`;
-            }
-            return text;
-        }
-
         function parsePPCTSheet(ws, fallbackGrade) {
             const rows = [];
             ws.eachRow({ includeEmpty: false }, row => {
@@ -2639,7 +2762,7 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
             if (headerIdx < 0) return null;
             const head = rows[headerIdx].map(v => v.toLowerCase());
             const col = re => head.findIndex(v => re.test(v));
-            const cWeek = col(/^tuần$/), cTopic = col(/chủ đề|chủ điểm|mạch kiến thức/), cLesson = col(/tên bài học/);
+            const cWeek = col(/^tuần$/), cTopic = col(/chủ đề|chủ điểm|mạch kiến thức/), cLesson = col(/tên bài học/), cContent = col(/nội dung tiết/);
             if (cWeek < 0 || cLesson < 0) return null;
 
             const titleRow = rows.slice(0, headerIdx).map(r => r.find(v => /môn học\s*:/i.test(v))).find(Boolean) || "";
@@ -2653,27 +2776,43 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
             const hasGDTCD = data.some(r => /^HĐ\s*GDTCĐ/i.test(r[cLesson] || ""));
             if (subject === "Hoạt động trải nghiệm" && hasGDTCD) data = data.filter(r => /^HĐ\s*GDTCĐ/i.test(r[cLesson] || ""));
 
+            // Tiếng Việt: cột "Nội dung tiết học" ghi theo mạch (Đọc, Luyện từ và câu, Viết, Nói và nghe)
+            const strandRe = /^(Đọc|Luyện từ và câu|Viết|Nói và nghe)\s*:\s*(.+)$/i;
+            const strandRows = cContent >= 0 ? data.filter(r => strandRe.test(String(r[cContent] || "").replace(/\s*\n\s*/g, " ").trim())).length : 0;
+            const byStrand = strandRows >= Math.max(5, data.length * 0.3);
+
             const periods = { GK1: new Map(), CK1: new Map(), GK2: new Map(), CK2: new Map() };
             data.forEach(r => {
                 const week = parseInt((r[cWeek].match(/\d+/) || ["0"])[0], 10);
                 if (!week) return;
+                const map = periods[ppctPeriodByWeek(week)];
+                if (byStrand) {
+                    const m = String(r[cContent] || "").replace(/\s*\n\s*/g, " ").trim().match(strandRe);
+                    if (!m) return;
+                    const strand = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase();
+                    const item = m[2].replace(/[\s.]+$/, "").trim();
+                    if (!map.has(strand)) map.set(strand, { name: strand, lessons: [] });
+                    const unit = map.get(strand);
+                    if (item && !unit.lessons.includes(item)) unit.lessons.push(item);
+                    return;
+                }
                 const topic = cleanPPCTTopic(cTopic >= 0 ? r[cTopic] : "");
                 const lesson = cleanPPCTLesson(r[cLesson]);
                 const key = topic.name.toLowerCase() || lesson.toLowerCase();
                 if (!key) return;
-                const map = periods[ppctPeriodByWeek(week)];
-                if (!map.has(key)) map.set(key, { name: topic.name || lesson, word: topic.word, lessons: [] });
+                if (!map.has(key)) map.set(key, { name: topic.name || lesson, lessons: [] });
                 const unit = map.get(key);
                 if (lesson && !isGenericPPCTName(lesson) && !unit.lessons.includes(lesson)) unit.lessons.push(lesson);
             });
 
+            // Mỗi dòng: "Mạch / chủ đề: nội dung 1; nội dung 2" — app chỉ dùng phần nội dung để viết, không nêu tên chủ đề
             const result = {};
             let total = 0;
             Object.keys(periods).forEach(p => {
                 let units = Array.from(periods[p].values());
                 const main = units.filter(u => !isReviewPPCTTopic(u.name));
                 if (main.length) units = main;
-                result[p] = units.filter(u => u.name).map(buildPPCTTopicText);
+                result[p] = units.filter(u => u.name).map(u => `${u.name}: ${(u.lessons.length ? u.lessons : [u.name]).join("; ")}`);
                 total += result[p].length;
             });
             return total ? { name: ws.name, subject, grade, periods: result } : null;
@@ -3924,7 +4063,7 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
 Kiến thức Phân phối chương trình giai đoạn này: ${ppctList.join("; ")}.
 Quy định bổ sung: ${customSchoolDirective || "Ngắn gọn, khích lệ vì sự tiến bộ của học sinh, dưới 400 ký tự mỗi em"}.
 Mức đánh giá: T là Hoàn thành tốt/Tốt, H hoặc Đ là Hoàn thành/Đạt, C là Chưa hoàn thành/Cần cố gắng.
-Mỗi nhận xét bắt đầu bằng từ "Em", không dùng dấu ngoặc đơn, mỗi em một cách diễn đạt khác nhau. Giáo viên xưng là "${teacherTitle}"; nếu cần xưng hô chỉ viết "${teacherTitle}", không viết "Thầy/cô".
+Mỗi nhận xét bắt đầu bằng từ "Em", không dùng dấu ngoặc đơn, mỗi em một cách diễn đạt khác nhau. Không nêu tên chủ đề, chủ điểm hay tên bài đọc; viết dựa vào kiến thức, kĩ năng và yêu cầu cần đạt mà em đã học. Giáo viên xưng là "${teacherTitle}"; nếu cần xưng hô chỉ viết "${teacherTitle}", không viết "Thầy/cô".
 Trả về JSON array gồm các object: [{"stt": number, "comment": string}].
 Danh sách học sinh: ${JSON.stringify(studentPayload)}`;
 

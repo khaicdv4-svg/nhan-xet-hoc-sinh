@@ -156,6 +156,9 @@
         .mode-import-button.is-active { background: var(--blue); border-color: var(--blue); color: #fff; }
         .mode-import-button.is-active > svg, .mode-import-button.is-active > small { color: var(--marker-soft); }
         .mode-import-nlpc.is-active { background: #8a2a25; border-color: #8a2a25; }
+        .mode-import-both { border-style: dashed; border-color: var(--blue); background: var(--tint-2); }
+        .mode-import-both.is-active { background: linear-gradient(100deg, var(--blue) 0%, var(--blue) 55%, #8a2a25 100%); border-style: solid; color: #fff; }
+        .mode-import-both.is-active > svg, .mode-import-both.is-active > small { color: var(--marker-soft); }
         .import-note { padding: 4px 16px 12px; font-size: 13px; line-height: 1.6; color: var(--muted); }
         .student-import-feedback { margin: 4px 14px 14px; padding: 10px 12px; border: 1px solid #9bc3a8; border-radius: 8px; background: #eaf6ee; color: #1b4d31; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
         .student-import-feedback.student-import-loading { background: #fff7d6; border-color: #e0c25a; color: #6b5314; }
@@ -401,6 +404,8 @@
 <div class="work-layout"><aside id="functionSidebar" class="function-sidebar" aria-label="Chức năng nhận xét"><section class="import-panel" aria-labelledby="importPanelTitle">
     <div class="import-panel-heading"><h2 id="importPanelTitle">1. Nhập file nhận xét</h2><p>Chọn đúng loại file Excel cần làm việc</p></div>
     <div class="import-actions">
+      <button type="button" id="primaryUploadBoth" class="mode-import-button mode-import-both" onclick="openBothFilePicker()"><i data-lucide="files" aria-hidden="true"></i><span>Nạp cùng lúc 2 file: môn học và năng lực – phẩm chất</span><small id="bothModeState">Chọn cả 2 file trong một lần · ghép theo mã học sinh</small></button>
+      <input type="file" id="excelUploadBoth" accept=".xlsx,.xls" multiple class="hidden" onchange="handleBothUpload(event)" onclick="this.value=null">
       <button type="button" id="primaryUpload" class="mode-import-button" onclick="openStudentFilePicker('MON_HOC')"><i data-lucide="book-open" aria-hidden="true"></i><span>Nhập file nhận xét môn học</span><small id="monHocModeState">Môn học · T / H / C</small></button>
       <button type="button" id="primaryUploadNLPC" class="mode-import-button mode-import-nlpc" onclick="openStudentFilePicker('NLPC')"><i data-lucide="award" aria-hidden="true"></i><span>Nhập file nhận xét năng lực – phẩm chất</span><small id="nlpcModeState">Năng lực, phẩm chất · T / Đ / C</small></button>
       <input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event, 'MON_HOC')" onclick="this.value=null">
@@ -422,7 +427,7 @@
                                     <i data-lucide="check" class="w-4 h-4"></i>
                                     <span>Xong - Áp dụng mục đã chọn</span>
                                 </button>
-                            </div><p id="scopeSummary" class="scope-summary"></p></section><section class="export-panel"><h2>Xuất kết quả</h2><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#ffe27a]">
+                            </div><p id="scopeSummary" class="scope-summary"></p></section><section class="export-panel"><h2>Xuất kết quả</h2><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button" id="btnUpdateComments" class="button-secondary" onclick="updateAndWriteComments()"><i data-lucide="wand-sparkles" aria-hidden="true"></i>Cập nhật và viết nhận xét</button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#ffe27a]">
                                 <i data-lucide="sparkles" class="w-4 h-4 text-[#ffe27a]"></i>
                                 <span>Viết bằng Gemini AI</span>
                             </button></section><section class="context-panel" aria-label="Danh sách và kỳ đánh giá"><h2 class="context-heading">2. Thông tin file và thiết lập nhận xét</h2>
@@ -1368,6 +1373,8 @@
 
         // 5. BIẾN TRẠNG THÁI TOÀN CỤC
         let currentWorkbookBuffer = null;
+        // Khi nạp cùng lúc 2 file: giữ riêng từng file để xuất lại đúng mẫu
+        let dualSources = null;
         let currentOriginalFileName = "danhgia_dinhky_tt27_2020GK1_4_1.xlsx";
         let currentFileMode = "MON_HOC";
         let studentDataOrigin = "empty";
@@ -1706,7 +1713,7 @@
             const usePPCT = document.getElementById("usePPCTToggle").checked;
             const isNLPCTarget = ["NL_CHUNG", "NL_DACTHU", "PHAM_CHAT"].includes(categoryKey);
             // Chuẩn hóa mã mức đạt: T (Tốt/Hoàn thành tốt), H hoặc Đ (Hoàn thành/Đạt), C (Chưa hoàn thành/Cần cố gắng)
-            const rawLevel = student.level;
+            const rawLevel = levelFor(student, targetKey);
             if (!["T", "H", "Đ", "C"].includes(rawLevel)) return "";
             const safeOffset = Number.isSafeInteger(seedOffset) && seedOffset >= 0 ? seedOffset : 0;
             const pick = (pool, salt) => hashPick(pool, student.stt, student.code, categoryKey, salt, safeOffset);
@@ -1773,17 +1780,27 @@
             }
         }
 
+        function defaultLevelValue(mode, idx, midCode) {
+            if (mode === "ALL_T" || mode === "ALL_XS") return "T";
+            if (mode === "ALL_MID" || mode === "ALL_HTT") return midCode;
+            if (mode === "3LEVELS") return idx % 8 === 7 ? "C" : (idx % 2 === 0 ? "T" : midCode);
+            return idx % 2 === 0 ? "T" : midCode;
+        }
+
         function applyDefaultLevelsToStudents() {
             const mode = document.getElementById("defaultLevelMode").value;
-            const midCode = currentFileMode === "NLPC" ? "Đ" : "H";
             studentsData.forEach((st, idx) => {
-                if (mode === "ALL_T" || mode === "ALL_XS") st.level = "T";
-                else if (mode === "ALL_MID" || mode === "ALL_HTT") st.level = midCode;
-                else if (mode === "3LEVELS") st.level = idx % 8 === 7 ? "C" : (idx % 2 === 0 ? "T" : midCode);
-                else st.level = idx % 2 === 0 ? "T" : midCode;
+                if (!dualSources) {
+                    st.level = defaultLevelValue(mode, idx, currentFileMode === "NLPC" ? "Đ" : "H");
+                    return;
+                }
+                if (st.rowNumberSubject) st.level = defaultLevelValue(mode, idx, "H");
+                if (st.rowNumberNLPC) st.levelNLPC = defaultLevelValue(mode, idx, "Đ");
             });
             regenerateAllComments();
-            showToast(`Đã áp dụng mức đánh giá chuẩn Thông tư 27 (${currentFileMode === "NLPC" ? "T / Đ / C" : "T / H / C"})!`);
+            showToast(dualSources
+                ? "Đã áp dụng mức đánh giá chuẩn Thông tư 27 cho cả môn học (T / H / C) và năng lực – phẩm chất (T / Đ / C)!"
+                : `Đã áp dụng mức đánh giá chuẩn Thông tư 27 (${currentFileMode === "NLPC" ? "T / Đ / C" : "T / H / C"})!`);
         }
 
         function syncTT27LevelLabelsByMode() {
@@ -1945,7 +1962,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         }
 
         function setStudentImportBusy(busy) {
-            ["primaryUpload", "primaryUploadNLPC"].forEach(id => {
+            ["primaryUpload", "primaryUploadNLPC", "primaryUploadBoth"].forEach(id => {
                 const el = document.getElementById(id);
                 el.disabled = busy;
                 el.setAttribute("aria-busy", String(busy));
@@ -1967,6 +1984,155 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             regenerateAllComments();
         }
 
+        const NLPC_TARGETS = [
+            { key: "NL_CHUNG", label: "Nhận xét Năng lực chung" },
+            { key: "NL_DACTHU", label: "Nhận xét Năng lực đặc thù" },
+            { key: "PHAM_CHAT", label: "Nhận xét Phẩm chất chủ yếu" }
+        ];
+
+        function targetMode(key) {
+            return ["NL_CHUNG", "NL_DACTHU", "PHAM_CHAT"].includes(key) ? "NLPC" : "MON_HOC";
+        }
+
+        // Mức đạt dùng cho một môn / nhóm: khi mở 2 file, NL-PC có mức riêng
+        function levelFor(st, targetKey) {
+            if (dualSources && targetMode(targetKey) === "NLPC") return st.levelNLPC || "";
+            return st.level;
+        }
+
+        function isNLPCWorkbook(workbook) {
+            const names = workbook.worksheets.map(ws => ws.name);
+            return names.length <= 2 && !!workbook.worksheets[0] &&
+                String(getCellValueSafe(workbook.worksheets[0].getRow(1).getCell(5))).toLowerCase().includes("năng lực");
+        }
+
+        // Đọc một file thành "nguồn": danh sách học sinh, các môn / nhóm, bản gốc để xuất lại
+        function readStudentSource(file, loaded, mode) {
+            const saved = { currentFileMode, studentsData };
+            try {
+                currentFileMode = mode;
+                studentsData = [];
+                let targets;
+                if (mode === "NLPC") {
+                    targets = NLPC_TARGETS.slice();
+                    parseStudentsFromSheet(loaded.workbook.worksheets[0], 3);
+                } else {
+                    const sheets = loaded.workbook.worksheets.filter(ws => ws.name.toLowerCase() !== "huongdan");
+                    targets = sheets.map(ws => ({ key: ws.name, label: `Môn: ${ws.name}` }));
+                    if (sheets.length) parseStudentsFromSheet(sheets[0], 2);
+                }
+                return { name: file.name, buffer: loaded.buffer, targets, students: studentsData, normalizedParts: loaded.normalizedParts };
+            } finally {
+                currentFileMode = saved.currentFileMode;
+                studentsData = saved.studentsData;
+            }
+        }
+
+        function openBothFilePicker() {
+            const input = document.getElementById("excelUploadBoth");
+            input.value = "";
+            input.click();
+        }
+
+        async function handleBothUpload(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length !== 2) {
+                const message = "Hãy chọn đúng 2 file cùng lúc: một file nhận xét môn học và một file năng lực – phẩm chất (giữ phím Ctrl để chọn file thứ hai). Danh sách hiện tại được giữ nguyên.";
+                setStudentImportFeedback(message, "error");
+                showToast(message);
+                return;
+            }
+            setStudentImportBusy(true);
+            setStudentImportFeedback(`Đang đọc 2 file "${files[0].name}" và "${files[1].name}"… Vui lòng chờ.`, "loading");
+            try {
+                const reads = [];
+                for (const file of files) {
+                    const loaded = await loadStudentWorkbookCompatible(await file.arrayBuffer());
+                    reads.push({ file, loaded, mode: isNLPCWorkbook(loaded.workbook) ? "NLPC" : "MON_HOC" });
+                }
+                const subjectRead = reads.find(r => r.mode === "MON_HOC");
+                const nlpcRead = reads.find(r => r.mode === "NLPC");
+                if (!subjectRead || !nlpcRead) {
+                    const kind = reads[0].mode === "NLPC" ? "năng lực – phẩm chất" : "môn học";
+                    const message = `Cả 2 file đều là file ${kind}. Cần một file môn học và một file năng lực – phẩm chất. Danh sách hiện tại được giữ nguyên.`;
+                    setStudentImportFeedback(message, "error");
+                    showToast(message);
+                    return;
+                }
+                const subject = readStudentSource(subjectRead.file, subjectRead.loaded, "MON_HOC");
+                const nlpc = readStudentSource(nlpcRead.file, nlpcRead.loaded, "NLPC");
+
+                // Ghép học sinh theo mã (không có mã thì theo họ tên và ngày sinh)
+                const merged = new Map();
+                subject.students.forEach(st => {
+                    merged.set(studentMemoryKey(st), Object.assign({}, st, { rowNumberSubject: st.rowNumber, rowNumberNLPC: null, levelNLPC: "" }));
+                });
+                let onlyNLPC = 0;
+                nlpc.students.forEach(st => {
+                    const key = studentMemoryKey(st);
+                    let row = merged.get(key);
+                    if (!row) {
+                        row = Object.assign({}, st, { level: "", rowNumberSubject: null, comments: {} });
+                        merged.set(key, row);
+                        onlyNLPC++;
+                    }
+                    row.levelNLPC = st.level;
+                    row.rowNumberNLPC = st.rowNumber;
+                    if (!row.keywords && st.keywords) row.keywords = st.keywords;
+                });
+                const onlySubject = subject.students.filter(st => !nlpc.students.some(n => studentMemoryKey(n) === studentMemoryKey(st))).length;
+
+                dualSources = { subject, nlpc };
+                studentsData = Array.from(merged.values());
+                currentWorkbookBuffer = null;
+                studentDataOrigin = "file";
+                currentOriginalFileName = `${subject.name} + ${nlpc.name}`;
+                availableSheetsOrTargets = subject.targets.concat(nlpc.targets);
+                selectedTargets = new Set(availableSheetsOrTargets.map(t => t.key));
+                currentFileMode = "MON_HOC";
+                document.getElementById("fileTypeBadge").innerText = `${subject.targets.length} môn + 3 nhóm NL–PC`;
+                document.getElementById("loadedFileName").innerText = currentOriginalFileName;
+                document.getElementById("footerFileNamePreview").innerText = currentOriginalFileName;
+
+                syncTT27LevelLabelsByMode();
+                renderSubjectCheckboxes();
+                populatePreviewTargetSelect();
+                regenerateAllComments();
+                updatePPCTSummaryBox();
+                document.getElementById("primaryUploadBoth").classList.add("is-active");
+
+                const missing = countMissingLevels();
+                const notes = [
+                    onlySubject ? `${onlySubject} em chỉ có trong file môn học` : "",
+                    onlyNLPC ? `${onlyNLPC} em chỉ có trong file năng lực – phẩm chất` : "",
+                    missing ? `${missing} em còn thiếu mức đạt: hãy chọn mức hoặc dùng "Nhận xét nhanh cả lớp"` : ""
+                ].filter(Boolean);
+                const message = `Đã nạp cùng lúc 2 file: ${studentsData.length} học sinh, ${subject.targets.length} môn và 3 nhóm năng lực – phẩm chất. Từ khóa của mỗi em dùng chung cho cả hai.` + (notes.length ? ` Lưu ý: ${notes.join("; ")}.` : "");
+                setStudentImportFeedback(message, "success");
+                showToast(message);
+            } catch (err) {
+                console.error(err);
+                const message = "Không thể đọc 2 file. Danh sách hiện tại được giữ nguyên. Kiểm tra định dạng XLSX và thử lại.";
+                setStudentImportFeedback(message, "error");
+                showToast(message);
+            } finally {
+                setStudentImportBusy(false);
+            }
+        }
+
+        // Viết lại nhận xét từ dữ liệu đang có: mức đạt, từ khóa, PPCT (không gọi AI)
+        function updateAndWriteComments() {
+            if (!studentsData.length) {
+                showToast("Chưa có danh sách học sinh. Hãy nhập file Excel trước.");
+                return;
+            }
+            regenerateAllComments();
+            const missing = countMissingLevels();
+            const withKw = studentsData.filter(st => String(st.keywords || "").trim()).length;
+            showToast(`Đã cập nhật nhận xét cho ${studentsData.length} học sinh, ${availableSheetsOrTargets.length} môn / nhóm (${withKw} em có từ khóa).` +
+                (missing ? ` Còn ${missing} em thiếu mức đạt nên chưa có nhận xét.` : ""));
+        }
+
         function openStudentFilePicker(mode) {
             const input = document.getElementById(mode === "NLPC" ? "excelUploadNLPC" : "excelUpload");
             input.value = "";
@@ -1983,7 +2149,17 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             document.getElementById("workspaceModeLabel").textContent = nlpc ? "Danh sách nhận xét năng lực – phẩm chất" : "Danh sách nhận xét môn học";
             document.getElementById("exportModeLabel").textContent = nlpc ? "Xuất Excel NL–PC" : "Xuất Excel môn học";
             document.getElementById("primaryUpload").classList.toggle("is-active", !nlpc);
-            document.getElementById("primaryUploadNLPC").classList.toggle("is-active", nlpc);
+            document.getElementById("primaryUploadNLPC").classList.toggle("is-active", nlpc && !dualSources);
+            document.getElementById("primaryUpload").classList.toggle("is-active", !nlpc && !dualSources);
+            const both = document.getElementById("primaryUploadBoth");
+            if (both) {
+                both.classList.toggle("is-active", !!dualSources);
+                document.getElementById("bothModeState").textContent = dualSources ? "ĐANG LÀM VIỆC · môn học + NL–PC" : "Chọn cả 2 file trong một lần · ghép theo mã học sinh";
+                if (dualSources) {
+                    document.getElementById("monHocModeState").textContent = "Môn học · T / H / C";
+                    document.getElementById("nlpcModeState").textContent = "Năng lực, phẩm chất · T / Đ / C";
+                }
+            }
             document.getElementById("monHocModeState").textContent = !nlpc ? "ĐANG LÀM VIỆC · T / H / C" : "Môn học · T / H / C";
             document.getElementById("nlpcModeState").textContent = nlpc ? "ĐANG LÀM VIỆC · T / Đ / C" : "Năng lực, phẩm chất · T / Đ / C";
             const total = availableSheetsOrTargets.length, count = selectedTargets.size;
@@ -2006,7 +2182,12 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     ? `Gồm ${total} ${unit}, giữ đúng cấu trúc file đã nhập, bất kể đang chọn môn nào ở trên.`
                     : "Nhập file Excel để xuất đúng theo mẫu.";
             }
-            ["btnExportAll", "btnQuickComment", "btnQuickExport"].forEach(id => {
+            if (dualSources) {
+                document.getElementById("exportAllLabel").textContent = "Xuất cả 2 file (môn học và NL–PC)";
+                document.getElementById("exportAllTitle").textContent = "Xuất cả 2 file";
+                document.getElementById("exportAllHint").textContent = `Xuất "${dualSources.subject.name}" và "${dualSources.nlpc.name}", mỗi file giữ đúng cấu trúc đã nhập.`;
+            }
+            ["btnExportAll", "btnQuickComment", "btnQuickExport", "btnUpdateComments"].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = !studentsData.length;
             });
@@ -2035,6 +2216,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                     showToast(message);
                     return;
                 }
+                dualSources = null;
                 currentWorkbookBuffer = loaded.buffer;
                 studentDataOrigin = "file";
                 currentOriginalFileName = file.name;
@@ -2696,6 +2878,10 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         }
 
         function renderStudentTable() {
+            if (dualSources) {
+                const viewing = document.getElementById("activePreviewTarget").value;
+                if (viewing) currentFileMode = targetMode(viewing);
+            }
             updateWorkingModeUI();
             updatePreviewHeaderTitle();
             const tbody = document.getElementById("studentTableBody");
@@ -2746,9 +2932,9 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                         <div class="text-xs sm:text-sm text-[#44546f] font-bold">Mã: ${st.code || '---'} • NS: ${st.dob || '---'}</div>
                     </td>
                     <td class="py-3.5 px-3">
-                        <select onchange="updateStudentLevel(${idx}, this.value)"
-                            class="w-full rounded-xl border-2 px-3 py-2 text-sm sm:text-base font-extrabold outline-none cursor-pointer shadow-sm ${getLevelSelectColorClass(st.level)}">
-                            ${levelOptionsHTML(st.level)}
+                        <select onchange="updateStudentLevel(${idx}, this.value, '${activeTargetKey}')"
+                            class="w-full rounded-xl border-2 px-3 py-2 text-sm sm:text-base font-extrabold outline-none cursor-pointer shadow-sm ${getLevelSelectColorClass(levelFor(st, activeTargetKey))}">
+                            ${levelOptionsHTML(levelFor(st, activeTargetKey))}
                         </select>
                     </td>
                     <td class="py-3.5 px-4">
@@ -2819,8 +3005,9 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             ).join("");
         }
 
-        function updateStudentLevel(idx, newLevel) {
-            studentsData[idx].level = newLevel;
+        function updateStudentLevel(idx, newLevel, targetKey) {
+            if (dualSources && targetKey && targetMode(targetKey) === "NLPC") studentsData[idx].levelNLPC = newLevel;
+            else studentsData[idx].level = newLevel;
             generateCommentsForSingleStudent(idx);
             renderStudentTable();
         }
@@ -2924,7 +3111,40 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             if (wrap) cell.alignment = Object.assign({}, cell.alignment || {}, { vertical: "middle", wrapText: true });
         }
 
+        // Khi mở 2 file: xuất từng file theo đúng mẫu của nó (môn học, năng lực – phẩm chất)
         async function exportExcelFile(options) {
+            if (!dualSources) return exportExcelFileCore(options);
+            const all = !!(options && options.all === true);
+            const viewing = document.getElementById("activePreviewTarget").value;
+            const modes = all ? ["MON_HOC", "NLPC"] : [targetMode(viewing || "")];
+            for (const mode of modes) {
+                const src = mode === "NLPC" ? dualSources.nlpc : dualSources.subject;
+                await withSourceView(src, mode, all, () => exportExcelFileCore({ all: true }));
+            }
+            if (all) showToast(`Đã xuất 2 file: "${dualSources.subject.name}" và "${dualSources.nlpc.name}".`);
+        }
+
+        // Tạm đặt dữ liệu như khi chỉ mở một file, để dùng lại đúng cách xuất của file đó
+        async function withSourceView(src, mode, all, fn) {
+            const saved = { currentWorkbookBuffer, currentFileMode, studentsData, availableSheetsOrTargets, selectedTargets, currentOriginalFileName };
+            const rowField = mode === "NLPC" ? "rowNumberNLPC" : "rowNumberSubject";
+            const srcKeys = new Set(src.targets.map(t => t.key));
+            try {
+                currentWorkbookBuffer = src.buffer;
+                currentFileMode = mode;
+                currentOriginalFileName = src.name;
+                availableSheetsOrTargets = src.targets;
+                selectedTargets = all ? srcKeys : new Set(Array.from(saved.selectedTargets).filter(k => srcKeys.has(k)));
+                studentsData = saved.studentsData
+                    .filter(st => st[rowField])
+                    .map(st => Object.assign({}, st, { level: mode === "NLPC" ? (st.levelNLPC || "") : st.level, rowNumber: st[rowField] }));
+                await fn();
+            } finally {
+                ({ currentWorkbookBuffer, currentFileMode, studentsData, availableSheetsOrTargets, selectedTargets, currentOriginalFileName } = saved);
+            }
+        }
+
+        async function exportExcelFileCore(options) {
             const exportAll = !!(options && options.all === true);
             const exportTargets = exportAll ? new Set(availableSheetsOrTargets.map(t => t.key)) : selectedTargets;
             const periodCode = document.getElementById("periodSelect").value;
@@ -3008,7 +3228,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 saveAs(blob, currentOriginalFileName);
 
                 const unit = currentFileMode === "NLPC" ? "nhóm" : "môn";
-                const missing = studentsData.filter(st => !["T", "H", "Đ", "C"].includes(st.level)).length;
+                const missing = countMissingLevels();
                 showToast(`Đã xuất file "${currentOriginalFileName}" (${writtenSheets} ${unit}).` + (missing ? ` Còn ${missing} học sinh chưa có mức đạt nên chưa có nhận xét.` : ""));
             } catch (err) {
                 console.error(err);
@@ -3019,17 +3239,30 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
         // ---- Nhận xét nhanh và xuất nhanh ----
         const VALID_LEVELS = ["T", "H", "Đ", "C"];
 
-        // Gán mức đạt theo mục "Mức đánh giá" trong Thiết lập cho các em chưa có mức; trả về số học sinh được gán
+        // Những ô mức đạt còn trống của một em: "level" (môn học), "levelNLPC" (năng lực – phẩm chất khi mở 2 file)
+        function missingLevelFields(st) {
+            if (!dualSources) return VALID_LEVELS.includes(st.level) ? [] : ["level"];
+            const fields = [];
+            if (st.rowNumberSubject && !VALID_LEVELS.includes(st.level)) fields.push("level");
+            if (st.rowNumberNLPC && !VALID_LEVELS.includes(st.levelNLPC)) fields.push("levelNLPC");
+            return fields;
+        }
+
+        function countMissingLevels() {
+            return studentsData.filter(st => missingLevelFields(st).length).length;
+        }
+
+        // Gán mức đạt theo mục "Mức đánh giá" trong Thiết lập cho các em chưa có mức; trả về danh sách em được gán
         function assignDefaultLevelsToMissing() {
             const mode = document.getElementById("defaultLevelMode").value;
-            const midCode = currentFileMode === "NLPC" ? "Đ" : "H";
             const assigned = [];
             studentsData.forEach((st, idx) => {
-                if (VALID_LEVELS.includes(st.level)) return;
-                if (mode === "ALL_T" || mode === "ALL_XS") st.level = "T";
-                else if (mode === "ALL_MID" || mode === "ALL_HTT") st.level = midCode;
-                else if (mode === "3LEVELS") st.level = idx % 8 === 7 ? "C" : (idx % 2 === 0 ? "T" : midCode);
-                else st.level = idx % 2 === 0 ? "T" : midCode;
+                const fields = missingLevelFields(st);
+                if (!fields.length) return;
+                fields.forEach(field => {
+                    const midCode = field === "levelNLPC" || (!dualSources && currentFileMode === "NLPC") ? "Đ" : "H";
+                    st[field] = defaultLevelValue(mode, idx, midCode);
+                });
                 assigned.push(idx);
             });
             return assigned;
@@ -3041,7 +3274,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                 showToast("Chưa có danh sách học sinh. Hãy nhập file Excel trước.");
                 return null;
             }
-            const missing = studentsData.filter(st => !VALID_LEVELS.includes(st.level)).length;
+            const missing = countMissingLevels();
             if (missing) {
                 const ok = window.confirm(`Có ${missing} học sinh chưa có mức đạt.\n\nMáy sẽ tự gán mức theo mục "Mức đánh giá" trong Thiết lập (mặc định xen kẽ Tốt và Hoàn thành) để viết nhận xét. Thầy/cô nên xem lại cột "Mức đạt chuẩn" của các em này.\n\nBấm OK để tiếp tục, Hủy để bỏ qua các em chưa có mức.`);
                 if (ok) return assignDefaultLevelsToMissing();
@@ -3053,7 +3286,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             const assigned = prepareQuickMode();
             if (assigned === null) return;
             regenerateAllComments(true);
-            const missing = studentsData.filter(st => !VALID_LEVELS.includes(st.level)).length;
+            const missing = countMissingLevels();
             showToast(missing
                 ? `Đã viết nhận xét nhanh cho ${studentsData.length - missing} học sinh. Còn ${missing} học sinh chưa có mức đạt nên chưa có nhận xét.`
                 : `Đã viết nhận xét nhanh cho cả lớp: ${studentsData.length} học sinh, ${availableSheetsOrTargets.length} mục.` + (assigned.length ? ` Đã tự gán mức cho ${assigned.length} học sinh, nên xem lại.` : ""));

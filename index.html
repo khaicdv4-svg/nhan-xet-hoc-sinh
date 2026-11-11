@@ -2168,6 +2168,17 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
             return Number.isFinite(n) && n >= 0 && n <= 10 ? n : null;
         }
 
+        // Điểm đúng như hiển thị trong ô: ô định dạng "0" làm tròn về số nguyên (8,5 hiện là 9), "0.0" giữ 1 chữ số lẻ
+        // Excel làm tròn .5 lên; giá trị thật trong ô (ví dụ công thức =(H2+I2)/2) có thể là số lẻ.
+        function scoreFromCell(cell) {
+            const raw = parseScore(getCellValueSafe(cell));
+            if (raw === null) return null;
+            const m = String(cell.numFmt || "").match(/^0(?:\.(0+))?$/);
+            if (!m) return raw;
+            const factor = Math.pow(10, m[1] ? m[1].length : 0);
+            return Math.floor(raw * factor + 0.5 + 1e-9) / factor;
+        }
+
         function findHeaderColumn(ws, re) {
             let hit = 0;
             ws.getRow(1).eachCell({ includeEmpty: false }, (cell, col) => {
@@ -2202,7 +2213,7 @@ async function loadStudentWorkbookCompatible(arrayBuffer) {
                         if (["T", "H", "C"].includes(lv)) st.subjectLevels[ws.name] = lv;
                     }
                     if (scoreCol) {
-                        const sc = parseScore(getCellValueSafe(row.getCell(scoreCol)));
+                        const sc = scoreFromCell(row.getCell(scoreCol));
                         if (sc !== null) st.scores[ws.name] = sc;
                     }
                 });

@@ -317,9 +317,27 @@
         .export-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; background: var(--marker-soft); border-top: 3px solid var(--blue); }
         .export-bar > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
         .export-bar strong { font-family: var(--hand); font-size: 19px; color: var(--blue); line-height: 1.4; }
-        .export-bar span { font-size: 13px; color: var(--muted); }
-        .export-bar .button-primary { flex-shrink: 0; min-width: 260px; }
+        .export-bar > div > span { font-size: 13px; color: var(--muted); }
+        .export-bar .button-primary { flex-shrink: 0; min-width: 260px; min-height: 52px; font-size: 17px; font-weight: 800; color: #fff; background: var(--blue); border: 2px solid var(--blue-dark); }
+        .export-bar .button-primary span, .export-bar .button-primary svg { color: #fff; }
+        .export-bar .button-primary:hover:not(:disabled) { background: var(--blue-dark); }
+        .export-bar .button-primary:disabled { opacity: .6; }
         @media (max-width: 700px) { .export-bar { flex-direction: column; align-items: stretch; padding: 14px; } .export-bar .button-primary { min-width: 0; width: 100%; } }
+
+        .header-right { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .header-update { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 14px; border: 1.5px solid var(--blue-soft); border-radius: 8px; background: transparent; color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap; transition: background .15s; }
+        .header-update:hover { background: rgba(255, 255, 255, .14); }
+        .header-update.has-update { background: var(--marker); border-color: var(--marker); color: var(--ink); }
+        .header-update.is-checking svg { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .update-banner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; padding: 10px max(20px, calc((100vw - 1480px) / 2)); background: var(--marker); color: var(--ink); border-bottom: 2px solid #d9b53a; font-size: 15px; line-height: 1.5; }
+        .update-banner-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .update-banner .button-primary { min-height: 40px; font-size: 14px; }
+        .draft-box { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line-strong); }
+        .draft-status { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 0; }
+        .draft-clear { flex-shrink: 0; min-height: 36px; padding: 6px 10px; font-size: 13px; color: var(--red); }
+        .draft-clear:hover { background: #fdecea; color: var(--red); }
+        @media (max-width: 600px) { .header-update span { display: none; } .header-update { padding: 8px 10px; } .update-banner { padding: 10px 14px; } }
 
         /* ---------- Hộp thoại ---------- */
         .card-3d, .card-3d-amber { background: var(--paper); border: 1px solid var(--line-strong); border-radius: 14px; box-shadow: 0 24px 60px rgba(20, 48, 107, .3); }
@@ -392,7 +410,8 @@
 <header class="app-header">
   <a class="brand" href="#main-content"><img class="brand-image" src="icons/icon-192.png" alt="" width="38" height="38"><span>ThayKhaiEdu<small>Trợ lý nhận xét tiểu học</small></span></a>
   
-<span class="header-note">Công cụ nhận xét học sinh · Thông tư 27</span></header>
+<div class="header-right"><span class="header-note">Công cụ nhận xét học sinh · Thông tư 27</span><button type="button" id="btnUpdateApp" class="header-update" onclick="onUpdateAppClick()" title="Kiểm tra và cập nhật phiên bản mới nhất của ứng dụng"><i data-lucide="refresh-cw" aria-hidden="true"></i><span id="btnUpdateAppLabel">Cập nhật bản mới</span></button></div></header>
+<div id="updateBanner" class="update-banner hidden" role="status" aria-live="polite"><span><strong>Có bản mới của ThayKhaiEdu.</strong> Công việc đang làm được lưu tự động và sẽ mở lại sau khi cập nhật.</span><span class="update-banner-actions"><button type="button" class="button-primary" onclick="applyAppUpdate()">Cập nhật bản mới</button><button type="button" class="button-secondary" onclick="dismissUpdateBanner()">Để sau</button></span></div>
 <main id="main-content" class="app-main">
   <div class="page-heading"><svg class="title-ornament" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg><svg class="title-ornament title-ornament-right" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M10 78C40 78 25 25 72 18M20 70C8 50 18 32 35 28M38 49C55 48 69 35 68 21M38 49C20 45 24 22 40 15M58 29C47 12 64 4 77 8M21 71C43 73 55 62 57 49" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M70 68l4-9 4 9 9 4-9 4-4 9-4-9-9-4z" fill="currentColor" opacity=".45"/></svg>
     <div class="title-copy"><p class="eyebrow">Đồng hành cùng giáo viên tiểu học</p><h1>Nhận xét học sinh</h1><p class="page-description">Tải danh sách, kiểm tra từng em và xuất file Excel.</p></div>
@@ -432,7 +451,7 @@
                             </div><p id="scopeSummary" class="scope-summary"></p></section><section class="export-panel"><h2>Xuất kết quả</h2><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button" id="btnUpdateComments" class="button-secondary" onclick="updateAndWriteComments()"><i data-lucide="wand-sparkles" aria-hidden="true"></i>Cập nhật và viết nhận xét</button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#ffe27a]">
                                 <i data-lucide="sparkles" class="w-4 h-4 text-[#ffe27a]"></i>
                                 <span>Viết bằng Gemini AI</span>
-                            </button></section><section class="context-panel" aria-label="Danh sách và kỳ đánh giá"><h2 class="context-heading">2. Thông tin file và thiết lập nhận xét</h2>
+                            </button><div class="draft-box"><p id="draftStatus" class="draft-status" role="status" aria-live="polite">Chưa có bản lưu. Khi nhập file, app tự lưu để thầy/cô làm tiếp lần sau.</p><button type="button" id="btnClearDraft" class="button-quiet draft-clear" onclick="clearAllWork()" title="Xóa bản lưu và dữ liệu học sinh đang mở"><i data-lucide="trash-2" aria-hidden="true"></i>Xóa bản lưu</button></div></section><section class="context-panel" aria-label="Danh sách và kỳ đánh giá"><h2 class="context-heading">2. Thông tin file và thiết lập nhận xét</h2>
     <div id="loadedFileNameBox" class="file-summary"><span class="field-caption">Danh sách đang mở</span><span id="loadedFileName" class="file-name"></span><span id="fileTypeBadge" class="muted-badge"></span></div>
     <div class="field"><label for="gradeSelect">Khối lớp</label><select id="gradeSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
                                     <option value="1">Lớp 1 (6t)</option>
@@ -1393,6 +1412,274 @@
         try { if (["Thầy", "Cô"].includes(localStorage.getItem("THAYKHAIEDU_TEACHER_TITLE"))) teacherTitle = localStorage.getItem("THAYKHAIEDU_TEACHER_TITLE"); } catch (_) { /* dùng mặc định */ }
 
         // 6. KHỞI TẠO KHI TẢI TRANG
+        // ---------- Lưu bản làm dở: lưu trong trình duyệt này (IndexedDB), không gửi đi đâu ----------
+        const DRAFT_DB = "thaykhaiedu-draft", DRAFT_STORE = "draft", DRAFT_KEY = "current", DRAFT_VERSION = 1;
+        let autosaveTimer = null, draftSavedAt = 0, draftReady = false;
+
+        function draftDb() {
+            return new Promise((resolve, reject) => {
+                if (!window.indexedDB) { reject(new Error("no-indexeddb")); return; }
+                const req = indexedDB.open(DRAFT_DB, 1);
+                req.onupgradeneeded = () => req.result.createObjectStore(DRAFT_STORE);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function draftRun(mode, action) {
+            const db = await draftDb();
+            try {
+                return await new Promise((resolve, reject) => {
+                    const tx = db.transaction(DRAFT_STORE, mode);
+                    const req = action(tx.objectStore(DRAFT_STORE));
+                    tx.oncomplete = () => resolve(req ? req.result : undefined);
+                    tx.onerror = () => reject(tx.error);
+                    tx.onabort = () => reject(tx.error);
+                });
+            } finally {
+                db.close();
+            }
+        }
+
+        const draftPut = value => draftRun("readwrite", store => store.put(value, DRAFT_KEY));
+        const draftGet = () => draftRun("readonly", store => store.get(DRAFT_KEY));
+        const draftDelete = () => draftRun("readwrite", store => store.delete(DRAFT_KEY));
+
+        function formatDraftTime(ms) {
+            const d = new Date(ms);
+            const hm = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+            return d.toDateString() === new Date().toDateString() ? `${hm} hôm nay` : `${hm} ngày ${d.getDate()}/${d.getMonth() + 1}`;
+        }
+
+        function setDraftStatus(text) {
+            const el = document.getElementById("draftStatus");
+            if (el) el.textContent = text;
+        }
+
+        function updateDraftStatus() {
+            setDraftStatus(draftSavedAt
+                ? `Đã lưu tự động lúc ${formatDraftTime(draftSavedAt)}. Lần sau mở lại sẽ làm tiếp. Bản lưu chỉ nằm trong trình duyệt này.`
+                : "Chưa có bản lưu. Khi nhập file, app tự lưu để thầy/cô làm tiếp lần sau.");
+        }
+
+        function pickDraftSource(src) {
+            return { name: src.name, buffer: src.buffer, targets: src.targets };
+        }
+
+        function buildDraftSnapshot() {
+            const val = id => { const el = document.getElementById(id); return el ? el.value : undefined; };
+            const chk = id => { const el = document.getElementById(id); return el ? el.checked : undefined; };
+            const scope = document.querySelector('input[name="subjectScope"]:checked');
+            return {
+                version: DRAFT_VERSION,
+                savedAt: Date.now(),
+                fileMode: currentFileMode,
+                fileName: currentOriginalFileName,
+                buffer: currentWorkbookBuffer,
+                dual: dualSources ? { subject: pickDraftSource(dualSources.subject), nlpc: pickDraftSource(dualSources.nlpc) } : null,
+                targets: availableSheetsOrTargets,
+                selected: Array.from(selectedTargets),
+                students: studentsData,
+                settings: {
+                    grade: val("gradeSelect"), period: val("periodSelect"), style: val("styleSelect"), defaultLevel: val("defaultLevelMode"),
+                    usePPCT: chk("usePPCTToggle"), autoFill: chk("autoFillLevelCode"), scope: scope ? scope.value : "ALL", activeTarget: val("activePreviewTarget")
+                }
+            };
+        }
+
+        // Chỉ lưu khi có danh sách học sinh nhập từ file (không lưu dữ liệu giả để trải nghiệm)
+        function canSaveDraft() {
+            return draftReady && studentsData.length > 0 && studentDataOrigin === "file";
+        }
+
+        function scheduleAutosave() {
+            if (!canSaveDraft()) return;
+            clearTimeout(autosaveTimer);
+            autosaveTimer = setTimeout(saveDraftNow, 1500);
+        }
+
+        async function saveDraftNow() {
+            clearTimeout(autosaveTimer);
+            if (!canSaveDraft()) return;
+            try {
+                await draftPut(buildDraftSnapshot());
+                draftSavedAt = Date.now();
+                updateDraftStatus();
+            } catch (err) {
+                console.error(err);
+                setDraftStatus("Không lưu được bản làm dở (trình duyệt không cho phép lưu). Thầy/cô nhớ xuất file trước khi đóng trang.");
+            }
+        }
+
+        // Khi tải file mới lên: xóa bản lưu cũ (bản làm việc mới sẽ được lưu thay thế)
+        async function discardSavedDraft() {
+            clearTimeout(autosaveTimer);
+            try { await draftDelete(); } catch (err) { console.error(err); }
+            draftSavedAt = 0;
+            updateDraftStatus();
+        }
+
+        async function clearAllWork() {
+            const hasDraft = draftSavedAt > 0;
+            if (!hasDraft && !studentsData.length) {
+                showToast("Chưa có bản lưu hay dữ liệu nào để xóa.");
+                return;
+            }
+            const ok = window.confirm("Xóa bản lưu và toàn bộ dữ liệu học sinh đang mở?\n\nCác nhận xét chưa xuất ra file Excel sẽ mất và không khôi phục được. File Excel đã tải về máy không bị ảnh hưởng.");
+            if (!ok) return;
+            await discardSavedDraft();
+            dualSources = null;
+            studentDataOrigin = "empty";
+            sessionKeywordMemory.clear();
+            initializeEmptyStudentWorkspace();
+            setStudentImportFeedback("Đã xóa bản lưu và dữ liệu học sinh đang mở. Thầy/cô nhập file mới để bắt đầu lại.", "success");
+            showToast("Đã xóa bản lưu và dữ liệu học sinh.");
+        }
+
+        async function restoreDraftIfAny() {
+            try {
+                const d = await draftGet();
+                if (!d || d.version !== DRAFT_VERSION || !Array.isArray(d.students) || !d.students.length) return false;
+                studentsData = d.students;
+                currentFileMode = d.fileMode === "NLPC" ? "NLPC" : "MON_HOC";
+                currentOriginalFileName = d.fileName || "";
+                currentWorkbookBuffer = d.buffer || null;
+                dualSources = d.dual ? { subject: d.dual.subject, nlpc: d.dual.nlpc } : null;
+                availableSheetsOrTargets = d.targets || [];
+                selectedTargets = new Set(d.selected || availableSheetsOrTargets.map(t => t.key));
+                studentDataOrigin = "file";
+                sessionKeywordMemory.clear();
+                studentsData.forEach(st => rememberStudentKeywords(st));
+
+                const st = d.settings || {};
+                const setValue = (id, v) => { const el = document.getElementById(id); if (el && v !== undefined && v !== null) el.value = v; };
+                setValue("gradeSelect", st.grade); setValue("periodSelect", st.period);
+                setValue("styleSelect", st.style); setValue("defaultLevelMode", st.defaultLevel);
+                const ppct = document.getElementById("usePPCTToggle");
+                if (ppct && typeof st.usePPCT === "boolean") {
+                    ppct.checked = st.usePPCT;
+                    const badge = document.getElementById("ppctActiveBadge");
+                    badge.innerText = st.usePPCT ? "Đang bật" : "Đang tắt";
+                    badge.className = st.usePPCT
+                        ? "px-2 py-0.5 text-xs bg-[#16382c] text-[#fce89c] rounded-full font-extrabold"
+                        : "px-2 py-0.5 text-xs bg-slate-600 text-white rounded-full font-extrabold";
+                }
+                const autoFill = document.getElementById("autoFillLevelCode");
+                if (autoFill && typeof st.autoFill === "boolean") autoFill.checked = st.autoFill;
+
+                const subjectCount = availableSheetsOrTargets.filter(t => targetMode(t.key) === "MON_HOC").length;
+                document.getElementById("fileTypeBadge").innerText = dualSources ? `${subjectCount} môn + 3 nhóm NL–PC`
+                    : (currentFileMode === "NLPC" ? "File NL & Phẩm Chất" : `File ${availableSheetsOrTargets.length} Môn Học`);
+                document.getElementById("loadedFileName").innerText = currentOriginalFileName;
+                document.getElementById("footerFileNamePreview").innerText = currentOriginalFileName;
+                syncTT27LevelLabelsByMode();
+                const scopeRadio = document.querySelector(`input[name="subjectScope"][value="${selectedTargets.size < availableSheetsOrTargets.length ? "CUSTOM" : "ALL"}"]`);
+                if (scopeRadio) scopeRadio.checked = true;
+                renderSubjectCheckboxes();
+                document.getElementById("customSubjectsPanel").classList.toggle("hidden", selectedTargets.size >= availableSheetsOrTargets.length);
+                populatePreviewTargetSelect();
+                if (st.activeTarget && Array.from(document.getElementById("activePreviewTarget").options).some(o => o.value === st.activeTarget)) {
+                    document.getElementById("activePreviewTarget").value = st.activeTarget;
+                }
+                updatePreviewHeaderTitle();
+                renderStudentTable();
+                updatePPCTSummaryBox();
+
+                draftSavedAt = d.savedAt || Date.now();
+                updateDraftStatus();
+                const message = `Đã mở lại bản làm dở lưu lúc ${formatDraftTime(draftSavedAt)}: ${studentsData.length} học sinh, "${currentOriginalFileName}". Thầy/cô làm tiếp; nhập file mới thì bản lưu cũ sẽ tự xóa, hoặc bấm "Xóa bản lưu".`;
+                setStudentImportFeedback(message, "success");
+                showToast(message);
+                return true;
+            } catch (err) {
+                console.error(err);
+                return false;
+            }
+        }
+
+        // ---------- Cập nhật bản mới ----------
+        let appBaselineHash = null, updateAvailable = false, lastUpdateCheck = 0, updateDismissed = false;
+
+        function hashText(text) {
+            let h = 2166136261;
+            for (let i = 0; i < text.length; i++) {
+                h ^= text.charCodeAt(i);
+                h = Math.imul(h, 16777619) >>> 0;
+            }
+            return `${h}:${text.length}`;
+        }
+
+        async function fetchAppHash(cacheMode) {
+            const url = cacheMode === "no-store" ? `${location.pathname}?_=${Date.now()}` : location.pathname;
+            const res = await fetch(url, { cache: cacheMode });
+            if (!res.ok) throw new Error("http " + res.status);
+            return hashText(await res.text());
+        }
+
+        function setUpdateAvailable(flag) {
+            updateAvailable = flag;
+            const btn = document.getElementById("btnUpdateApp");
+            if (btn) {
+                btn.classList.toggle("has-update", flag);
+                document.getElementById("btnUpdateAppLabel").textContent = flag ? "Có bản mới – cập nhật" : "Cập nhật bản mới";
+            }
+            document.getElementById("updateBanner").classList.toggle("hidden", !flag || updateDismissed);
+        }
+
+        async function checkForUpdate(manual) {
+            const btn = document.getElementById("btnUpdateApp");
+            if (manual && btn) btn.classList.add("is-checking");
+            try {
+                lastUpdateCheck = Date.now();
+                if (appBaselineHash === null) appBaselineHash = await fetchAppHash("force-cache").catch(() => null);
+                const latest = await fetchAppHash("no-store");
+                if (appBaselineHash === null) appBaselineHash = latest;
+                if (latest !== appBaselineHash) {
+                    updateDismissed = manual ? false : updateDismissed;
+                    setUpdateAvailable(true);
+                    if (manual) showToast("Có bản mới. Bấm \"Cập nhật bản mới\" để dùng.");
+                } else if (manual) {
+                    showToast("Thầy/cô đang dùng bản mới nhất.");
+                }
+            } catch (err) {
+                if (manual) showToast("Không kiểm tra được bản mới. Kiểm tra kết nối mạng rồi thử lại.");
+            } finally {
+                if (btn) btn.classList.remove("is-checking");
+            }
+        }
+
+        function onUpdateAppClick() {
+            if (updateAvailable) applyAppUpdate();
+            else checkForUpdate(true);
+        }
+
+        function dismissUpdateBanner() {
+            updateDismissed = true;
+            document.getElementById("updateBanner").classList.add("hidden");
+        }
+
+        async function applyAppUpdate() {
+            showToast("Đang cập nhật bản mới…");
+            try { await saveDraftNow(); } catch (_) { /* vẫn cập nhật */ }
+            try {
+                await fetch(`${location.pathname}?_=${Date.now()}`, { cache: "reload" });
+                await fetch(location.pathname, { cache: "reload" });
+            } catch (_) { /* thử tải lại bình thường */ }
+            location.reload();
+        }
+
+        function initUpdateChecks() {
+            checkForUpdate(false);
+            setInterval(() => checkForUpdate(false), 10 * 60 * 1000);
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "hidden") saveDraftNow();
+                else if (Date.now() - lastUpdateCheck > 2 * 60 * 1000) checkForUpdate(false);
+            });
+            window.addEventListener("pagehide", saveDraftNow);
+            document.addEventListener("input", scheduleAutosave);
+            document.addEventListener("change", scheduleAutosave);
+        }
+
         window.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
             renderQuickKeywordChips();
@@ -1405,6 +1692,8 @@
             initializeEmptyStudentWorkspace();
             warnAboutMisassignedPPCT();
             updatePPCTSummaryBox();
+            restoreDraftIfAny().finally(() => { draftReady = true; });
+            initUpdateChecks();
         });
 
         function renderQuickKeywordChips() {
@@ -2378,6 +2667,7 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
                 });
                 const onlySubject = subject.students.filter(st => !nlpc.students.some(n => studentMemoryKey(n) === studentMemoryKey(st))).length;
 
+                await discardSavedDraft();
                 dualSources = { subject, nlpc };
                 studentsData = Array.from(merged.values());
                 currentWorkbookBuffer = null;
@@ -2515,6 +2805,7 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
                     showToast(message);
                     return;
                 }
+                await discardSavedDraft();
                 dualSources = null;
                 currentWorkbookBuffer = loaded.buffer;
                 studentDataOrigin = "file";
@@ -3182,6 +3473,7 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
         }
 
         function renderStudentTable() {
+            scheduleAutosave();
             if (dualSources) {
                 const viewing = document.getElementById("activePreviewTarget").value;
                 if (viewing) currentFileMode = targetMode(viewing);

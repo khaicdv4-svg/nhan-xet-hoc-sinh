@@ -159,6 +159,53 @@
         .mode-import-both { border-style: dashed; border-color: var(--blue); background: var(--tint-2); }
         .mode-import-both.is-active { background: linear-gradient(100deg, var(--blue) 0%, var(--blue) 55%, #8a2a25 100%); border-style: solid; color: #fff; }
         .mode-import-both.is-active > svg, .mode-import-both.is-active > small { color: var(--marker-soft); }
+        /* Khu nhập file nổi bật: đây là việc đầu tiên thầy/cô cần làm */
+        .import-panel { border: 2px solid var(--blue); border-top-width: 6px; box-shadow: 0 10px 28px rgba(29, 63, 143, .22); }
+        .import-panel-heading { padding: 14px 16px 12px; background: var(--tint); border-bottom: 1px solid var(--line); }
+        .import-panel-heading h2 { font-size: 22px; }
+        .import-panel-heading p { font-size: 14px; }
+        .import-actions { padding: 14px; gap: 12px; }
+        .mode-import-both.drop-zone {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
+            width: 100%; min-height: 190px; padding: 20px 14px; border: 2px solid var(--blue-dark); border-radius: 14px;
+            background: linear-gradient(160deg, #2a56b8 0%, var(--blue) 45%, var(--blue-dark) 100%); color: #fff;
+            outline: 3px dashed var(--marker); outline-offset: -11px; transition: transform .15s, box-shadow .15s;
+            box-shadow: 0 6px 16px rgba(20, 48, 107, .3);
+        }
+        .mode-import-both.drop-zone:hover { background: linear-gradient(160deg, #3463c9 0%, #234b9f 45%, #16336f 100%); transform: translateY(-1px); box-shadow: 0 10px 20px rgba(20, 48, 107, .35); }
+        .mode-import-both.drop-zone:focus-visible { outline: 4px solid var(--marker); outline-offset: 3px; }
+        .mode-import-both.drop-zone > svg { width: 54px; height: 54px; color: var(--marker); grid-row: auto; }
+        .mode-import-both.drop-zone .drop-title { font-family: var(--hand); font-size: 22px; font-weight: 700; line-height: 1.3; color: #fff; }
+        .mode-import-both.drop-zone .drop-sub { font-size: 14px; font-weight: 500; color: var(--blue-soft); line-height: 1.4; }
+        .mode-import-both.drop-zone .drop-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; padding: 11px 22px; border-radius: 999px; background: var(--marker); color: var(--ink); font-size: 17px; font-weight: 800; }
+        .mode-import-both.drop-zone .drop-cta span, .mode-import-both.drop-zone .drop-cta svg { color: var(--ink); font-size: 17px; font-weight: 800; }
+        .mode-import-both.drop-zone .drop-cta svg { width: 20px; height: 20px; }
+        .mode-import-both.drop-zone > small { margin-top: 4px; font-size: 12.5px; font-weight: 500; color: var(--blue-soft); line-height: 1.5; }
+        .mode-import-both.drop-zone.is-active { background: linear-gradient(160deg, #1f7a4d 0%, #17623d 100%); border-color: #0f4a2d; }
+        .mode-import-both.drop-zone.is-active:hover { background: linear-gradient(160deg, #26905b 0%, #1b6d44 100%); }
+        .mode-import-both.drop-zone.is-active > svg, .mode-import-both.drop-zone.is-active .drop-sub, .mode-import-both.drop-zone.is-active > small { color: #e4f6ec; }
+        .mode-import-both.drop-zone.is-dragover { background: var(--marker); border-color: #d9b53a; outline-color: var(--blue); transform: scale(1.02); }
+        .mode-import-both.drop-zone.is-dragover .drop-title, .mode-import-both.drop-zone.is-dragover > svg, .mode-import-both.drop-zone.is-dragover .drop-sub, .mode-import-both.drop-zone.is-dragover > small { color: var(--ink); }
+        .mode-import-both.drop-zone.is-dragover .drop-cta { background: var(--blue); }
+        .mode-import-both.drop-zone.is-dragover .drop-cta span, .mode-import-both.drop-zone.is-dragover .drop-cta svg { color: #fff; }
+        .drop-hint { font-size: 13px; line-height: 1.6; color: var(--muted); margin: 0; }
+        .import-checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+        .import-checklist li { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--tint-2); min-width: 0; }
+        .import-checklist .chk-mark { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line-strong); background: #fff; display: grid; place-items: center; font-size: 15px; font-weight: 800; line-height: 1; color: #fff; }
+        .import-checklist li.is-done { border-color: #7fb596; background: #eaf6ee; }
+        .import-checklist li.is-done .chk-mark { background: var(--green); border-color: var(--green); }
+        .import-checklist li.is-done .chk-mark::after { content: "✓"; }
+        .import-checklist .chk-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.4; }
+        .import-checklist strong { font-size: 14px; color: var(--ink); }
+        .import-checklist small { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+        .import-checklist li.is-done small { color: #1b4d31; font-weight: 600; }
+        .import-single { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: stretch; padding-top: 4px; }
+        .import-single-label { grid-column: 1 / -1; font-size: 13px; font-weight: 600; color: var(--muted); }
+        .mode-import-compact { min-height: 60px; padding: 8px 10px; grid-template-columns: 22px 1fr; gap: 0 8px; }
+        .mode-import-compact > svg { width: 20px; height: 20px; }
+        .mode-import-compact > span { font-size: 14px; }
+        .mode-import-compact > small { display: none; }
+        .mode-import-compact.is-active > small { display: block; }
         .import-note { padding: 4px 16px 12px; font-size: 13px; line-height: 1.6; color: var(--muted); }
         .student-import-feedback { margin: 4px 14px 14px; padding: 10px 12px; border: 1px solid #9bc3a8; border-radius: 8px; background: #eaf6ee; color: #1b4d31; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
         .student-import-feedback.student-import-loading { background: #fff7d6; border-color: #e0c25a; color: #6b5314; }
@@ -177,7 +224,12 @@
         .scope-panel #subjectCheckboxesContainer { grid-template-columns: 1fr; max-height: 260px; }
         .scope-summary { margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--muted); }
 
-        .export-panel #primaryExport { width: 100%; }
+        .export-panel #primaryExport { width: 100%; margin-top: 10px; min-height: 52px; font-size: 17px; font-weight: 800; }
+        .export-panel #btnUpdateComments { width: 100%; }
+        .button-accent { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 10px 14px; border-radius: 8px; background: var(--marker); color: var(--ink); border: 2px solid #d9b53a; font-size: 17px; font-weight: 800; line-height: 1.35; transition: background .15s; }
+        .button-accent:hover:not(:disabled) { background: #ffd84d; }
+        .workspace-actions .button-secondary, .workspace-actions .btn-3d-gold { min-height: 46px; font-size: 15px; font-weight: 800; }
+        .workspace-actions .button-secondary { border-color: var(--blue); border-width: 2px; }
         .export-panel > .button-secondary, .export-panel > #btnGenerateWithGeminiAI { width: 100%; margin-top: 10px; }
 
         /* ---------- Nút ---------- */
@@ -363,7 +415,7 @@
             .function-sidebar { position: static; max-height: none; overflow: visible; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
             .function-sidebar > * { margin-bottom: 0; }
             .function-sidebar .import-panel, .function-sidebar .support-tools, .sidebar-settings { grid-column: 1 / -1; }
-            .import-actions { grid-template-columns: 1fr 1fr; }
+            .import-actions { grid-template-columns: 1fr; }
             .sidebar-settings .header-links { flex-direction: row; flex-wrap: wrap; }
             .student-table-scroll { max-height: 560px; }
             .header-note { font-size: 11px; max-width: 140px; }
@@ -423,35 +475,26 @@
   
   
 <div class="work-layout"><aside id="functionSidebar" class="function-sidebar" aria-label="Chức năng nhận xét"><section class="import-panel" aria-labelledby="importPanelTitle">
-    <div class="import-panel-heading"><h2 id="importPanelTitle">1. Nhập file nhận xét</h2><p>Chọn đúng loại file Excel cần làm việc</p></div>
+    <div class="import-panel-heading"><h2 id="importPanelTitle">1. Nạp file nhận xét</h2><p>Bước đầu tiên: đưa file Excel vào app</p></div>
     <div class="import-actions">
-      <button type="button" id="primaryUploadBoth" class="mode-import-button mode-import-both" onclick="openBothFilePicker()"><i data-lucide="files" aria-hidden="true"></i><span>Nạp cùng lúc 2 file: môn học và năng lực – phẩm chất</span><small id="bothModeState">Chọn cả 2 file trong một lần · ghép theo mã học sinh</small></button>
+      <button type="button" id="primaryUploadBoth" class="mode-import-button mode-import-both drop-zone" onclick="openBothFilePicker()" aria-describedby="dropHint"><i data-lucide="upload-cloud" aria-hidden="true"></i><span id="dropTitle" class="drop-title">Nạp cùng lúc 2 file</span><span class="drop-sub">File môn học và file năng lực – phẩm chất</span><span class="drop-cta"><i data-lucide="folder-open" aria-hidden="true"></i><span id="dropCtaLabel">Chọn file</span></span><small id="bothModeState">Bấm file thứ nhất, giữ phím Ctrl rồi bấm file thứ hai</small></button>
       <input type="file" id="excelUploadBoth" accept=".xlsx,.xls" multiple class="hidden" onchange="handleBothUpload(event)" onclick="this.value=null">
-      <button type="button" id="primaryUpload" class="mode-import-button" onclick="openStudentFilePicker('MON_HOC')"><i data-lucide="book-open" aria-hidden="true"></i><span>Nhập file nhận xét môn học</span><small id="monHocModeState">Môn học · T / H / C</small></button>
-      <button type="button" id="primaryUploadNLPC" class="mode-import-button mode-import-nlpc" onclick="openStudentFilePicker('NLPC')"><i data-lucide="award" aria-hidden="true"></i><span>Nhập file nhận xét năng lực – phẩm chất</span><small id="nlpcModeState">Năng lực, phẩm chất · T / Đ / C</small></button>
+      <p id="dropHint" class="drop-hint">Hoặc kéo thả file Excel vào khung trên. App tự nhận file nào là môn học, file nào là năng lực – phẩm chất, rồi ghép học sinh theo mã.</p>
+      <ul class="import-checklist" aria-label="File đã nạp">
+        <li id="chkSubject" class="is-empty"><span class="chk-mark" aria-hidden="true"></span><span class="chk-text"><strong>File môn học</strong><small id="chkSubjectName">Chưa nạp</small></span></li>
+        <li id="chkNlpc" class="is-empty"><span class="chk-mark" aria-hidden="true"></span><span class="chk-text"><strong>File năng lực – phẩm chất</strong><small id="chkNlpcName">Chưa nạp</small></span></li>
+      </ul>
+      <div class="import-single">
+        <span class="import-single-label">Chỉ có một file? Nhập riêng:</span>
+        <button type="button" id="primaryUpload" class="mode-import-button mode-import-compact" onclick="openStudentFilePicker('MON_HOC')"><i data-lucide="book-open" aria-hidden="true"></i><span>File môn học</span><small id="monHocModeState">Môn học · T / H / C</small></button>
+        <button type="button" id="primaryUploadNLPC" class="mode-import-button mode-import-nlpc mode-import-compact" onclick="openStudentFilePicker('NLPC')"><i data-lucide="award" aria-hidden="true"></i><span>File NL–PC</span><small id="nlpcModeState">Năng lực, phẩm chất · T / Đ / C</small></button>
+      </div>
       <input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event, 'MON_HOC')" onclick="this.value=null">
       <input type="file" id="excelUploadNLPC" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event, 'NLPC')" onclick="this.value=null">
     </div>
     <p class="import-note">File được nhập sẽ thay danh sách đang mở. Chọn nút nhập không làm mất dữ liệu nếu thầy/cô chưa chọn file.</p>
     <p id="studentImportFeedback" class="hidden" role="status" aria-live="polite"></p>
-  </section><section id="scopePanel" class="scope-panel"><h2 id="scopePanelTitle">Chọn môn cần nhận xét</h2><div class="scope-options"><label><input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()"> <span id="allScopeLabel">Nhận xét tất cả môn</span></label><label><input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()"> <span id="customScopeLabel">Chọn một hoặc nhiều môn</span></label></div><div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#edf2fa] border-2 border-[#b9c8e0] space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-extrabold text-[#18233a]">Tích chọn mục cần nhận xét:</span>
-                                    <div class="flex gap-2 text-xs font-bold">
-                                        <button type="button" onclick="selectAllSubjects(true)" class="text-[#1d3f8f] underline">Chọn hết</button>
-                                        <span>|</span>
-                                        <button type="button" onclick="selectAllSubjects(false)" class="text-[#b3302a] underline">Bỏ hết</button>
-                                    </div>
-                                </div>
-                                <div id="subjectCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-44 overflow-y-auto custom-scrollbar pr-1"></div>
-                                <button type="button" onclick="applySubjectFilter()" class="w-full btn-3d-teal py-2 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5">
-                                    <i data-lucide="check" class="w-4 h-4"></i>
-                                    <span>Xong - Áp dụng mục đã chọn</span>
-                                </button>
-                            </div><p id="scopeSummary" class="scope-summary"></p></section><section class="export-panel"><h2>Xuất kết quả</h2><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button" id="btnUpdateComments" class="button-secondary" onclick="updateAndWriteComments()"><i data-lucide="wand-sparkles" aria-hidden="true"></i>Cập nhật và viết nhận xét</button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#ffe27a]">
-                                <i data-lucide="sparkles" class="w-4 h-4 text-[#ffe27a]"></i>
-                                <span>Viết bằng Gemini AI</span>
-                            </button><div class="draft-box"><p id="draftStatus" class="draft-status" role="status" aria-live="polite">Chưa có bản lưu. Khi nhập file, app tự lưu để thầy/cô làm tiếp lần sau.</p><button type="button" id="btnClearDraft" class="button-quiet draft-clear" onclick="clearAllWork()" title="Xóa bản lưu và dữ liệu học sinh đang mở"><i data-lucide="trash-2" aria-hidden="true"></i>Xóa bản lưu</button></div></section><section class="context-panel" aria-label="Danh sách và kỳ đánh giá"><h2 class="context-heading">2. Thông tin file và thiết lập nhận xét</h2>
+  </section><section class="context-panel" aria-label="Danh sách và kỳ đánh giá"><h2 class="context-heading">2. Thông tin file và thiết lập nhận xét</h2>
     <div id="loadedFileNameBox" class="file-summary"><span class="field-caption">Danh sách đang mở</span><span id="loadedFileName" class="file-name"></span><span id="fileTypeBadge" class="muted-badge"></span></div>
     <div class="field"><label for="gradeSelect">Khối lớp</label><select id="gradeSelect" onchange="onGradeOrPeriodChange()" class="w-full input-vintage rounded-xl px-3 py-2.5 text-base">
                                     <option value="1">Lớp 1 (6t)</option>
@@ -470,7 +513,24 @@
                                 <option value="ngangon">⚡ Ngắn gọn, súc tích & chuẩn TT27</option>
                                 <option value="nghiemtuc">🎯 Khách quan, chuẩn mực & rõ ràng</option>
                             </select></div><div class="field title-field" role="radiogroup" aria-labelledby="teacherTitleLabel"><span id="teacherTitleLabel" class="field-title">Giáo viên xưng là</span><div class="title-choice"><label><input type="radio" name="teacherTitle" value="Thầy" checked onchange="onTeacherTitleChange()"><span>Thầy</span></label><label><input type="radio" name="teacherTitle" value="Cô" onchange="onTeacherTitleChange()"><span>Cô</span></label></div><small class="title-hint">Lời nhận xét sẽ viết "Thầy" hoặc "Cô" theo lựa chọn này.</small></div>
-  </section><details id="supportTools" open class="support-tools"><summary>Học liệu và thiết lập bổ trợ <span>Ngân hàng mẫu câu · PPCT · tùy chọn nâng cao</span></summary><section class="resources" aria-label="Học liệu bổ trợ">
+  </section><section id="scopePanel" class="scope-panel"><h2 id="scopePanelTitle">Chọn môn cần nhận xét</h2><div class="scope-options"><label><input type="radio" name="subjectScope" value="ALL" checked onchange="toggleSubjectSelectionScope()"> <span id="allScopeLabel">Nhận xét tất cả môn</span></label><label><input type="radio" name="subjectScope" value="CUSTOM" onchange="toggleSubjectSelectionScope()"> <span id="customScopeLabel">Chọn một hoặc nhiều môn</span></label></div><div id="customSubjectsPanel" class="hidden p-3.5 rounded-xl bg-[#edf2fa] border-2 border-[#b9c8e0] space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-extrabold text-[#18233a]">Tích chọn mục cần nhận xét:</span>
+                                    <div class="flex gap-2 text-xs font-bold">
+                                        <button type="button" onclick="selectAllSubjects(true)" class="text-[#1d3f8f] underline">Chọn hết</button>
+                                        <span>|</span>
+                                        <button type="button" onclick="selectAllSubjects(false)" class="text-[#b3302a] underline">Bỏ hết</button>
+                                    </div>
+                                </div>
+                                <div id="subjectCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-44 overflow-y-auto custom-scrollbar pr-1"></div>
+                                <button type="button" onclick="applySubjectFilter()" class="w-full btn-3d-teal py-2 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5">
+                                    <i data-lucide="check" class="w-4 h-4"></i>
+                                    <span>Xong - Áp dụng mục đã chọn</span>
+                                </button>
+                            </div><p id="scopeSummary" class="scope-summary"></p></section><section class="export-panel"><h2>3. Viết nhận xét và xuất file</h2><button type="button" id="btnUpdateComments" class="button-accent" onclick="updateAndWriteComments()"><i data-lucide="wand-sparkles" aria-hidden="true"></i>Cập nhật và viết nhận xét</button><button type="button" id="primaryExport" class="button-primary" onclick="exportExcelFile()"><i data-lucide="download" aria-hidden="true"></i><span id="exportModeLabel">Xuất Excel môn học</span></button><button type="button"  class="button-secondary" onclick="regenerateAllComments(true)"><i data-lucide="refresh-cw" aria-hidden="true"></i>Đổi câu toàn lớp</button><button type="button" id="btnGenerateWithGeminiAI" onclick="generateAllWithGeminiAI()" class="hidden btn-3d-teal px-3.5 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 border-[#ffe27a]">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-[#ffe27a]"></i>
+                                <span>Viết bằng Gemini AI</span>
+                            </button><div class="draft-box"><p id="draftStatus" class="draft-status" role="status" aria-live="polite">Chưa có bản lưu. Khi nhập file, app tự lưu để thầy/cô làm tiếp lần sau.</p><button type="button" id="btnClearDraft" class="button-quiet draft-clear" onclick="clearAllWork()" title="Xóa bản lưu và dữ liệu học sinh đang mở"><i data-lucide="trash-2" aria-hidden="true"></i>Xóa bản lưu</button></div></section><details id="supportTools" open class="support-tools"><summary>Học liệu và thiết lập bổ trợ <span>Ngân hàng mẫu câu · PPCT · tùy chọn nâng cao</span></summary><section class="resources" aria-label="Học liệu bổ trợ">
     <span class="resource-label">CHỨC NĂNG BỔ TRỢ</span><button type="button" id="installAppButton" class="button-quiet" onclick="installApp()">Cài trên máy</button><button type="button"  class="button-secondary" onclick="openModal('modalBank')"><i data-lucide="book-open" aria-hidden="true"></i>Ngân hàng mẫu câu <span id="customBankBadge" class="hidden muted-badge"></span></button><button type="button"  class="button-secondary" onclick="openModal('modalPPCT')"><i data-lucide="calendar-range" aria-hidden="true"></i>Phân phối chương trình <span id="ppctActiveBadge" class="muted-badge">Đang bật</span></button>
     <details id="workflowSettings" class="settings-menu"><summary>Thiết lập nhận xét</summary><div class="settings-content">
       
@@ -1692,6 +1752,7 @@
             initializeEmptyStudentWorkspace();
             warnAboutMisassignedPPCT();
             updatePPCTSummaryBox();
+            initImportDrop();
             restoreDraftIfAny().finally(() => { draftReady = true; });
             initUpdateChecks();
         });
@@ -2613,6 +2674,41 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
             }
         }
 
+        // Kéo thả: 1 file thì tự nhận loại file, 2 file thì nạp cùng lúc
+        function handleDroppedFiles(files) {
+            const sheets = files.filter(f => /\.xlsx?$/i.test(f.name));
+            if (!sheets.length) {
+                showToast("Chỉ nhận file Excel (.xlsx hoặc .xls). Thầy/cô thả lại file khác nhé.");
+                return;
+            }
+            if (sheets.length === 1) return handleExcelUpload({ target: { files: sheets } }, null);
+            if (sheets.length === 2) return handleBothUpload({ target: { files: sheets } });
+            showToast("Mỗi lần thả tối đa 2 file Excel: một file môn học và một file năng lực – phẩm chất.");
+        }
+
+        function initImportDrop() {
+            const panel = document.querySelector(".import-panel");
+            const zone = document.getElementById("primaryUploadBoth");
+            if (!panel || !zone) return;
+            ["dragenter", "dragover"].forEach(ev => panel.addEventListener(ev, e => {
+                e.preventDefault();
+                if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+                zone.classList.add("is-dragover");
+            }));
+            panel.addEventListener("dragleave", e => {
+                if (!panel.contains(e.relatedTarget)) zone.classList.remove("is-dragover");
+            });
+            panel.addEventListener("drop", e => {
+                e.preventDefault();
+                zone.classList.remove("is-dragover");
+                handleDroppedFiles(Array.from((e.dataTransfer && e.dataTransfer.files) || []));
+            });
+            // Thả nhầm ra ngoài khung thì không để trình duyệt mở file; ô chọn file khác vẫn nhận bình thường
+            ["dragover", "drop"].forEach(ev => window.addEventListener(ev, e => {
+                if (!e.target.closest || !e.target.closest('input[type="file"], .import-panel')) e.preventDefault();
+            }));
+        }
+
         function openBothFilePicker() {
             const input = document.getElementById("excelUploadBoth");
             input.value = "";
@@ -2740,7 +2836,7 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
             const both = document.getElementById("primaryUploadBoth");
             if (both) {
                 both.classList.toggle("is-active", !!dualSources);
-                document.getElementById("bothModeState").textContent = dualSources ? "ĐANG LÀM VIỆC · môn học + NL–PC" : "Chọn cả 2 file trong một lần · ghép theo mã học sinh";
+                document.getElementById("bothModeState").textContent = dualSources ? "Đã nạp xong, bấm để nạp lại cả 2 file" : "Bấm file thứ nhất, giữ phím Ctrl rồi bấm file thứ hai";
                 if (dualSources) {
                     document.getElementById("monHocModeState").textContent = "Môn học · T / H / C";
                     document.getElementById("nlpcModeState").textContent = "Năng lực, phẩm chất · T / Đ / C";
@@ -2757,6 +2853,23 @@ Mức đã có trong file hoặc thầy/cô đã chọn được giữ nguyên. 
             const scopeText = total ? `Đã chọn ${count}/${total} ${unit}. Điền nhận xét cho các mục đã chọn; các sheet khác được giữ nguyên.` : "Nhập file để có danh sách môn / nhóm cần nhận xét.";
             document.getElementById("scopeSummary").textContent = scopeText;
             document.getElementById("scopeStatusLine").textContent = total ? `${scopeText} Bảng bên dưới chỉ xem một mục tại một thời điểm.` : "Chưa có danh sách học sinh. Dùng nút nhập file ở cột trái để bắt đầu.";
+            // Danh sách file đã nạp và nhãn của vùng nhập file
+            const fileLoaded = studentDataOrigin === "file";
+            const subjectName = dualSources ? dualSources.subject.name : (fileLoaded && !dualSources && currentFileMode === "MON_HOC" ? currentOriginalFileName : "");
+            const nlpcName = dualSources ? dualSources.nlpc.name : (fileLoaded && !dualSources && currentFileMode === "NLPC" ? currentOriginalFileName : "");
+            [["chkSubject", "chkSubjectName", subjectName], ["chkNlpc", "chkNlpcName", nlpcName]].forEach(([liId, nameId, name]) => {
+                const li = document.getElementById(liId);
+                if (!li) return;
+                li.classList.toggle("is-done", !!name);
+                li.classList.toggle("is-empty", !name);
+                document.getElementById(nameId).textContent = name || "Chưa nạp";
+            });
+            const dropTitle = document.getElementById("dropTitle");
+            if (dropTitle) {
+                const loadedCount = (subjectName ? 1 : 0) + (nlpcName ? 1 : 0);
+                dropTitle.textContent = loadedCount === 2 ? "Đã nạp cả 2 file" : (loadedCount === 1 ? "Đã nạp 1 file" : "Nạp cùng lúc 2 file");
+                document.getElementById("dropCtaLabel").textContent = loadedCount ? "Nạp lại file" : "Chọn file";
+            }
             const source = document.getElementById("studentSourceLabel");
             source.textContent = studentDataOrigin === "file" ? `DANH SÁCH ĐÃ NHẬP: ${currentOriginalFileName} · ${studentsData.length} học sinh` : studentDataOrigin === "demo" ? "ĐANG DÙNG DỮ LIỆU GIẢ ĐỂ TRẢI NGHIỆM — chưa phải danh sách học sinh của thầy/cô." : "CHƯA NHẬP DANH SÁCH HỌC SINH";
             source.classList.toggle("is-demo", studentDataOrigin === "demo");
